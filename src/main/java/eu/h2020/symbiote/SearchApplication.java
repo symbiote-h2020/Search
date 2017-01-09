@@ -1,13 +1,11 @@
 package eu.h2020.symbiote;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.context.annotation.Bean;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.sleuth.sampler.AlwaysSampler;
+import org.springframework.web.bind.annotation.RestController;
 
 
 /**
@@ -16,6 +14,8 @@ import org.springframework.cloud.sleuth.sampler.AlwaysSampler;
 @EnableDiscoveryClient
 @SpringBootApplication
 public class SearchApplication {
+
+    public static final String DIRECTORY = "/corePlatformTriplestore";
 
 	private static Log log = LogFactory.getLog(SearchApplication.class);
 
@@ -29,9 +29,18 @@ public class SearchApplication {
         }
     }
 
-    @Bean
-    public AlwaysSampler defaultSampler() {
-        return new AlwaysSampler();
+//    //TODO whats this
+//    @Bean
+//    public AlwaysSampler defaultSampler() {
+//        return new AlwaysSampler();
+//    }
+
+    @RestController
+    class RegistrationController {
+
+
+        public RegistrationController() {
+        }
     }
 
 }

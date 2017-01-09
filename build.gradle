@@ -32,6 +32,9 @@ repositories {
     maven {
         url 'https://repo.spring.io/libs-snapshot'
     }
+    maven {
+        url 'https://maven.man.poznan.pl/repository/kiwi-repo'
+    }
 }
 
 sourceCompatibility = 1.8
@@ -44,7 +47,14 @@ dependencies {
     compile('org.springframework.cloud:spring-cloud-starter-stream-rabbit')
     compile('org.springframework.boot:spring-boot-starter-data-rest')
     compile('org.springframework.boot:spring-boot-starter-web')
-    compile('org.springframework.boot:spring-boot-starter-data-mongodb')
+
+    //Jena dependencies
+    compile('org.apache.jena:apache-jena-libs:3.1.0')
+    compile('org.apache.jena:jena-core:3.1.0')
+//    compile('org.semanticweb.owl:align:1.0')
+//    compile('org.semanticweb.owl:proc-align:1.0')
+//    compile('fr.inrialpes.exmo:ontowrap:1.0')
+    compile('eu.symbiote-h2020:MediationFramework:1.0-SNAPSHOT')
 
     testCompile('org.springframework.boot:spring-boot-starter-test')
 
