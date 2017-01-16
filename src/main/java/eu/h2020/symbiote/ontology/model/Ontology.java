@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eu.h2020.symbiote.ontology.model.model;
+package eu.h2020.symbiote.ontology.model;
 
 import java.math.BigInteger;
 
@@ -24,7 +24,7 @@ public class Ontology {
      */
     public static final String MIM_GRAPH = ROOT_URI + "meta.owl";
     public static final String CORE_GRAPH = ROOT_URI + "core";
-//    public static final String MAPPING_GRAPH = ROOT_URI + "mappings";
+    public static final String MAPPING_GRAPH = ROOT_URI + "mappings";
     public static final String PLATFORMS_GRAPH = ROOT_URI + "platforms";
 //    public static final String MODELS_GRAPH = ROOT_URI + "models";
 
@@ -32,14 +32,14 @@ public class Ontology {
      * Classes
      */
     public static final String PLATFORM = MIM_GRAPH + "#Platform";
-//    public static final String MAPPING = ROOT_URI + "Mapping";
+    public static final String MAPPING = MIM_GRAPH + "#Mapping";
 
     /**
      * Predicates
      */
-//    public static final String FROM = ROOT_URI + "from";
-//    public static final String TO = ROOT_URI + "to";
-//    public static final String USES = ROOT_URI + "uses";
+    public static final String FROM = ROOT_URI + "from";
+    public static final String TO = ROOT_URI + "to";
+    public static final String USES = ROOT_URI + "uses";
 
     /**
      * Imported
@@ -54,7 +54,7 @@ public class Ontology {
 //        return MODELS_GRAPH + "/" + modelId;
 //    }
 
-    public static String getPlatformGraphURI(BigInteger platformId) {
+    public static String getPlatformGraphURI(String platformId) {
         return PLATFORMS_GRAPH + "/" + platformId;
     }
 
@@ -62,7 +62,7 @@ public class Ontology {
 //        return MAPPING_GRAPH + "/" + mappingId;
 //    }
 
-    public static String getPlatformMetadata(BigInteger platformId, BigInteger modelId) {
+    public static String getPlatformMetadata(String platformId, String modelId) {
         return "<" + getPlatformGraphURI(platformId) + "> <" + IS_A + "> <" + PLATFORM + "> ." + "\n"
                 //For now remove model reference
 //                + "<" + getPlatformGraphURI(platformId) + "> <" + USES + "> <" + getModelGraphURI(modelId) + "> ."

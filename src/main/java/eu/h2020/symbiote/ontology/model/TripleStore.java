@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eu.h2020.symbiote.ontology.model.model;
+package eu.h2020.symbiote.ontology.model;
 
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
@@ -40,10 +40,10 @@ public class TripleStore {
     public void insertGraph(String uri, String rdf, RDFFormat format) {
         Model model = ModelFactory.createDefaultModel();
         model.read(new ByteArrayInputStream(rdf.getBytes()), null, format.toString());
-        insertGraph(uri, model, format);
+        insertGraph(uri, model);
     }
 
-    public void insertGraph(String uri, Model model, RDFFormat format) {
+    public void insertGraph(String uri, Model model) {
         dataset.begin(ReadWrite.WRITE);
         if (!dataset.containsNamedModel(uri)) {
             dataset.addNamedModel(uri, ModelFactory.createDefaultModel());

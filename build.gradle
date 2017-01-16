@@ -47,18 +47,18 @@ dependencies {
     compile('org.springframework.cloud:spring-cloud-starter-stream-rabbit')
     compile('org.springframework.boot:spring-boot-starter-data-rest')
     compile('org.springframework.boot:spring-boot-starter-web')
-    compile('com.fasterxml.jackson.core:jackson-core:2.8.5')
-    compile('com.fasterxml.jackson.core:jackson-databind:2.8.5')
-    compile('com.fasterxml.jackson.core:jackson-annotations:2.8.5')
-
+//    compile('com.fasterxml.jackson.core:jackson-core:2.8.5')
+//    compile('com.fasterxml.jackson.core:jackson-databind:2.8.5')
+//    compile('com.fasterxml.jackson.core:jackson-annotations:2.8.5')
+//    compile group: 'org.springframework.data', name: 'spring-cql', version: '1.5.0.M1'
 
     //Jena dependencies
-    compile('org.apache.jena:apache-jena-libs:3.1.0')
+//    compile('org.apache.jena:apache-jena-libs:3.1.0')
     compile('org.apache.jena:jena-core:3.1.0')
 //    compile('org.semanticweb.owl:align:1.0')
 //    compile('org.semanticweb.owl:proc-align:1.0')
 //    compile('fr.inrialpes.exmo:ontowrap:1.0')
-    compile('eu.symbiote-h2020:MediationFramework:1.0-SNAPSHOT')
+    compile('eu.symbiote-h2020:MediationFramework:1.0')
 
     testCompile('org.springframework.boot:spring-boot-starter-test')
 

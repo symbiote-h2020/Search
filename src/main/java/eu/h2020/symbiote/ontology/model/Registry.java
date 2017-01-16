@@ -3,10 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eu.h2020.symbiote.ontology.model.model;
+package eu.h2020.symbiote.ontology.model;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jena.rdf.model.Model;
 
 import java.math.BigInteger;
 
@@ -32,10 +33,16 @@ public class Registry {
 //        log.debug(String.format("model registered: modelId={}, format={}, rdf={}", modelId, format, rdf));
 //    }
 
-    public void registerPlatform(BigInteger platformId, String rdf, RDFFormat format, BigInteger modelId) {
+    public void registerPlatform(String platformId, String rdf, RDFFormat format, String modelId) {
         tripleStore.insertGraph(Ontology.getPlatformGraphURI(platformId), rdf, format);
         tripleStore.insertGraph(Ontology.PLATFORMS_GRAPH, Ontology.getPlatformMetadata(platformId, modelId), format);
         log.debug(String.format("platform registered: platformId={}, modelId={}, format={}, rdf={}", platformId, modelId, format, rdf));
+    }
+
+    public void registerPlatform(String platformId, Model rdf, String modelId) {
+        tripleStore.insertGraph(Ontology.getPlatformGraphURI(platformId), rdf);
+        tripleStore.insertGraph(Ontology.PLATFORMS_GRAPH, Ontology.getPlatformMetadata(platformId, modelId), RDFFormat.Turtle);
+        log.debug(String.format("platform registered: platformId={}, modelId={}, rdf={}", platformId, modelId, rdf));
     }
 
 //    public void registerMapping(BigInteger mappingId, BigInteger modelId1, BigInteger modelId2, String mapping) throws UnsupportedEncodingException {

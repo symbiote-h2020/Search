@@ -1,4 +1,4 @@
-package eu.h2020.symbiote.ontology.model.model;
+package eu.h2020.symbiote.ontology.model;
 
 
 import org.apache.commons.io.FilenameUtils;
