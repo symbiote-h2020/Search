@@ -1,39 +1,40 @@
 package eu.h2020.symbiote.communication;
 
 import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rabbitmq.client.*;
-import eu.h2020.symbiote.handlers.HandlerUtils;
-import eu.h2020.symbiote.handlers.PlatformHandler;
+import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.DefaultConsumer;
+import com.rabbitmq.client.Envelope;
+import eu.h2020.symbiote.handlers.ResourceHandler;
 import eu.h2020.symbiote.model.Platform;
-import eu.h2020.symbiote.search.SearchStorage;
+import eu.h2020.symbiote.model.Resource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jena.rdf.model.Model;
 
 import java.io.IOException;
 
 /**
- * Consumer of the platform created event. Handler creates RDF representation of provided platform and adds it into
+ * Consumer of the resource created event. Handler creates RDF representation of provided resource and adds it into
  * repository.
  *
- * Created by Mael on 13/01/2017.
+ * Created by Mael on 17/01/2017.
  */
-public class PlatformCreatedConsumer extends DefaultConsumer {
+public class ResourceCreatedConsumer extends DefaultConsumer {
 
-    private static Log log = LogFactory.getLog(PlatformCreatedConsumer.class);
+    private static Log log = LogFactory.getLog(ResourceCreatedConsumer.class);
 
-    private final PlatformHandler handler;
+    private final ResourceHandler handler;
 
     /**
      * Constructs a new instance and records its association to the passed-in channel.
      *
-     * @param channel the channel to which this consumer is attached.
+     * @param channel the channel to which this consumer is attached
      * @param handler handler to be used by the consumer.
+     *
      */
-    public PlatformCreatedConsumer(Channel channel, PlatformHandler handler ) {
+    public ResourceCreatedConsumer(Channel channel, ResourceHandler handler) {
         super(channel);
         this.handler = handler;
     }
@@ -47,22 +48,19 @@ public class PlatformCreatedConsumer extends DefaultConsumer {
 
         try {
             ObjectMapper mapper = new ObjectMapper();
-            Platform platform = mapper.readValue(msg, Platform.class);
+            Resource resource = mapper.readValue(msg, Resource.class);
 
-            boolean success = handler.registerPlatform(platform);
+            boolean success = handler.registerResource(resource);
             log.debug(success?
-                    "Registration of the platform in RDF is success"
-                    :"Registration of the platform in RDF failed");
+                    "Registration of the resource in RDF is success"
+                    :"Registration of the resource in RDF failed");
 
         } catch( JsonParseException | JsonMappingException e ) {
-            log.error("Error occurred when parsing Platform object JSON: " + msg, e);
+            log.error("Error occurred when parsing Resource object JSON: " + msg, e);
         } catch( IOException e ) {
-            log.error("I/O Exception occurred when parsing Platform object" , e);
+            log.error("I/O Exception occurred when parsing Resource object" , e);
         }
-
-
 
         getChannel().basicAck(envelope.getDeliveryTag(),false);
     }
-
 }

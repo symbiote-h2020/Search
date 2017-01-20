@@ -28,11 +28,6 @@ public class Registry {
         log.info("Data loaded!" );
     }
 
-//    public void registerModel(BigInteger modelId, String rdf, RDFFormat format) {
-//        tripleStore.insertGraph(Ontology.getModelGraphURI(modelId), rdf, format);
-//        log.debug(String.format("model registered: modelId={}, format={}, rdf={}", modelId, format, rdf));
-//    }
-
     public void registerPlatform(String platformId, String rdf, RDFFormat format, String modelId) {
         tripleStore.insertGraph(Ontology.getPlatformGraphURI(platformId), rdf, format);
         tripleStore.insertGraph(Ontology.PLATFORMS_GRAPH, Ontology.getPlatformMetadata(platformId, modelId), format);
@@ -43,6 +38,18 @@ public class Registry {
         tripleStore.insertGraph(Ontology.getPlatformGraphURI(platformId), rdf);
         tripleStore.insertGraph(Ontology.PLATFORMS_GRAPH, Ontology.getPlatformMetadata(platformId, modelId), RDFFormat.Turtle);
         log.debug(String.format("platform registered: platformId={}, modelId={}, rdf={}", platformId, modelId, rdf));
+    }
+
+    /**
+     * Registers resource of the platform described by specified Uri. Model will be stored in the platform's named graph.
+     *
+     * @param platformUri Uri of the platform for which resource is added.
+     * @param resourceModel Model describiding the resource.
+     */
+    public void registerResource(String platformUri, String serviceURI, String resourceUri, Model resourceModel) {
+        tripleStore.insertGraph(platformUri, resourceModel);
+        tripleStore.insertGraph(platformUri, Ontology.getResourceMetadata(serviceURI,resourceUri), RDFFormat.Turtle);
+        log.debug(String.format("Resource registered for platform: platformUri={}", platformUri));
     }
 
 //    public void registerMapping(BigInteger mappingId, BigInteger modelId1, BigInteger modelId2, String mapping) throws UnsupportedEncodingException {

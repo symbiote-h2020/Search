@@ -1,0 +1,17 @@
+@prefix : <https://www.symbiote-h2020.eu/ontology/platforms/3#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix mim: <http://www.symbiote-h2020.eu/ontology/meta.owl#> .
+
+<http://www.symbiote-h2020.eu/ontology/platforms/3> rdf:type owl:Ontology ;
+     mim:hasDescription "Test platform C" ;
+     mim:hasName "Platform C" ;
+     mim:hasService [
+        mim:hasInformationModel [
+            mim:hasID "31"
+        ] ;
+        mim:hasURL "http://somehost3.com/resourceAccessProxy"
+     ] .

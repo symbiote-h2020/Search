@@ -55,6 +55,7 @@ dependencies {
     //Jena dependencies
 //    compile('org.apache.jena:apache-jena-libs:3.1.0')
     compile('org.apache.jena:jena-core:3.1.0')
+    compile('org.apache.jena:jena-querybuilder:3.1.0')
 //    compile('org.semanticweb.owl:align:1.0')
 //    compile('org.semanticweb.owl:proc-align:1.0')
 //    compile('fr.inrialpes.exmo:ontowrap:1.0')

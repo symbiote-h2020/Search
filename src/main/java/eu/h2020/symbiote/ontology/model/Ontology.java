@@ -26,6 +26,7 @@ public class Ontology {
     public static final String CORE_GRAPH = ROOT_URI + "core";
     public static final String MAPPING_GRAPH = ROOT_URI + "mappings";
     public static final String PLATFORMS_GRAPH = ROOT_URI + "platforms";
+    public static final String RESOURCES_GRAPH = ROOT_URI + "resources";
 //    public static final String MODELS_GRAPH = ROOT_URI + "models";
 
     /**
@@ -40,6 +41,7 @@ public class Ontology {
     public static final String FROM = ROOT_URI + "from";
     public static final String TO = ROOT_URI + "to";
     public static final String USES = ROOT_URI + "uses";
+    public static final String HAS_RESOURCE = ROOT_URI + "#hasResource";
 
     /**
      * Imported
@@ -58,6 +60,10 @@ public class Ontology {
         return PLATFORMS_GRAPH + "/" + platformId;
     }
 
+    public static String getResourceGraphURI(String resourceId ) {
+        return RESOURCES_GRAPH + "/" + resourceId;
+    }
+
 //    public static String getMappingGraphURI(BigInteger mappingId) {
 //        return MAPPING_GRAPH + "/" + mappingId;
 //    }
@@ -67,6 +73,10 @@ public class Ontology {
                 //For now remove model reference
 //                + "<" + getPlatformGraphURI(platformId) + "> <" + USES + "> <" + getModelGraphURI(modelId) + "> ."
                 ;
+    }
+
+    public static String getResourceMetadata( String serviceURI, String resourceUri ) {
+        return "<" + serviceURI + "> <" + HAS_RESOURCE + "> <" +resourceUri + "> .";
     }
 
 //    public static String getMappingMetadata(BigInteger modelId1, BigInteger modelId2, BigInteger mappingId) {

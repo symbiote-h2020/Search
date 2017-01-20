@@ -1,8 +1,7 @@
 package eu.h2020.symbiote.model;
 
 /**
- * Class used to describe platform instance.
- * Used for Rabbit messaging.
+ * Class representing platform in the system events.
  */
 public class Platform {
     private String platformId;

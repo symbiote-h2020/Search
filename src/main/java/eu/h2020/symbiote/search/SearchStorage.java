@@ -1,17 +1,21 @@
 package eu.h2020.symbiote.search;
 
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import eu.h2020.symbiote.SearchApplication;
 import eu.h2020.symbiote.ontology.model.Registry;
 import eu.h2020.symbiote.ontology.model.SearchEngine;
 import eu.h2020.symbiote.ontology.model.TripleStore;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Created by Mael on 31/08/2016.
@@ -111,6 +115,18 @@ public class SearchStorage {
         log.info( "Platform registered!");
     }
 
+    /**
+     * Registers resource in the search engine for specified platform
+     *
+     * @param platformUri
+     * @param rdfModel
+     */
+    public void registerResource( String platformUri, String serviceUri, String resourceUri, Model rdfModel ) {
+        log.info( "Registering platform in search " + platformUri + " ...");
+        core.registerResource(platformUri, serviceUri, resourceUri, rdfModel );
+        log.info( "Platform registered!");
+    }
+
 //    public void registerMapping(Mapping mapping ) {
 //        log.info( "Registering mapping in search " + mapping.getId() + " ...");
 //        try {
@@ -121,39 +137,66 @@ public class SearchStorage {
 //        log.info( "Mapping registered!");
 //    }
 
-//    public String query( String modelGraphUri, String query) {
-//        String result = null;
-//        try {
-//            List<String> resultList = query(searchEngine, modelGraphUri, query);
-//            Gson gson = new Gson();
+    public List<String> query( String modelGraphUri, String query) {
+        List<String> result = null;
+        try {
+            result = query(searchEngine, modelGraphUri, query);
+//            Gson gson = new GsonBuilder().disableHtmlEscaping().create();
 //            result = gson.toJson(resultList);
-//        } catch (IOException e) {
-//            log.error("Error during executing query",e);
-//        }
-//        return result;
-//    }
-//
-//    private static List<String> query(SearchEngine searchEngine, String modelGraphUri, String sparql) throws IOException {
-//        List<String> results = new ArrayList<String>();
-//        log.info(String.format("executing query: modelId={}, sparql=\n{}", modelGraphUri, sparql));
-//        ResultSet result = searchEngine.search(modelGraphUri, sparql);
-//        log.info("----- result ----");
-//        while (result.hasNext()) {
-//            QuerySolution solution = result.next();
-//            Iterator<String> varNames = solution.varNames();
-//            String temp = "";
-//            while (varNames.hasNext()) {
-//                String var = varNames.next();
-//                if (!temp.isEmpty()) {
-//                    temp += ", ";
-//                }
-//                temp += var + " = " + solution.get(var).toString();
-//            }
-//            results.add(temp);
-//            log.info(temp);
-//        }
-//        log.info("----- result finish ----");
-//        return results;
-//    }
+        } catch (IOException e) {
+            log.error("Error during executing query",e);
+        }
+        return result;
+    }
+
+    public List<String> query( String modelGraphUri, Query query) {
+        List<String> result = null;
+        try {
+            result = query(searchEngine, modelGraphUri, query);
+        } catch (IOException e) {
+            log.error("Error during executing query",e);
+        }
+        return result;
+    }
+
+    private static List<String> query(SearchEngine searchEngine, String modelGraphUri, Query sparql) throws IOException {
+
+        log.info(String.format("executing query: modelId={}, sparql=\n{}", modelGraphUri, sparql));
+        ResultSet result = searchEngine.search(sparql);
+        List<String> results = generateOutputFromResultSet( result );
+
+        log.info("----- result finish ----");
+        return results;
+    }
+
+    private static List<String> query(SearchEngine searchEngine, String modelGraphUri, String sparql) throws IOException {
+
+        log.info(String.format("executing query: modelId={}, sparql=\n{}", modelGraphUri, sparql));
+        ResultSet result = searchEngine.search(modelGraphUri, sparql);
+        List<String> results = generateOutputFromResultSet( result );
+
+        log.info("----- result finish ----");
+        return results;
+    }
+
+    private static List<String> generateOutputFromResultSet( ResultSet result ) {
+        List<String> results = new ArrayList<String>();
+        log.info("----- result ----");
+        while (result.hasNext()) {
+            QuerySolution solution = result.next();
+            Iterator<String> varNames = solution.varNames();
+            String temp = "";
+            while (varNames.hasNext()) {
+                String var = varNames.next();
+                if (!temp.isEmpty()) {
+                    temp += ", ";
+                }
+                temp += var + " = " + solution.get(var).toString();
+            }
+            results.add(temp);
+            log.info(temp);
+        }
+        return results;
+    }
 
 }

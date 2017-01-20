@@ -122,9 +122,9 @@ public class RabbitManager {
         channel.queueBind(queueName, platformExchangeName, platformCreatedRoutingKey);
         PlatformCreatedConsumer consumer = new PlatformCreatedConsumer(channel, platformHandler );
 
-        System.out.println("Creating consumer");
+        log.debug("Creating consumer");
         channel.basicConsume(queueName, false, consumer);
-        System.out.println( "Consumer created!!!" );
+        log.debug( "Consumer created!!!" );
     }
 
 }

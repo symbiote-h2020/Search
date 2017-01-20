@@ -1,0 +1,5 @@
+PREFIX cim: <http://www.symbiote-h2020.eu/ontology/core#>
+
+SELECT ?sensor WHERE {
+	?sensor a cim:Sensor .
+}

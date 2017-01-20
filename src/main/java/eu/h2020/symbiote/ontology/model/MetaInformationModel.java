@@ -34,27 +34,7 @@ public class MetaInformationModel {
 
     public static final Property MIM_HASURL;
 
-//    String MIM_HASDESCRIPTION = MIM_PREFIX + "hasDescription";
-//
-//    String MIM_HASNAME = MIM_PREFIX + "hasName";
-//    String  = MIM_PREFIX + "";
-//    String  = MIM_PREFIX + "";
-//    String  = MIM_PREFIX + "";
-//    String  = MIM_PREFIX + "";
-//
-//
-//
-//
-//
-//    mim:hasDescription "Test platform"^^xsd:string ;
-//    mim:hasName "Platform A"^^xsd:string ;
-//    mim:hasService [
-//    mim:hasInformationModel [
-//    mim:ID "22222"^^rdfs:long
-//        ] ;
-//    mim:hasURL "http://somehost.com/resourceAccessProxy"^^xsd:string
-//     ] .
-
+    public static final Property MIM_INTERWORKINGSERVICE;
 
     static {
         Model m = ModelFactory.createDefaultModel();
@@ -66,6 +46,7 @@ public class MetaInformationModel {
         MIM_HASINFORMATIONMODEL = m.createProperty( MIM_PREFIX + "hasInformationModel");
         MIM_HASID = m.createProperty( MIM_PREFIX + "hasID");
         MIM_HASURL = m.createProperty( MIM_PREFIX + "hasURL");
+        MIM_INTERWORKINGSERVICE = m.createProperty( MIM_PREFIX + "InterworkingService");
     }
 
 }

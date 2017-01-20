@@ -45,24 +45,29 @@ public class SearchEngine {
         partialResults.add(tripleStore.executeQuery(query));
 
         // 2. execute against all mappings
-        ResultSet mappedModels = tripleStore.executeQueryOnGraph(generateFindMappingsQuery(modelGraphUri), Ontology.MAPPING_GRAPH);
-        while (mappedModels.hasNext()) {
-            QuerySolution solution = mappedModels.next();
-            String mappingGraph = solution.get("?mapping").asNode().toString();
-            String destinationModelUri = solution.get("?mapDest").asNode().toString();
-            String mappingDefinition = tripleStore.getGraphAsString(mappingGraph);
-            // for each do query rewriting and the execute to store
-            Query translatedQuery = translateQuery(query, mappingDefinition);
-            // find all platforms that use model that is mapped to and query them all
-            ResultSet platformsForModel = tripleStore.executeQueryOnGraph(generateFindPlatformsForModelQuery(destinationModelUri), Ontology.PLATFORMS_GRAPH);
-            while (platformsForModel.hasNext()) {
-                QuerySolution platformSolution = platformsForModel.next();
-                String platformGraph = platformSolution.get("?platform").asNode().toString();
-                ResultSet partialResult = tripleStore.executeQueryOnGraph(translatedQuery, platformGraph);
-                partialResults.add(partialResult);
-            }
-        }
+//        ResultSet mappedModels = tripleStore.executeQueryOnGraph(generateFindMappingsQuery(modelGraphUri), Ontology.MAPPING_GRAPH);
+//        while (mappedModels.hasNext()) {
+//            QuerySolution solution = mappedModels.next();
+//            String mappingGraph = solution.get("?mapping").asNode().toString();
+//            String destinationModelUri = solution.get("?mapDest").asNode().toString();
+//            String mappingDefinition = tripleStore.getGraphAsString(mappingGraph);
+//            // for each do query rewriting and the execute to store
+//            Query translatedQuery = translateQuery(query, mappingDefinition);
+//            // find all platforms that use model that is mapped to and query them all
+//            ResultSet platformsForModel = tripleStore.executeQueryOnGraph(generateFindPlatformsForModelQuery(destinationModelUri), Ontology.PLATFORMS_GRAPH);
+//            while (platformsForModel.hasNext()) {
+//                QuerySolution platformSolution = platformsForModel.next();
+//                String platformGraph = platformSolution.get("?platform").asNode().toString();
+//                ResultSet partialResult = tripleStore.executeQueryOnGraph(translatedQuery, platformGraph);
+//                partialResults.add(partialResult);
+//            }
+//        }
         return new ResultSetMem(partialResults.toArray(new ResultSet[partialResults.size()]));
+    }
+
+    public ResultSet search( Query query ) {
+        ResultSet resultSet = tripleStore.executeQuery(query);
+        return resultSet;
     }
 
     private Query translateQuery(String queryString, String mapping) {

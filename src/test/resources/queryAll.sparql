@@ -1,0 +1,4 @@
+PREFIX mim: <http://www.symbiote-h2020.eu/ontology/meta.owl#>
+
+SELECT ?x
+    WHERE { ?x mim:hasName "Platform A" }

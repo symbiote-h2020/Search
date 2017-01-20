@@ -1,4 +1,4 @@
-@prefix : <https://www.symbiote-h2020.eu/ontology/platforms/11111#> .
+@prefix : <https://www.symbiote-h2020.eu/ontology/platforms/1#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix xml: <http://www.w3.org/XML/1998/namespace> .
@@ -6,12 +6,14 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix mim: <http://www.symbiote-h2020.eu/ontology/meta.owl#> .
 
-<http://www.symbiote-h2020.eu/ontology/platforms/11111> rdf:type owl:Ontology ;
-     mim:hasDescription "Test platform" ;
-     mim:hasName "Platform A" ;
-     mim:hasService [
-        mim:hasInformationModel [
-            mim:hasID "22222"
+<http://www.symbiote-h2020.eu/ontology/platforms/1/service/somehost1.com/resourceAccessProxy> rdf:type mim:InterworkingService ;
+    mim:hasInformationModel [
+                mim:hasID "11" ;
         ] ;
-        mim:hasURL "http://somehost.com/resourceAccessProxy"
-     ] .
+    mim:hasURL "http://somehost1.com/resourceAccessProxy" .
+
+
+<http://www.symbiote-h2020.eu/ontology/platforms/1> rdf:type owl:Ontology ;
+     mim:hasDescription "Test platform A" ;
+     mim:hasName "Platform A" ;
+     mim:hasService <http://www.symbiote-h2020.eu/ontology/platforms/1/service/somehost1.com/resourceAccessProxy> .
