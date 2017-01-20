@@ -90,19 +90,13 @@ public class PlatformRegistrationTest {
         SearchStorage searchStorage = SearchStorage.getInstance( SearchStorage.TESTCASE_STORAGE_NAME );
         PlatformHandler handler = new PlatformHandler(searchStorage);
         Platform platform = createPlatform();
-        boolean result = handler.registerPlatform(platform);
-        assert(result);
+//        boolean result = handler.registerPlatform(platform);
+//        assert(result);
+//
+//        Model graph = searchStorage.getTripleStore().getGraph(Ontology.getPlatformGraphURI(platform.getPlatformId()));
+//        assertNotNull(graph);
 
-
-        try {
-            executeQuery(searchStorage.getTripleStore(), "/q5.sparql");
-        } catch ( Exception e ) {
-            e.printStackTrace();
-        }
-
-        Model graph = searchStorage.getTripleStore().getGraph(Ontology.getPlatformGraphURI(platform.getPlatformId()));
-        assertNotNull(graph);
-
+        Model graph = HandlerUtils.generateModelFromPlatform(platform);
 
         try {
             InputStream modelToSave = IOUtils.toInputStream( IOUtils.toString(this.getClass()
