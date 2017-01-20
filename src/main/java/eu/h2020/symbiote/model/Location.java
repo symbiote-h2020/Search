@@ -15,6 +15,10 @@ public class Location {
     private Double longitude = null;
     private Double altitude = null;
 
+    public Location() {
+
+    }
+
     public Location(String id, String name, String description, Double latitude, Double longitude, Double altitude) {
         this.id = id;
         this.name = name;

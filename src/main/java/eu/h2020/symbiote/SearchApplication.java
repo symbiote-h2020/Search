@@ -2,6 +2,7 @@ package eu.h2020.symbiote;
 
 import eu.h2020.symbiote.communication.RabbitManager;
 import eu.h2020.symbiote.handlers.PlatformHandler;
+import eu.h2020.symbiote.handlers.ResourceHandler;
 import eu.h2020.symbiote.search.SearchStorage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -43,10 +44,14 @@ public class SearchApplication {
 
         @Override
         public void run(String... args) throws Exception {
-            SearchStorage searchStorage = SearchStorage.getInstance();
+            SearchStorage searchStorage = SearchStorage.getInstance(SearchStorage.TESTCASE_STORAGE_NAME);
 
             PlatformHandler platformHandler = new PlatformHandler( searchStorage );
             manager.registerPlatformCreatedConsumer(platformHandler);
+
+            ResourceHandler resourceHandler = new ResourceHandler(searchStorage);
+            manager.registerResourceCreatedConsumer(resourceHandler);
+
         }
     }
 

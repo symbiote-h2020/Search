@@ -42,7 +42,7 @@ public class ResourceCreatedConsumer extends DefaultConsumer {
     @Override
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
         String msg = new String(body);
-        log.debug( "Consume platform created message: " + msg );
+        log.debug( "Consume resource created message: " + msg );
 
         //Try to parse the message
 

@@ -2,6 +2,7 @@ package eu.h2020.symbiote.communication;
 
 import com.rabbitmq.client.*;
 import eu.h2020.symbiote.handlers.PlatformHandler;
+import eu.h2020.symbiote.handlers.ResourceHandler;
 import eu.h2020.symbiote.search.SearchStorage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,6 +46,21 @@ public class RabbitManager {
     private String platformCreationRequestedRoutingKey;
     @Value("${rabbit.routingKey.platform.created}")
     private String platformCreatedRoutingKey;
+
+    @Value("${rabbit.exchange.resource.name}")
+    private String resourceExchangeName;
+    @Value("${rabbit.exchange.resource.type}")
+    private String resourceExchangeType;
+    @Value("${rabbit.exchange.resource.durable}")
+    private boolean resourceExchangeDurable;
+    @Value("${rabbit.exchange.resource.autodelete}")
+    private boolean resourceExchangeAutodelete;
+    @Value("${rabbit.exchange.resource.internal}")
+    private boolean resourceExchangeInternal;
+    @Value("${rabbit.routingKey.resource.creationRequested}")
+    private String resourceCreationRequestedRoutingKey;
+    @Value("${rabbit.routingKey.resource.created}")
+    private String resourceCreatedRoutingKey;
 
     private Connection connection;
 
@@ -122,9 +138,21 @@ public class RabbitManager {
         channel.queueBind(queueName, platformExchangeName, platformCreatedRoutingKey);
         PlatformCreatedConsumer consumer = new PlatformCreatedConsumer(channel, platformHandler );
 
-        log.debug("Creating consumer");
+        log.debug("Creating platform consumer");
         channel.basicConsume(queueName, false, consumer);
-        log.debug( "Consumer created!!!" );
+        log.debug( "Consumer platform created!!!" );
+    }
+
+    public void registerResourceCreatedConsumer( ResourceHandler resourceHandler) throws IOException {
+
+        Channel channel = connection.createChannel();
+        String queueName = channel.queueDeclare().getQueue();
+        channel.queueBind(queueName, resourceExchangeName, resourceCreatedRoutingKey);
+        ResourceCreatedConsumer consumer = new ResourceCreatedConsumer(channel, resourceHandler );
+
+        log.debug("Creating resource consumer");
+        channel.basicConsume(queueName, false, consumer);
+        log.debug( "Consumer resource created!!!" );
     }
 
 }

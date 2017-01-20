@@ -9,6 +9,7 @@ import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.Model;
 import org.objectweb.asm.Handle;
+import org.springframework.util.Assert;
 
 import java.util.List;
 
@@ -27,6 +28,9 @@ public class ResourceHandler implements IResourceEvents {
 
     @Override
     public boolean registerResource(Resource resource) {
+        Assert.notNull(resource);
+        log.debug( "Resource handler is handling resource: " + resource.getId());
+
         //Read to get platform and its information service
         String platformId = resource.getPlatformId();
         String resourceURL = resource.getResourceURL(); //match this with
@@ -47,10 +51,11 @@ public class ResourceHandler implements IResourceEvents {
         if( response != null && response.size() == 1) {
             registeredServiceURI = response.get(0).substring(response.get(0).indexOf("=")+2);
         } else {
-            log.debug(response==null?"Response is null":"Response size differs, got size: " + response.size());
+            log.error(response==null?"Response is null":"Response size differs, got size: " + response.size());
         }
 
         if( registeredServiceURI == null ) {
+            log.error("Could not properly find interworking service for url " + resourceURL);
             return false;
         }
         log.debug("Gonna create resource for service URI: " + registeredServiceURI);
