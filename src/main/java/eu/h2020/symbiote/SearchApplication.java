@@ -1,8 +1,11 @@
 package eu.h2020.symbiote;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.h2020.symbiote.communication.RabbitManager;
 import eu.h2020.symbiote.handlers.PlatformHandler;
 import eu.h2020.symbiote.handlers.ResourceHandler;
+import eu.h2020.symbiote.model.QueryRequest;
 import eu.h2020.symbiote.search.SearchStorage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -13,8 +16,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.sleuth.sampler.AlwaysSampler;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 /**
@@ -44,7 +53,7 @@ public class SearchApplication {
 
         @Override
         public void run(String... args) throws Exception {
-            SearchStorage searchStorage = SearchStorage.getInstance(SearchStorage.TESTCASE_STORAGE_NAME);
+            SearchStorage searchStorage = getDefaultStorage();
 
             PlatformHandler platformHandler = new PlatformHandler( searchStorage );
             manager.registerPlatformCreatedConsumer(platformHandler);
@@ -55,18 +64,44 @@ public class SearchApplication {
         }
     }
 
-    //TODO whats this
+    public static SearchStorage getDefaultStorage() {
+        return SearchStorage.getInstance(DIRECTORY);
+    }
+
     @Bean
     public AlwaysSampler defaultSampler() {
         return new AlwaysSampler();
     }
 
+    @CrossOrigin
     @RestController
     class RegistrationController {
 
-
         public RegistrationController() {
         }
+
+        @RequestMapping(value = "/search/sparql", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+        public
+        @ResponseBody
+        HttpEntity<String> searchResourcesByParams(@RequestBody QueryRequest query){
+
+            //Do sparql query
+            SearchStorage storage = getDefaultStorage();
+            List<String> listResponse = storage.query(query.getGraphUri(),query.getSparql());
+            System.out.println( "Got response: " + listResponse);
+            ObjectMapper mapper = new ObjectMapper();
+            String response = listResponse.toString();
+            try {
+                response = mapper.writeValueAsString(listResponse);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+
+            return new ResponseEntity<String>(response, HttpStatus.OK);
+        }
+
     }
+
+
 
 }

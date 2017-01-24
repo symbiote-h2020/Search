@@ -41,7 +41,7 @@ public class Ontology {
     public static final String FROM = ROOT_URI + "from";
     public static final String TO = ROOT_URI + "to";
     public static final String USES = ROOT_URI + "uses";
-    public static final String HAS_RESOURCE = ROOT_URI + "#hasResource";
+    public static final String HAS_RESOURCE = MIM_GRAPH + "#hasResource";
 
     /**
      * Imported

@@ -81,7 +81,7 @@ public class PlatformRegistrationTest {
 
         Model model = HandlerUtils.generateModelFromPlatform(platform);
         assertNotNull(model);
-        assertEquals("Created model should have " + 8l + " entries, but has " + model.size(), 8l, model.size() );
+        assertEquals("Created model should have " + 9l + " entries, but has " + model.size(), 9l, model.size() );
 
     }
 
@@ -172,7 +172,7 @@ public class PlatformRegistrationTest {
             //Check rdf added correctly
             Model graph = triplestore.getGraph(PLATFORM2_URI);
             graph.write(System.out,"TURTLE");
-            assertEquals("Size of saved graph should be " + 7l + " but is " + graph.size(), 8l, graph.size());
+            assertEquals("Size of saved graph should be " + 9l + " but is " + graph.size(), 9l, graph.size());
 
 
         } catch (IOException e) {
@@ -211,7 +211,7 @@ public class PlatformRegistrationTest {
         String query = IOUtils.toString(this.getClass()
                 .getResource(filename));
         ResultSet resultSet = store.executeQuery(query);
-        System.out.println("=============== Query " + filename + " Execution results ===============" );
+        System.out.println("=============== QueryRequest " + filename + " Execution results ===============" );
         while (resultSet.hasNext()) {
             QuerySolution solution = resultSet.next();
             Iterator<String> varNames = solution.varNames();

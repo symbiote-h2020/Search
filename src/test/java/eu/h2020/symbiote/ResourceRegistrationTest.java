@@ -141,7 +141,7 @@ public class ResourceRegistrationTest {
 
         Query q = sb.build() ;
         List<String> results = storage.query("", q);
-        System.out.println( "Query results: ");
+        System.out.println( "QueryRequest results: ");
         System.out.println( results );
     }
 

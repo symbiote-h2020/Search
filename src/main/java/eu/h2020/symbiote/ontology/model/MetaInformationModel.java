@@ -12,6 +12,8 @@ import org.apache.jena.rdf.model.Resource;
  */
 public class MetaInformationModel {
 
+    public static final String CIM_PREFIX = "http://www.symbiote-h2020.eu/ontology/core.owl#";
+
     public static final String MIM_PREFIX = "http://www.symbiote-h2020.eu/ontology/meta.owl#";
 
     public static final String RDF_PREFIX = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
@@ -30,7 +32,7 @@ public class MetaInformationModel {
 
     public static final Property MIM_HASINFORMATIONMODEL;
 
-    public static final Property MIM_HASID;
+    public static final Property CIM_HASID;
 
     public static final Property MIM_HASURL;
 
@@ -44,7 +46,7 @@ public class MetaInformationModel {
         MIM_HASNAME = m.createProperty( MIM_PREFIX + "hasName");
         MIM_HASSERVICE = m.createProperty( MIM_PREFIX + "hasService");
         MIM_HASINFORMATIONMODEL = m.createProperty( MIM_PREFIX + "hasInformationModel");
-        MIM_HASID = m.createProperty( MIM_PREFIX + "hasID");
+        CIM_HASID = m.createProperty( CIM_PREFIX + "hasID");
         MIM_HASURL = m.createProperty( MIM_PREFIX + "hasURL");
         MIM_INTERWORKINGSERVICE = m.createProperty( MIM_PREFIX + "InterworkingService");
     }

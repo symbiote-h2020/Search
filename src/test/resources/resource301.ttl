@@ -9,7 +9,7 @@
 
 <https://www.symbiote-h2020.eu/ontology/resources/301> rdf:type cim:Sensor ;
      rdfs:label "Resource 301" ;
-     rdfs:comment "" ;
+     rdfs:comment "This is resource 301" ;
      cim:id "301" ;
      cim:locatedAt [
         rdfs:label "Somewhere" ;

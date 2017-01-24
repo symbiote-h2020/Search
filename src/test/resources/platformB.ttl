@@ -5,13 +5,17 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix mim: <http://www.symbiote-h2020.eu/ontology/meta.owl#> .
+@prefix cimowl: <http://www.symbiote-h2020.eu/ontology/core.owl#> .
+
+<http://www.symbiote-h2020.eu/ontology/platforms/2/service/somehost2.com/resourceAccessProxy> rdf:type mim:InterworkingService ;
+    mim:hasInformationModel [
+                cimowl:hasID "21" ;
+        ] ;
+    mim:hasURL "http://somehost2.com/resourceAccessProxy" .
+
 
 <http://www.symbiote-h2020.eu/ontology/platforms/2> rdf:type owl:Ontology ;
      mim:hasDescription "Test platform B" ;
      mim:hasName "Platform B" ;
-     mim:hasService [
-        mim:hasInformationModel [
-            mim:hasID "21"
-        ] ;
-        mim:hasURL "http://somehost2.com/resourceAccessProxy"
-     ] .
+     cimowl:hasID "2" ;
+     mim:hasService <http://www.symbiote-h2020.eu/ontology/platforms/2/service/somehost2.com/resourceAccessProxy> .

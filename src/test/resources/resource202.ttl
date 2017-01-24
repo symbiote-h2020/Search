@@ -9,7 +9,7 @@
 
 <https://www.symbiote-h2020.eu/ontology/resources/202> rdf:type cim:Sensor ;
      rdfs:label "Resource 202" ;
-     rdfs:comment "" ;
+     rdfs:comment "This is resource 202" ;
      cim:id "202" ;
      cim:locatedAt [
         rdfs:label "Somewhere Croatia" ;

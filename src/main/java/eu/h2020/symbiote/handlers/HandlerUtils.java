@@ -35,6 +35,7 @@ public class HandlerUtils {
         // construct proper Platform entry
                 model.createResource(Ontology.getPlatformGraphURI(platform.getPlatformId()))
                 .addProperty(MetaInformationModel.RDF_TYPE,MetaInformationModel.OWL_ONTOLOGY)
+                .addProperty(MetaInformationModel.CIM_HASID,platform.getPlatformId())
                 .addProperty(MetaInformationModel.MIM_HASDESCRIPTION, platform.getDescription())
                 .addProperty(MetaInformationModel.MIM_HASNAME, platform.getName())
                 .addProperty(MetaInformationModel.MIM_HASSERVICE, generateInterworkingServiceUri(Ontology.getPlatformGraphURI(platform.getPlatformId()),platform.getUrl()));
@@ -90,7 +91,7 @@ public class HandlerUtils {
                 .addProperty(MetaInformationModel.RDF_TYPE,MetaInformationModel.MIM_INTERWORKINGSERVICE)
                 .addProperty(MetaInformationModel.MIM_HASURL, platform.getUrl() )
                 .addProperty(MetaInformationModel.MIM_HASINFORMATIONMODEL, model.createResource()
-                        .addProperty(MetaInformationModel.MIM_HASID,platform.getInformationModelId()));
+                        .addProperty(MetaInformationModel.CIM_HASID,platform.getInformationModelId()));
         return model;
     }
 
