@@ -1,0 +1,13 @@
+PREFIX spatial: <http://jena.apache.org/spatial#>
+PREFIX cim: <http://www.symbiote-h2020.eu/ontology/core#>
+PREFIX cimowl: <http://www.symbiote-h2020.eu/ontology/core.owl#>
+PREFIX mim: <http://www.symbiote-h2020.eu/ontology/meta.owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+
+SELECT ?sensor WHERE {
+	?sensor a cim:Sensor .
+    ?loc spatial:nearby (52.401790 16.960144 10 'km') .
+    ?sensor cim:locatedAt ?loc .
+}

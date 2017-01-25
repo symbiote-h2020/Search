@@ -6,7 +6,7 @@ import org.apache.commons.logging.LogFactory;
 import java.util.List;
 
 /**
- * Class used to generate SPARQL query reflecting specified parameters
+ * Class used to generate SPARQL query reflecting specified parameters of the query to the Search
  *
  * Created by Mael on 23/01/2017.
  */
@@ -30,9 +30,10 @@ public class QueryGenerator {
         query.append("PREFIX mim: <http://www.symbiote-h2020.eu/ontology/meta.owl#> \n");
         query.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n");
         query.append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
-        query.append("PREFIX owl: <http://www.w3.org/2002/07/owl#> \n\n");
+        query.append("PREFIX owl: <http://www.w3.org/2002/07/owl#> \n");
+        query.append("PREFIX spatial: <http://jena.apache.org/spatial#> \n\n");
 
-        query.append("SELECT ?sensor WHERE {\n");
+        query.append("SELECT ?sensor ?location WHERE {\n");
         query.append("\t?sensor a cim:Sensor .\n");
     }
 
@@ -92,6 +93,12 @@ public class QueryGenerator {
         query.append("\t?sensor cim:locatedAt ?location .\n");
         query.append("\t?location rdfs:label ?resLocationNamePattern .\n");
         query.append("\tFILTER (CONTAINS(LCASE(?resLocationNamePattern), LCASE(\"" + locationName + "\"))) .");
+        return this;
+    }
+
+    public QueryGenerator addResourceLocationDistance( Double latitude, Double longitude, Integer distance ) {
+        query.append("\t?location spatial:nearby ("+latitude.toString()+" " + longitude.toString() + " " + distance + " 'm') .\n");
+        query.append("\t?sensor cim:locatedAt ?location .\n");
         return this;
     }
 

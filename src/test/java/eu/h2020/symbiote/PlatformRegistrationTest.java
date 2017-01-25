@@ -113,47 +113,6 @@ public class PlatformRegistrationTest {
         }
     }
 
-
-    @Test
-    public void testTriplestoreGraphInsert() {
-        TripleStore tripleStore = new TripleStore();
-        try {
-            String modelToSave = IOUtils.toString( this.getClass()
-                    .getResource("/test1Insert.ttl"));
-            tripleStore.insertGraph(PLATFORM1_URI, modelToSave, RDFFormat.Turtle);
-            Model graph = tripleStore.getGraph(PLATFORM1_URI);
-            assertModelEqualsSingleSPO(graph,PLATFORM1_URI,TEST1_PRED,TEST1_OBJECT);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Test
-    public void testRegistryPlatformRegister() {
-        TripleStore triplestore = new TripleStore();
-        Registry registry = new Registry(triplestore);
-
-        String modelId = "111";
-
-        try {
-            String modelToSave = IOUtils.toString(this.getClass()
-                    .getResource("/test1Insert.ttl"));
-            registry.registerPlatform(PLATFORM1_ID, modelToSave, RDFFormat.Turtle, modelId);
-
-            //Check rdf added correctly
-            Model graph = triplestore.getGraph(PLATFORM1_URI);
-            assertModelEqualsSingleSPO(graph,PLATFORM1_URI,TEST1_PRED,TEST1_OBJECT);
-
-            //Check if metainformation added correctly
-            Model metaGraph = triplestore.getGraph(Ontology.PLATFORMS_GRAPH);
-            assertModelEqualsSingleSPO(metaGraph,PLATFORM1_URI,METAMODEL_PRED,METAMODEL_OBJECT);
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     @Test
     public void testRegistryNestedPlatformRegister() {
         TripleStore triplestore = new TripleStore();
@@ -165,14 +124,21 @@ public class PlatformRegistrationTest {
                     .getResource("/platformA.ttl"));
             registry.registerPlatform(PLATFORM2_ID, modelToSave, RDFFormat.Turtle, PLATFORM2_MODEL_ID);
 
-            //Check if metainformation added correctly
-            Model metaGraph = triplestore.getGraph(Ontology.PLATFORMS_GRAPH);
-            assertModelEqualsSingleSPO(metaGraph,PLATFORM2_URI,METAMODEL_PRED,METAMODEL_OBJECT);
+            //Check if platform can be queried
+            ResultSet resultSet = executeQuery(triplestore, "/qPlatformA.sparql");
+            if( !resultSet.hasNext() ) {
+                fail("Platform query didnt return anything");
+            }
+            QuerySolution solution = resultSet.next();
+            if( !solution.varNames().hasNext() ){
+                fail("Solution without var");
+            }
+            String var = solution.varNames().next();
 
-            //Check rdf added correctly
-            Model graph = triplestore.getGraph(PLATFORM2_URI);
-            graph.write(System.out,"TURTLE");
-            assertEquals("Size of saved graph should be " + 9l + " but is " + graph.size(), 9l, graph.size());
+            assertEquals("Seach didnt return proper value: ", PLATFORM1_URI, solution.get(var).toString());
+
+            //Check only 1 result
+            assertFalse( "Search should return only 1 result", resultSet.hasNext() );
 
 
         } catch (IOException e) {
@@ -181,20 +147,20 @@ public class PlatformRegistrationTest {
     }
 
 
-    private void assertModelEqualsSingleSPO(Model graph, String subject, String predicate, String object) {
-        assertNotNull(graph);
-        StmtIterator stmtIterator = graph.listStatements();
-        assertTrue(stmtIterator.hasNext());
-        Statement next = stmtIterator.next();
-        assertNotNull(next);
-        String readSubject = next.getSubject().toString();
-        String readPredicate = next.getPredicate().toString();
-        String readObject = next.getObject().toString();
-        assertEquals("Subject should be the same",subject,readSubject);
-        assertEquals("Predicate should be the same",predicate,readPredicate);
-        assertEquals("Object should be the same",object,readObject);
-        assertFalse(stmtIterator.hasNext());
-    }
+//    private void assertModelEqualsSingleSPO(Model graph, String subject, String predicate, String object) {
+//        assertNotNull(graph);
+//        StmtIterator stmtIterator = graph.listStatements();
+//        assertTrue(stmtIterator.hasNext());
+//        Statement next = stmtIterator.next();
+//        assertNotNull(next);
+//        String readSubject = next.getSubject().toString();
+//        String readPredicate = next.getPredicate().toString();
+//        String readObject = next.getObject().toString();
+//        assertEquals("Subject should be the same",subject,readSubject);
+//        assertEquals("Predicate should be the same",predicate,readPredicate);
+//        assertEquals("Object should be the same",object,readObject);
+//        assertFalse(stmtIterator.hasNext());
+//    }
 
 
     private Platform createPlatform() {
@@ -207,27 +173,28 @@ public class PlatformRegistrationTest {
         return platform;
     }
 
-    private void executeQuery( TripleStore store, String filename ) throws IOException {
+    private ResultSet executeQuery( TripleStore store, String filename ) throws IOException {
         String query = IOUtils.toString(this.getClass()
                 .getResource(filename));
         ResultSet resultSet = store.executeQuery(query);
-        System.out.println("=============== QueryRequest " + filename + " Execution results ===============" );
-        while (resultSet.hasNext()) {
-            QuerySolution solution = resultSet.next();
-            Iterator<String> varNames = solution.varNames();
-            String temp = "";
-            while (varNames.hasNext()) {
-                String var = varNames.next();
-                if (!temp.isEmpty()) {
-                    temp += ", ";
-                }
-                temp += var + " = " + solution.get(var).toString();
-            }
-
-            System.out.println( temp );
-
-        }
-        System.out.println("========================================================================" );
+        return resultSet;
+//        System.out.println("=============== QueryRequest " + filename + " Execution results ===============" );
+//        while (resultSet.hasNext()) {
+//            QuerySolution solution = resultSet.next();
+//            Iterator<String> varNames = solution.varNames();
+//            String temp = "";
+//            while (varNames.hasNext()) {
+//                String var = varNames.next();
+//                if (!temp.isEmpty()) {
+//                    temp += ", ";
+//                }
+//                temp += var + " = " + solution.get(var).toString();
+//            }
+//
+//            System.out.println( temp );
+//
+//        }
+//        System.out.println("========================================================================" );
     }
 
 }

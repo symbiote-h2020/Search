@@ -5,6 +5,7 @@ import eu.h2020.symbiote.ontology.model.Registry;
 import eu.h2020.symbiote.ontology.model.TripleStore;
 import eu.h2020.symbiote.query.QueryGenerator;
 import org.apache.commons.io.IOUtils;
+import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.junit.Before;
@@ -12,6 +13,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import static eu.h2020.symbiote.TestSetupConfig.*;
@@ -48,6 +50,9 @@ public class QueryGenerationTests {
             Model res201Model = loadFileAsModel( RESOURCE_201_FILENAME );
             Model res202Model = loadFileAsModel( RESOURCE_202_FILENAME );
             Model res301Model = loadFileAsModel( RESOURCE_301_FILENAME );
+
+            //TODO delete
+//            triplestore.insertGraph(null,res101Model);
 
             registry.registerResource(PLATFORM_A_URI,PLATFORM_A_SERVICE_URI, RESOURCE_101_URI, res101Model);
             registry.registerResource(PLATFORM_A_URI,PLATFORM_A_SERVICE_URI, RESOURCE_102_URI, res102Model);
@@ -387,6 +392,51 @@ public class QueryGenerationTests {
         assertEquals("Resource query should return " + 1 + " but got " + size, 1, size);
     }
 
+    @Test
+    public void testSearchByNearby() {
+        Double latitude = Double.valueOf("52.401790");
+        Double longitude = Double.valueOf("16.960144");
+        Integer distance = Integer.valueOf("1000");
+
+        String query = new QueryGenerator().addResourceLocationDistance(latitude,longitude,distance).toString();
+        ResultSet resultSet = triplestore.executeQuery(query);
+        int size = countResultSetSize(resultSet);
+        assertEquals("Resource query should return " + 3 + " but got " + size, 3, size);
+    }
+
+    @Test
+    public void testSearchByNearby_NotExisting() {
+        Double latitude = Double.valueOf("72.401790");
+        Double longitude = Double.valueOf("26.960144");
+        Integer distance = Integer.valueOf("1000");
+
+        String query = new QueryGenerator().addResourceLocationDistance(latitude,longitude,distance).toString();
+        ResultSet resultSet = triplestore.executeQuery(query);
+        int size = countResultSetSize(resultSet);
+        assertEquals("Resource query should return " + 0 + " but got " + size, 0, size);
+    }
+
+    public void testNearby() {
+
+            Double latitude = Double.valueOf("52.401790");
+            Double longitude = Double.valueOf("16.960144");
+            Integer distance = Integer.valueOf("1");
+
+            String query = new QueryGenerator().addResourceLocationDistance(latitude,longitude,distance).toString();
+            triplestore.executeQueryPP(query);
+
+    }
+
+    public void testNearby2() {
+        try {
+            String query = IOUtils.toString(this.getClass()
+                    .getResource("/q9.sparql"));
+            triplestore.executeQueryPP(query);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private int countResultSetSize( ResultSet resultSet ) {
         int i = 0;
         while (resultSet.hasNext()) {
@@ -394,6 +444,27 @@ public class QueryGenerationTests {
             i++;
         }
         return i;
+    }
+
+    private void executeQuery( TripleStore store, String filename ) throws IOException {
+        String query = IOUtils.toString(this.getClass()
+                .getResource(filename));
+        ResultSet resultSet = store.executeQuery(query);
+        System.out.println(">>>>>>>>>>>>> Executing query " + filename);
+        while (resultSet.hasNext()) {
+            QuerySolution solution = resultSet.next();
+            Iterator<String> varNames = solution.varNames();
+            String temp = "";
+            while (varNames.hasNext()) {
+                String var = varNames.next();
+                if (!temp.isEmpty()) {
+                    temp += ", ";
+                }
+                temp += var + " = " + solution.get(var).toString();
+            }
+            System.out.println( temp );
+        }
+        System.out.println("<<<<<<<<<<<<< QueryRequest finished ");
     }
 
 }

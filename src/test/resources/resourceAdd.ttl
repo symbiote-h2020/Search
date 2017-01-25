@@ -1,0 +1,24 @@
+@prefix : <https://www.symbiote-h2020.eu/ontology/resources/401#> .
+@prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix cim: <http://www.symbiote-h2020.eu/ontology/core#> .
+
+<https://www.symbiote-h2020.eu/ontology/resources/401> rdf:type cim:Sensor ;
+     rdfs:label "Resource 401" ;
+     rdfs:comment "This is resource 401" ;
+     cim:id "401" ;
+     cim:locatedAt [
+        rdfs:label "Poznan" ;
+        rdfs:comment "Poznan Malta" ;
+        geo:lat "52.401790" ;
+        geo:long "16.960144" ;
+        geo:alt "200" ;
+     ] ;
+     cim:observes [
+            rdfs:label "Temperature" ;
+            rdfs:comment "Temperature comment" ;
+        ] .

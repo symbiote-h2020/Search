@@ -1,3 +1,0 @@
-@prefix foaf: <http://xmlns.com/foaf/0.1/>
-
-<http://www.symbiote-h2020.eu/ontology/platforms/1> foaf:name "dev" .
