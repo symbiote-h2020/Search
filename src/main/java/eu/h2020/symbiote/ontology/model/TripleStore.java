@@ -15,6 +15,7 @@ import org.apache.jena.sparql.util.QueryExecUtils;
 import org.apache.jena.tdb.TDBFactory;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.RAMDirectory;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -46,21 +47,22 @@ public class TripleStore {
 
         EntityDefinition entDef = new EntityDefinition("entityField", "geoField");
 
-        File dir = new File("/spatialLucene");
-
-        deleteOldFiles(dir);
-        if( !dir.exists() ) {
-            dir.mkdirs();
-        }
+//        File dir = new File("/spatialLucene");
+//
+//        deleteOldFiles(dir);
+//        if( !dir.exists() ) {
+//            dir.mkdirs();
+//        }
         Dataset baseDataset = DatasetFactory.create();
-        Directory realDir = null;
-        try {
-            realDir = FSDirectory.open(dir);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        Directory realDir = null;
+//        try {
+//            realDir = FSDirectory.open(dir);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+        Directory ramDir = new RAMDirectory();
 
-        dataset = SpatialDatasetFactory.createLucene(baseDataset, realDir, entDef);
+        dataset = SpatialDatasetFactory.createLucene(baseDataset, ramDir, entDef);
     }
 
 
