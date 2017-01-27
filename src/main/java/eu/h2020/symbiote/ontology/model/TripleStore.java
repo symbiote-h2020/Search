@@ -13,6 +13,10 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.sparql.util.QueryExecUtils;
 import org.apache.jena.tdb.TDBFactory;
+import org.apache.jena.update.UpdateAction;
+import org.apache.jena.update.UpdateExecutionFactory;
+import org.apache.jena.update.UpdateFactory;
+import org.apache.jena.update.UpdateRequest;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
@@ -24,6 +28,8 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import static org.apache.jena.sparql.vocabulary.VocabTestQuery.query;
 
 /**
  * Class representing a triplestore - connected to in-memory or disk (TDB) jena repository. Creates a spatial index
@@ -154,6 +160,13 @@ public class TripleStore {
         return executeQueryOnGraph(QueryFactory.create(queryString, Syntax.syntaxARQ), graphUri);
     }
 
+    public void executeUpdate( UpdateRequest request ) {
+        dataset.begin(ReadWrite.WRITE);
+        UpdateAction.execute(request,dataset);
+        dataset.commit();
+        dataset.end();
+    }
+
     public ResultSet executeQueryOnGraph(Query query, String graphUri) {
         dataset.begin(ReadWrite.READ);
 //        Model model = dataset.containsNamedModel(graphUri)
@@ -192,6 +205,12 @@ public class TripleStore {
         return data;
     }
 
+    public void printDataset() {
+        dataset.begin(ReadWrite.READ);
+        Model result = dataset.getDefaultModel();
+        dataset.end();
+        result.write(System.out,"TURTLE");
+    }
 
     public String getGraphAsString(String graph) {
         return getGraphAsString(graph, "RDF/XML-ABBREV");

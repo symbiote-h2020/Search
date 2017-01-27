@@ -7,17 +7,18 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix cim: <http://www.symbiote-h2020.eu/ontology/core#> .
 
-<https://www.symbiote-h2020.eu/ontology/resources/301> rdf:type cim:Sensor ;
-     rdfs:label "Resource 301" ;
-     rdfs:comment "This is resource 301" ;
-     cim:id "301" ;
-     cim:locatedAt [
+<https://www.symbiote-h2020.eu/ontology/resources/301/location> rdf:type cim:Location ;
         rdfs:label "Somewhere" ;
         rdfs:comment "somewhere" ;
         geo:lat "53.401790" ;
         geo:long "16.760144" ;
-        geo:alt "120" ;
-     ] ;
+        geo:alt "120" .
+
+<https://www.symbiote-h2020.eu/ontology/resources/301> rdf:type cim:Sensor ;
+     rdfs:label "Resource 301" ;
+     rdfs:comment "This is resource 301" ;
+     cim:id "301" ;
+     cim:locatedAt <https://www.symbiote-h2020.eu/ontology/resources/301/location> ;
      cim:observes [
             rdfs:label "PM2,5" ;
             rdfs:comment "Particles 2,5" ;

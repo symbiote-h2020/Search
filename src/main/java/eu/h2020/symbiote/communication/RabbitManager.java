@@ -2,7 +2,9 @@ package eu.h2020.symbiote.communication;
 
 import com.rabbitmq.client.*;
 import eu.h2020.symbiote.handlers.PlatformHandler;
+import eu.h2020.symbiote.handlers.ResourceDeleteHandler;
 import eu.h2020.symbiote.handlers.ResourceHandler;
+import eu.h2020.symbiote.handlers.SearchHandler;
 import eu.h2020.symbiote.search.SearchStorage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -62,10 +64,20 @@ public class RabbitManager {
     @Value("${rabbit.routingKey.resource.created}")
     private String resourceCreatedRoutingKey;
 
+    @Value("${rabbit.routingKey.resource.removed}")
+    private String resourceDeletedRoutingKey;
+
+    @Value("${rabbit.routingKey.resource.searchRequested}")
+    private String resourceSearchRequestedRoutingKey;
+
+    @Value("${rabbit.routingKey.resource.searchPerformed}")
+    private String resourceSearchPerformedRoutingKey;
+
     private Connection connection;
 
     /**
-     * Initialization method.
+     * Initialization method. Used to create global connection used by all communication within the component and
+     * all global exchanges.
      */
     @PostConstruct
     private void init() throws InterruptedException {
@@ -89,6 +101,12 @@ public class RabbitManager {
                     this.platformExchangeInternal,
                     null);
 
+            channel.exchangeDeclare(this.resourceExchangeName,
+                    this.resourceExchangeType,
+                    this.resourceExchangeDurable,
+                    this.resourceExchangeAutodelete,
+                    this.resourceExchangeInternal,
+                    null);
 
 
             //message retrieval
@@ -106,7 +124,7 @@ public class RabbitManager {
     }
 
     /**
-     * Cleanup method
+     * Cleanup method - removes the global connection disconnecting all channels/queues.
      */
     @PreDestroy
     private void cleanup() {
@@ -119,6 +137,11 @@ public class RabbitManager {
         }
     }
 
+    /**
+     * Closes specified channel.
+     *
+     * @param channel Channel to be closed.
+     */
     private void closeChannel(Channel channel) {
         try {
             if (channel != null && channel.isOpen())
@@ -130,7 +153,13 @@ public class RabbitManager {
         }
     }
 
-
+    /**
+     * Registers consumer for event platform.created. Event will trigger translation of the platform into RDF
+     * and writing it into JENA repository.
+     *
+     * @param platformHandler Event handler which will be triggered when platform.created event is received.
+     * @throws IOException In case there are problems with RabbitMQ connections.
+     */
     public void registerPlatformCreatedConsumer( PlatformHandler platformHandler ) throws IOException {
 
         Channel channel = connection.createChannel();
@@ -143,6 +172,13 @@ public class RabbitManager {
         log.debug( "Consumer platform created!!!" );
     }
 
+    /**
+     * Registers consumer for event resource.created. Event will trigger translation of the resource into RDF
+     * and writing it into JENA repository.
+     *
+     * @param resourceHandler Event handler which will be triggered when resource.created event is received.
+     * @throws IOException In case there are problems with RabbitMQ connections.
+     */
     public void registerResourceCreatedConsumer( ResourceHandler resourceHandler) throws IOException {
 
         Channel channel = connection.createChannel();
@@ -154,5 +190,45 @@ public class RabbitManager {
         channel.basicConsume(queueName, false, consumer);
         log.debug( "Consumer resource created!!!" );
     }
+
+    /**
+     * Registers consumer for event resource.deleted. Event will trigger translation of the request into SPARQL UPDATE
+     * and executing it in JENA repository.
+     *
+     * @param resourceDeleteHandler Event handler which will be triggered when resource.deleted event is received.
+     * @throws IOException In case there are problems with RabbitMQ connections.
+     */
+    public void registerResourceDeletedConsumer( ResourceDeleteHandler resourceDeleteHandler ) throws IOException {
+
+        Channel channel = connection.createChannel();
+        String queueName = channel.queueDeclare().getQueue();
+        channel.queueBind(queueName, resourceExchangeName, resourceDeletedRoutingKey);
+        DeleteResourceRequestedConsumer consumer = new DeleteResourceRequestedConsumer(channel,resourceDeleteHandler );
+
+        log.debug("Delete resource consumer");
+        channel.basicConsume(queueName, false, consumer);
+        log.debug( "Consumer delete resource created!!!" );
+    }
+
+    /**
+     * Registers consumer for event resource.searchRequested. Event will trigger translation of the request into SPARQL
+     * and executing it in JENA repository.
+     *
+     * @param searchHandler Event handler which will be triggered when resource.searchRequested event is received.
+     * @throws IOException In case there are problems with RabbitMQ connections.
+     */
+    public void registerResourceSearchConsumer( SearchHandler searchHandler ) throws IOException {
+        Channel channel = connection.createChannel();
+        String queueName = channel.queueDeclare().getQueue();
+        channel.queueBind(queueName, resourceExchangeName, resourceSearchRequestedRoutingKey );
+
+        SearchRequestedConsumer consumer = new SearchRequestedConsumer(channel, searchHandler );
+
+        log.debug("Creating search consumer");
+        channel.basicConsume(queueName, false, consumer);
+        log.debug( "Consumer search created!!!" );
+    }
+
+
 
 }

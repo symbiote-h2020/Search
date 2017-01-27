@@ -153,7 +153,7 @@ public class SearchApplicationTests {
             }
             System.out.println( temp );
         }
-        System.out.println("<<<<<<<<<<<<< QueryRequest finished ");
+        System.out.println("<<<<<<<<<<<<< SearchRequest finished ");
     }
 
     private void executeQuery( TripleStore store, Query query ) throws IOException {

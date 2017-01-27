@@ -7,7 +7,7 @@ import java.util.List;
  *
  * Created by Mael on 24/01/2017.
  */
-public class QueryResponseResource {
+public class SearchResponseResource {
 
     private String id;
     private String name;
@@ -20,10 +20,10 @@ public class QueryResponseResource {
     private Double locationAltitude;
     private List<String> observedProperties;
 
-    public QueryResponseResource() {
+    public SearchResponseResource() {
     }
 
-    public QueryResponseResource(String id, String name, String description, String platformId, String platformName, String locationName, Double locationLatitude, Double locationLongitude, Double locationAltitude, List<String> observedProperties) {
+    public SearchResponseResource(String id, String name, String description, String platformId, String platformName, String locationName, Double locationLatitude, Double locationLongitude, Double locationAltitude, List<String> observedProperties) {
         this.id = id;
         this.name = name;
         this.description = description;

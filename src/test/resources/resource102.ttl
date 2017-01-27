@@ -7,17 +7,18 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix cim: <http://www.symbiote-h2020.eu/ontology/core#> .
 
-<https://www.symbiote-h2020.eu/ontology/resources/102> rdf:type cim:Sensor ;
-     rdfs:label "Resource 102" ;
-     rdfs:comment "This is resource 102" ;
-     cim:id "102" ;
-     cim:locatedAt [
+<https://www.symbiote-h2020.eu/ontology/resources/102/location> rdf:type cim:Location ;
         rdfs:label "Poznan" ;
         rdfs:comment "centrum" ;
         geo:lat "52.404790" ;
         geo:long "16.961144" ;
-        geo:alt "150" ;
-     ] ;
+        geo:alt "150" .
+
+<https://www.symbiote-h2020.eu/ontology/resources/102> rdf:type cim:Sensor ;
+     rdfs:label "Resource 102" ;
+     rdfs:comment "This is resource 102" ;
+     cim:id "102" ;
+     cim:locatedAt <https://www.symbiote-h2020.eu/ontology/resources/102/location> ;
      cim:observes [
             rdfs:label "PM2,5" ;
             rdfs:comment "Particles 2,5" ;

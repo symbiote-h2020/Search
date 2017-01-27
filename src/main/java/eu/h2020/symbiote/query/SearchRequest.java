@@ -7,7 +7,7 @@ import java.util.List;
  *
  * Created by Mael on 24/01/2017.
  */
-public class QueryRequest {
+public class SearchRequest {
 
     private String platform_id;
     private String platform_name;
@@ -21,10 +21,10 @@ public class QueryRequest {
     private Integer max_distance;
     private List<String> observed_property;
 
-    public QueryRequest() {
+    public SearchRequest() {
     }
 
-    public QueryRequest(String platform_id, String platform_name, String owner, String name, String id, String description, String location_name, Double location_lat, Double location_long, Integer max_distance, List<String> observed_property) {
+    public SearchRequest(String platform_id, String platform_name, String owner, String name, String id, String description, String location_name, Double location_lat, Double location_long, Integer max_distance, List<String> observed_property) {
         this.platform_id = platform_id;
         this.platform_name = platform_name;
         this.owner = owner;

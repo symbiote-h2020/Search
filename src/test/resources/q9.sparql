@@ -6,8 +6,18 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 
-SELECT ?sensor WHERE {
-	?sensor a cim:Sensor .
-    ?loc spatial:nearby (52.401790 16.960144 10 'km') .
-    ?sensor cim:locatedAt ?loc .
-}
+SELECT ?resId ?resName ?resDescription ?platformId ?platformName ?locationName ?locationLat ?locationLong ?locationAlt ?propertyName WHERE {
+    ?sensor cim:id ?resId ;
+           rdfs:label ?resName ;
+           rdfs:comment ?resDescription ;
+           cim:locatedAt ?location ;
+           cim:observes ?property .
+    ?platform cimowl:hasID ?platformId ;
+              mim:hasName ?platformName .
+    ?location rdfs:label ?locationName ;
+              geo:lat ?locationLat .
+              geo:long ?locationLong .
+              geo:alt ?locationAlt .
+    ?property rdf:rest* [ rdf:first ?item ] .
+    ?item rdfs:label ?propertyName .
+    }

@@ -72,7 +72,7 @@ public class QueryGenerationTests {
         String query = new QueryGenerator().addPlatformId("1").toString();
         ResultSet resultSet = triplestore.executeQuery(query);
         int size = countResultSetSize(resultSet);
-        assertEquals("Platform query should return " + 3 + " but got " + size, 3, size);
+        assertEquals("Platform query should return " + 4 + " but got " + size, 4, size);
 
         //Platform 2
         query = new QueryGenerator().addPlatformId("2").toString();
@@ -102,7 +102,7 @@ public class QueryGenerationTests {
         String query = new QueryGenerator().addPlatformName("Platform A").toString();
         ResultSet resultSet = triplestore.executeQuery(query);
         int size = countResultSetSize(resultSet);
-        assertEquals("Platform query should return " + 3 + " but got " + size, 3, size);
+        assertEquals("Platform query should return " + 4 + " but got " + size, 4, size);
 
         //Platform 2
         query = new QueryGenerator().addPlatformName("Platform B").toString();
@@ -129,13 +129,13 @@ public class QueryGenerationTests {
 
     @Test
     public void testSearchByLikePlatformName() {
-        String query = new QueryGenerator().addLikePlatformName("Plat").toString();
+        String query = new QueryGenerator().addLikePlatformName("Plat","CONTAINS").toString();
         ResultSet resultSet = triplestore.executeQuery(query);
         int size = countResultSetSize(resultSet);
-        assertEquals("Platform query should return " + 6 + " but got " + size, 6, size);
+        assertEquals("Platform query should return " + 7 + " but got " + size, 7, size);
 
         //Platform 2
-        query = new QueryGenerator().addLikePlatformName("form B").toString();
+        query = new QueryGenerator().addLikePlatformName("form B","CONTAINS").toString();
         resultSet = triplestore.executeQuery(query);
         size = countResultSetSize(resultSet);
         assertEquals("Platform query should return " + 2 + " but got " + size, 2, size);
@@ -144,7 +144,7 @@ public class QueryGenerationTests {
     @Test
     public void testSearchByLikePlatformName_notExistingPlatform() {
         //Not existing platform
-        String query = new QueryGenerator().addLikePlatformName("Platform 12345").toString();
+        String query = new QueryGenerator().addLikePlatformName("Platform 12345","CONTAINS").toString();
         ResultSet resultSet = triplestore.executeQuery(query);
         int size = countResultSetSize(resultSet);
         assertEquals("Platform query should return " + 0 + " but got " + size, 0, size);
@@ -155,7 +155,7 @@ public class QueryGenerationTests {
         String query = new QueryGenerator().addResourceName("Resource 101").toString();
         ResultSet resultSet = triplestore.executeQuery(query);
         int size = countResultSetSize(resultSet);
-        assertEquals("Resource query should return " + 1 + " but got " + size, 1, size);
+        assertEquals("Resource query should return " + 2 + " but got " + size, 2, size);
 
         //Platform 2
         query = new QueryGenerator().addResourceName("Resource 202").toString();
@@ -182,15 +182,15 @@ public class QueryGenerationTests {
 
     @Test
     public void testSearchByLikeResourceName() {
-        String query = new QueryGenerator().addLikeResourceName("res").toString();
+        String query = new QueryGenerator().addLikeResourceName("res","CONTAINS").toString();
         ResultSet resultSet = triplestore.executeQuery(query);
         int size = countResultSetSize(resultSet);
-        assertEquals("Resource query should return " + 6 + " but got " + size, 6, size);
+        assertEquals("Resource query should return " + 7 + " but got " + size, 7, size);
 
-        query = new QueryGenerator().addLikeResourceName("01").toString();
+        query = new QueryGenerator().addLikeResourceName("01","CONTAINS").toString();
         resultSet = triplestore.executeQuery(query);
         size = countResultSetSize(resultSet);
-        assertEquals("Resource query should return " + 3 + " but got " + size, 3, size);
+        assertEquals("Resource query should return " + 4 + " but got " + size, 4, size);
     }
 
     @Test
@@ -206,7 +206,7 @@ public class QueryGenerationTests {
         String query = new QueryGenerator().addResourceId("101").toString();
         ResultSet resultSet = triplestore.executeQuery(query);
         int size = countResultSetSize(resultSet);
-        assertEquals("Resource query should return " + 1 + " but got " + size, 1, size);
+        assertEquals("Resource query should return " + 2 + " but got " + size, 2, size);
 
         //Platform 2
         query = new QueryGenerator().addResourceId("202").toString();
@@ -235,7 +235,7 @@ public class QueryGenerationTests {
         String query = new QueryGenerator().addResourceDescription("This is resource 101").toString();
         ResultSet resultSet = triplestore.executeQuery(query);
         int size = countResultSetSize(resultSet);
-        assertEquals("Resource query should return " + 1 + " but got " + size, 1, size);
+        assertEquals("Resource query should return " + 2 + " but got " + size, 2, size);
 
         //Platform 2
         query = new QueryGenerator().addResourceDescription("This is resource 201").toString();
@@ -261,22 +261,22 @@ public class QueryGenerationTests {
 
     @Test
     public void testSearchByLikeResourceDescription() {
-        String query = new QueryGenerator().addLikeResourceDescription("This is resource ").toString();
+        String query = new QueryGenerator().addLikeResourceDescription("This is resource ","CONTAINS").toString();
         ResultSet resultSet = triplestore.executeQuery(query);
         int size = countResultSetSize(resultSet);
-        assertEquals("Resource query should return " + 6 + " but got " + size, 6, size);
+        assertEquals("Resource query should return " + 7 + " but got " + size, 7, size);
 
         //Platform 2
-        query = new QueryGenerator().addLikeResourceDescription("This is resource 20").toString();
+        query = new QueryGenerator().addLikeResourceDescription("This is resource 20","CONTAINS").toString();
         resultSet = triplestore.executeQuery(query);
         size = countResultSetSize(resultSet);
         assertEquals("Resource query should return " + 2 + " but got " + size, 2, size);
 
         //Platform 3
-        query = new QueryGenerator().addLikeResourceDescription("01").toString();
+        query = new QueryGenerator().addLikeResourceDescription("01","CONTAINS").toString();
         resultSet = triplestore.executeQuery(query);
         size = countResultSetSize(resultSet);
-        assertEquals("Resource query should return " + 3 + " but got " + size, 3, size);
+        assertEquals("Resource query should return " + 4 + " but got " + size, 4, size);
     }
 
     @Test
@@ -293,7 +293,7 @@ public class QueryGenerationTests {
         String query = new QueryGenerator().addResourceLocationName("Poznan").toString();
         ResultSet resultSet = triplestore.executeQuery(query);
         int size = countResultSetSize(resultSet);
-        assertEquals("Resource query should return " + 3 + " but got " + size, 3, size);
+        assertEquals("Resource query should return " + 4 + " but got " + size, 4, size);
 
         //Platform 2
         query = new QueryGenerator().addResourceLocationName("Somewhere").toString();
@@ -313,13 +313,13 @@ public class QueryGenerationTests {
 
     @Test
     public void testSearchByLikeResourceLocationName() {
-        String query = new QueryGenerator().addLikeResourceLocationName("Poznan").toString();
+        String query = new QueryGenerator().addLikeResourceLocationName("Poznan","CONTAINS").toString();
         ResultSet resultSet = triplestore.executeQuery(query);
         int size = countResultSetSize(resultSet);
-        assertEquals("Resource query should return " + 3 + " but got " + size, 3, size);
+        assertEquals("Resource query should return " + 4 + " but got " + size, 4, size);
 
         //Platform 2
-        query = new QueryGenerator().addLikeResourceLocationName("Somewhere").toString();
+        query = new QueryGenerator().addLikeResourceLocationName("Somewhere","CONTAINS").toString();
         resultSet = triplestore.executeQuery(query);
         size = countResultSetSize(resultSet);
         assertEquals("Resource query should return " + 3 + " but got " + size, 3, size);
@@ -328,7 +328,7 @@ public class QueryGenerationTests {
     @Test
     public void testSearchByLikeResourceLocationName_NotExistingResource() {
         //Not existing platform
-        String query = new QueryGenerator().addLikeResourceLocationName("12345location").toString();
+        String query = new QueryGenerator().addLikeResourceLocationName("12345location","CONTAINS").toString();
         ResultSet resultSet = triplestore.executeQuery(query);
         int size = countResultSetSize(resultSet);
         assertEquals("Resource query should return " + 0 + " but got " + size, 0, size);
@@ -359,13 +359,13 @@ public class QueryGenerationTests {
 
     @Test
     public void testSearchByLikeResourceObservedPropertyName() {
-        String query = new QueryGenerator().addLikeResourceObservedPropertyName("Temp").toString();
+        String query = new QueryGenerator().addLikeResourceObservedPropertyName("Temp","CONTAINS").toString();
         ResultSet resultSet = triplestore.executeQuery(query);
         int size = countResultSetSize(resultSet);
         assertEquals("Resource query should return " + 3 + " but got " + size, 3, size);
 
         //Platform 2
-        query = new QueryGenerator().addLikeResourceObservedPropertyName("Hum").toString();
+        query = new QueryGenerator().addLikeResourceObservedPropertyName("Hum","CONTAINS").toString();
         resultSet = triplestore.executeQuery(query);
         size = countResultSetSize(resultSet);
         assertEquals("Resource query should return " + 2 + " but got " + size, 2, size);
@@ -374,7 +374,7 @@ public class QueryGenerationTests {
     @Test
     public void testSearchByLikeResourceObservedPropertyName_NotExistingResource() {
         //Not existing platform
-        String query = new QueryGenerator().addLikeResourceObservedPropertyName("12345property").toString();
+        String query = new QueryGenerator().addLikeResourceObservedPropertyName("12345property","CONTAINS").toString();
         ResultSet resultSet = triplestore.executeQuery(query);
         int size = countResultSetSize(resultSet);
         assertEquals("Resource query should return " + 0 + " but got " + size, 0, size);
@@ -401,7 +401,7 @@ public class QueryGenerationTests {
         String query = new QueryGenerator().addResourceLocationDistance(latitude,longitude,distance).toString();
         ResultSet resultSet = triplestore.executeQuery(query);
         int size = countResultSetSize(resultSet);
-        assertEquals("Resource query should return " + 3 + " but got " + size, 3, size);
+        assertEquals("Resource query should return " + 4 + " but got " + size, 4, size);
     }
 
     @Test
@@ -416,25 +416,32 @@ public class QueryGenerationTests {
         assertEquals("Resource query should return " + 0 + " but got " + size, 0, size);
     }
 
-    public void testNearby() {
+    @Test
+    public void testNearbyAndObservedProperty() {
+        Double latitude = Double.valueOf("52.401790");
+        Double longitude = Double.valueOf("16.960144");
+        Integer distance = Integer.valueOf("1000");
 
-            Double latitude = Double.valueOf("52.401790");
-            Double longitude = Double.valueOf("16.960144");
-            Integer distance = Integer.valueOf("1");
-
-            String query = new QueryGenerator().addResourceLocationDistance(latitude,longitude,distance).toString();
-            triplestore.executeQueryPP(query);
-
+        String query = new QueryGenerator().addResourceLocationDistance(latitude,longitude,distance)
+                .addResourceObservedPropertyName("Temperature").toString();
+        ResultSet resultSet = triplestore.executeQuery(query);
+        int size = countResultSetSize(resultSet);
+        assertEquals("Resource query should return " + 2 + " but got " + size, 2, size);
     }
 
-    public void testNearby2() {
-        try {
-            String query = IOUtils.toString(this.getClass()
-                    .getResource("/q9.sparql"));
-            triplestore.executeQueryPP(query);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    @Test
+    public void testNearbyAndObservedPropertyAndComment() {
+        Double latitude = Double.valueOf("52.401790");
+        Double longitude = Double.valueOf("16.960144");
+        Integer distance = Integer.valueOf("1000");
+
+        String query = new QueryGenerator().addResourceObservedPropertyName("Temperature")
+                .addResourceLocationDistance(latitude,longitude,distance)
+                .addLikeResourceDescription("01","CONTAINS")
+                .toString();
+        ResultSet resultSet = triplestore.executeQuery(query);
+        int size = countResultSetSize(resultSet);
+        assertEquals("Resource query should return " + 1 + " but got " + size, 1, size);
     }
 
     private int countResultSetSize( ResultSet resultSet ) {
@@ -464,7 +471,7 @@ public class QueryGenerationTests {
             }
             System.out.println( temp );
         }
-        System.out.println("<<<<<<<<<<<<< QueryRequest finished ");
+        System.out.println("<<<<<<<<<<<<< SearchRequest finished ");
     }
 
 }

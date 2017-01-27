@@ -47,6 +47,9 @@ public class TestSetupConfig {
     public static final String RESOURCE_301_FILENAME = "/resource301.ttl";
     public static final String RESOURCE_301_URI = RESOURCE_PREDICATE + "301";
 
+    public static final String RESOURCE_501_FILENAME = "/resource501.ttl";
+    public static final String RESOURCE_501_URI = RESOURCE_PREDICATE + "501";
+
     public static Model loadFileAsModel(String fileLocation ) {
         Model model = null;
         InputStream modelToSave = null;

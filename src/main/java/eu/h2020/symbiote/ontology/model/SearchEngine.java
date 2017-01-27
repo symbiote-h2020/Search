@@ -52,7 +52,7 @@ public class SearchEngine {
 //            String destinationModelUri = solution.get("?mapDest").asNode().toString();
 //            String mappingDefinition = tripleStore.getGraphAsString(mappingGraph);
 //            // for each do query rewriting and the execute to store
-//            QueryRequest translatedQuery = translateQuery(query, mappingDefinition);
+//            SearchRequest translatedQuery = translateQuery(query, mappingDefinition);
 //            // find all platforms that use model that is mapped to and query them all
 //            ResultSet platformsForModel = tripleStore.executeQueryOnGraph(generateFindPlatformsForModelQuery(destinationModelUri), Ontology.PLATFORMS_GRAPH);
 //            while (platformsForModel.hasNext()) {

@@ -178,7 +178,7 @@ public class PlatformRegistrationTest {
                 .getResource(filename));
         ResultSet resultSet = store.executeQuery(query);
         return resultSet;
-//        System.out.println("=============== QueryRequest " + filename + " Execution results ===============" );
+//        System.out.println("=============== SearchRequest " + filename + " Execution results ===============" );
 //        while (resultSet.hasNext()) {
 //            QuerySolution solution = resultSet.next();
 //            Iterator<String> varNames = solution.varNames();

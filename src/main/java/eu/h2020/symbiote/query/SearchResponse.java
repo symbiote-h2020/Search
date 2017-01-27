@@ -7,22 +7,22 @@ import java.util.List;
  *
  * Created by Mael on 24/01/2017.
  */
-public class QueryResponse {
+public class SearchResponse {
 
-    private List<QueryResponseResource> resourceList;
+    private List<SearchResponseResource> resourceList;
 
-    public QueryResponse() {
+    public SearchResponse() {
     }
 
-    public QueryResponse(List<QueryResponseResource> resourceList) {
+    public SearchResponse(List<SearchResponseResource> resourceList) {
         this.resourceList = resourceList;
     }
 
-    public List<QueryResponseResource> getResourceList() {
+    public List<SearchResponseResource> getResourceList() {
         return resourceList;
     }
 
-    public void setResourceList(List<QueryResponseResource> resourceList) {
+    public void setResourceList(List<SearchResponseResource> resourceList) {
         this.resourceList = resourceList;
     }
 }
