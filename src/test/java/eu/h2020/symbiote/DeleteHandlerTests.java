@@ -56,6 +56,7 @@ public class DeleteHandlerTests {
 
     @Test
     public void deleteResourceTest() {
+        setUp();
         printDataset();
         SearchHandler searchHandler = new SearchHandler(triplestore);
         SearchRequest searchReq = new SearchRequest();
