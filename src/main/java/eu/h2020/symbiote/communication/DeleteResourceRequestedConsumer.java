@@ -1,16 +1,12 @@
 package eu.h2020.symbiote.communication;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
-import eu.h2020.symbiote.handlers.ResourceDeleteHandler;
-import eu.h2020.symbiote.handlers.SearchHandler;
-import eu.h2020.symbiote.query.SearchRequest;
-import eu.h2020.symbiote.query.SearchResponse;
+import eu.h2020.symbiote.handlers.ResourceHandler;
+import eu.h2020.symbiote.query.SearchResponseResource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -26,7 +22,7 @@ public class DeleteResourceRequestedConsumer extends DefaultConsumer {
 
     private static Log log = LogFactory.getLog(DeleteResourceRequestedConsumer.class);
 
-    private final ResourceDeleteHandler handler;
+    private final ResourceHandler handler;
 
     /**
      * Constructs a new instance and records its association to the passed-in channel.
@@ -35,7 +31,7 @@ public class DeleteResourceRequestedConsumer extends DefaultConsumer {
      * @param handler handler to be used by the consumer.
      *
      */
-    public DeleteResourceRequestedConsumer(Channel channel, ResourceDeleteHandler handler) {
+    public DeleteResourceRequestedConsumer(Channel channel, ResourceHandler handler) {
         super(channel);
         this.handler = handler;
     }
@@ -46,11 +42,14 @@ public class DeleteResourceRequestedConsumer extends DefaultConsumer {
         log.debug( "DeleteResource requested message: " + msg );
 
         //Try to parse the message
+        ObjectMapper mapper = new ObjectMapper();
+        SearchResponseResource resourceToDel = mapper.readValue(msg, SearchResponseResource.class);
 
-        handler.deleteResource(msg);
+        handler.deleteResource(resourceToDel.getId());
         //Send the response back to the client
         //TODO
 
         getChannel().basicAck(envelope.getDeliveryTag(),false);
     }
 }
+

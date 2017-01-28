@@ -50,7 +50,7 @@ public class HandlerUtils {
                 .addProperty(MetaInformationModel.CIM_HASID,platform.getPlatformId())
                 .addProperty(MetaInformationModel.MIM_HASDESCRIPTION, platform.getDescription())
                 .addProperty(MetaInformationModel.MIM_HASNAME, platform.getName())
-                .addProperty(MetaInformationModel.MIM_HASSERVICE, generateInterworkingServiceUri(Ontology.getPlatformGraphURI(platform.getPlatformId()),platform.getUrl()));
+                .addProperty(MetaInformationModel.MIM_HASSERVICE, model.createResource(generateInterworkingServiceUri(Ontology.getPlatformGraphURI(platform.getPlatformId()),platform.getUrl())));
 
 
         Model serviceModel = generateInterworkingService(platform);
@@ -81,7 +81,7 @@ public class HandlerUtils {
                 .addProperty(CoreInformationModel.CIM_ID,resource.getId())
                 .addProperty(CoreInformationModel.RDFS_LABEL,resource.getName())
                 .addProperty(CoreInformationModel.RDFS_COMMENT,resource.getDescription())
-                .addProperty(CoreInformationModel.CIM_LOCATED_AT,Ontology.getResourceGraphURI(resource.getId())+"/location")
+                .addProperty(CoreInformationModel.CIM_LOCATED_AT,model.createResource(Ontology.getResourceGraphURI(resource.getId())+"/location"))
                 .addProperty(CoreInformationModel.CIM_OBSERVES,res);
 
         Model locationModel = generateLocation(resource);
@@ -105,6 +105,7 @@ public class HandlerUtils {
                 .addProperty(CoreInformationModel.GEO_LAT, resource.getLocation().getLatitude().toString())
                 .addProperty(CoreInformationModel.GEO_LONG, resource.getLocation().getLongitude().toString())
                 .addProperty(CoreInformationModel.GEO_ALT, resource.getLocation().getAltitude().toString());
+
         return model;
     }
 
@@ -183,6 +184,9 @@ public class HandlerUtils {
 
     public static SearchResponse generateSearchResponseFromResultSet( ResultSet resultSet) {
         Map<String,SearchResponseResource> responses = new HashMap<String,SearchResponseResource>();
+        if( !resultSet.hasNext() ) {
+            System.out.println( "Could not generate search response from result set, cause resultSet is empty");
+        }
         while (resultSet.hasNext()) {
             QuerySolution solution = resultSet.next();
             String resId = solution.get(RESOURCE_ID).toString();

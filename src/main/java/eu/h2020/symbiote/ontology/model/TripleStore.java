@@ -208,8 +208,8 @@ public class TripleStore {
     public void printDataset() {
         dataset.begin(ReadWrite.READ);
         Model result = dataset.getDefaultModel();
-        dataset.end();
         result.write(System.out,"TURTLE");
+        dataset.end();
     }
 
     public String getGraphAsString(String graph) {

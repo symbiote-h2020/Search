@@ -162,6 +162,11 @@ public class QueryHandlerTests {
         }
     }
 
+    @Test
+    public void toDel() {
+        triplestore.printDataset();
+    }
+
     private void ensureFieldsNotNull( SearchResponseResource response ) {
         assertNotNull(response.getId());
         assertFalse(response.getId().isEmpty());

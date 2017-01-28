@@ -58,6 +58,7 @@ public class PlatformHandler implements IPlatformEvents{
 
         log.debug( "End of model");
         storage.registerPlatform(platform.getPlatformId(), platformModel, platform.getInformationModelId() );
+        storage.getTripleStore().printDataset();
 
         return true;
     }

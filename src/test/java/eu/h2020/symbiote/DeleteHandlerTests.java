@@ -1,40 +1,39 @@
 package eu.h2020.symbiote;
 
-import eu.h2020.symbiote.handlers.ResourceDeleteHandler;
+import eu.h2020.symbiote.handlers.ResourceHandler;
 import eu.h2020.symbiote.handlers.SearchHandler;
 import eu.h2020.symbiote.ontology.model.RDFFormat;
 import eu.h2020.symbiote.ontology.model.Registry;
 import eu.h2020.symbiote.ontology.model.TripleStore;
 import eu.h2020.symbiote.query.SearchRequest;
 import eu.h2020.symbiote.query.SearchResponse;
+import eu.h2020.symbiote.search.SearchStorage;
 import org.apache.commons.io.IOUtils;
-import org.apache.jena.query.QuerySolution;
-import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Iterator;
 
 import static eu.h2020.symbiote.TestSetupConfig.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by Mael on 26/01/2017.
  */
 public class DeleteHandlerTests {
 
+    private SearchStorage storage;
     private Registry registry;
     private TripleStore triplestore;
 
-    @Before
+
     public void setUp() {
 
-//        storage = SearchStorage.getInstance(SearchStorage.TESTCASE_STORAGE_NAME);
-        triplestore = new TripleStore();
+        storage = SearchStorage.getInstance(SearchStorage.TESTCASE_STORAGE_NAME);
+        triplestore = storage.getTripleStore();
         registry = new Registry(triplestore);
         try {
             String platformA = IOUtils.toString(this.getClass()
@@ -75,7 +74,7 @@ public class DeleteHandlerTests {
         assertNotNull(search101Response.getResourceList());
         assertEquals("Before delete not mentioned resource should be 1",1,search101Response.getResourceList().size());
 
-        ResourceDeleteHandler delHandler = new ResourceDeleteHandler(triplestore);
+        ResourceHandler delHandler = new ResourceHandler(storage);
         delHandler.deleteResource("102");
 
         searchResponse = searchHandler.search(searchReq);

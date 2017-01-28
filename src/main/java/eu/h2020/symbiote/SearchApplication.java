@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.h2020.symbiote.communication.RabbitManager;
 import eu.h2020.symbiote.handlers.PlatformHandler;
-import eu.h2020.symbiote.handlers.ResourceDeleteHandler;
 import eu.h2020.symbiote.handlers.ResourceHandler;
 import eu.h2020.symbiote.handlers.SearchHandler;
 import eu.h2020.symbiote.model.QueryRequest;
@@ -63,8 +62,9 @@ public class SearchApplication {
             ResourceHandler resourceHandler = new ResourceHandler(searchStorage);
             manager.registerResourceCreatedConsumer(resourceHandler);
 
-            ResourceDeleteHandler resourceDeleteHandler = new ResourceDeleteHandler(searchStorage.getTripleStore());
-            manager.registerResourceDeletedConsumer(resourceDeleteHandler);
+            manager.registerResourceDeletedConsumer(resourceHandler);
+
+            manager.registerResourceUpdatedConsumer(resourceHandler);
 
             SearchHandler searchHandler = new SearchHandler(searchStorage.getTripleStore() );
             manager.registerResourceSearchConsumer(searchHandler);

@@ -94,8 +94,7 @@ public class SearchStorage {
 //    }
 
     /**
-     * Returns triplestore connected with this storage
-     * @return
+     *
      */
     public TripleStore getTripleStore() {
         return tripleStore;

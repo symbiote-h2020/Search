@@ -2,12 +2,14 @@ package eu.h2020.symbiote.handlers;
 
 import eu.h2020.symbiote.model.Resource;
 import eu.h2020.symbiote.ontology.model.Ontology;
+import eu.h2020.symbiote.query.DeleteRequestGenerator;
 import eu.h2020.symbiote.search.SearchStorage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.update.UpdateRequest;
 import org.objectweb.asm.Handle;
 import org.springframework.util.Assert;
 
@@ -44,9 +46,6 @@ public class ResourceHandler implements IResourceEvents {
                 "} ";
 
         List<String> response = this.storage.query(Ontology.getPlatformGraphURI(platformId), query);
-        log.debug(" RESPONSE FOR SEARCHING SERVICE URL: " + resourceURL );
-        log.debug(response);
-        log.debug(" xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx ");
         String registeredServiceURI = null;
         if( response != null && response.size() == 1) {
             registeredServiceURI = response.get(0).substring(response.get(0).indexOf("=")+2);
@@ -66,7 +65,19 @@ public class ResourceHandler implements IResourceEvents {
 
     @Override
     public boolean updateResource(Resource resource) {
-        return false;
+        log.debug("Updating description of the resource with id " + resource.getId() );
+        boolean deleteSuccess = deleteResource(resource.getId());
+        if( deleteSuccess ) {
+            boolean registerSuccess = registerResource(resource);
+            if( !registerSuccess) {
+                log.error("Registering of the resource failed during update execution");
+                return false;
+            }
+        } else {
+            log.error("Deleting of the resource failed during update execution");
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -76,6 +87,8 @@ public class ResourceHandler implements IResourceEvents {
 
     @Override
     public boolean deleteResource(String resourceId) {
-        return false;
+        UpdateRequest updateRequest = new DeleteRequestGenerator(resourceId).generateRequest();
+        this.storage.getTripleStore().executeUpdate(updateRequest);
+        return true;
     }
 }

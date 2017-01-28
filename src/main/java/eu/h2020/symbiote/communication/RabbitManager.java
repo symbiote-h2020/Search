@@ -1,11 +1,11 @@
 package eu.h2020.symbiote.communication;
 
-import com.rabbitmq.client.*;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
 import eu.h2020.symbiote.handlers.PlatformHandler;
-import eu.h2020.symbiote.handlers.ResourceDeleteHandler;
 import eu.h2020.symbiote.handlers.ResourceHandler;
 import eu.h2020.symbiote.handlers.SearchHandler;
-import eu.h2020.symbiote.search.SearchStorage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -72,6 +72,9 @@ public class RabbitManager {
 
     @Value("${rabbit.routingKey.resource.searchPerformed}")
     private String resourceSearchPerformedRoutingKey;
+
+    @Value("${rabbit.routingKey.resource.modified}")
+    private String resourceModifiedRoutingKey;
 
     private Connection connection;
 
@@ -198,7 +201,7 @@ public class RabbitManager {
      * @param resourceDeleteHandler Event handler which will be triggered when resource.deleted event is received.
      * @throws IOException In case there are problems with RabbitMQ connections.
      */
-    public void registerResourceDeletedConsumer( ResourceDeleteHandler resourceDeleteHandler ) throws IOException {
+    public void registerResourceDeletedConsumer( ResourceHandler resourceDeleteHandler ) throws IOException {
 
         Channel channel = connection.createChannel();
         String queueName = channel.queueDeclare().getQueue();
@@ -229,6 +232,23 @@ public class RabbitManager {
         log.debug( "Consumer search created!!!" );
     }
 
+    /**
+     * Registers consumer for event resource.created. Event will trigger translation of the resource into RDF
+     * and writing it into JENA repository.
+     *
+     * @param resourceHandler Event handler which will be triggered when resource.created event is received.
+     * @throws IOException In case there are problems with RabbitMQ connections.
+     */
+    public void registerResourceUpdatedConsumer(ResourceHandler resourceHandler) throws IOException {
 
+        Channel channel = connection.createChannel();
+        String queueName = channel.queueDeclare().getQueue();
+        channel.queueBind(queueName, resourceExchangeName, resourceModifiedRoutingKey);
+        ResourceModifiedConsumer consumer = new ResourceModifiedConsumer(channel, resourceHandler );
+
+        log.debug("Creating resource modified consumer");
+        channel.basicConsume(queueName, false, consumer);
+        log.debug( "Consumer resource modified created!!!" );
+    }
 
 }
