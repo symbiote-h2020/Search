@@ -69,11 +69,6 @@ public class PlatformHandler implements IPlatformEvents{
     }
 
     @Override
-    public boolean deletePlatform(Platform platform) {
-        return false;
-    }
-
-    @Override
     public boolean deletePlatform(String platformId) {
         return false;
     }

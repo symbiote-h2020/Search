@@ -6,6 +6,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 import eu.h2020.symbiote.handlers.ResourceHandler;
+import eu.h2020.symbiote.model.Resource;
 import eu.h2020.symbiote.query.SearchResponseResource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -43,7 +44,7 @@ public class DeleteResourceRequestedConsumer extends DefaultConsumer {
 
         //Try to parse the message
         ObjectMapper mapper = new ObjectMapper();
-        SearchResponseResource resourceToDel = mapper.readValue(msg, SearchResponseResource.class);
+        Resource resourceToDel = mapper.readValue(msg, Resource.class);
 
         handler.deleteResource(resourceToDel.getId());
         //Send the response back to the client

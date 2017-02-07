@@ -28,14 +28,6 @@ public interface IPlatformEvents {
     /**
      * Deletes platform representation in the Apache Jena repository.
      *
-     * @param platform Platform to be deleted
-     * @return <code>true</code> if delete was successful.
-     */
-    public boolean deletePlatform( Platform platform );
-
-    /**
-     * Deletes platform representation in the Apache Jena repository.
-     *
      * @param platformId Id of the platform to be deleted
      * @return <code>true</code> if delete was successful.
      */

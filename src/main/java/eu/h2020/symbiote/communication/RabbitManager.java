@@ -48,6 +48,10 @@ public class RabbitManager {
     private String platformCreationRequestedRoutingKey;
     @Value("${rabbit.routingKey.platform.created}")
     private String platformCreatedRoutingKey;
+    @Value("${rabbit.routingKey.platform.modified}")
+    private String platformModifiedRoutingKey;
+    @Value("${rabbit.routingKey.platform.removed}")
+    private String platformDeletedRoutingKey;
 
     @Value("${rabbit.exchange.resource.name}")
     private String resourceExchangeName;
@@ -64,6 +68,9 @@ public class RabbitManager {
     @Value("${rabbit.routingKey.resource.created}")
     private String resourceCreatedRoutingKey;
 
+    @Value("${rabbit.routingKey.resource.modified}")
+    private String resourceModifiedRoutingKey;
+
     @Value("${rabbit.routingKey.resource.removed}")
     private String resourceDeletedRoutingKey;
 
@@ -72,9 +79,6 @@ public class RabbitManager {
 
     @Value("${rabbit.routingKey.resource.searchPerformed}")
     private String resourceSearchPerformedRoutingKey;
-
-    @Value("${rabbit.routingKey.resource.modified}")
-    private String resourceModifiedRoutingKey;
 
     private Connection connection;
 
@@ -138,6 +142,10 @@ public class RabbitManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public Connection getConnection() {
+        return connection;
     }
 
     /**

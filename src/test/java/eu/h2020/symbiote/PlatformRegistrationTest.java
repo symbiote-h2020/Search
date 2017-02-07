@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.util.Iterator;
 
 import static org.junit.Assert.*;
+import static eu.h2020.symbiote.TestSetupConfig.*;
 
 //@RunWith(SpringRunner.class)
 //@SpringBootTest({"eureka.client.enabled=false"})
@@ -77,7 +78,7 @@ public class PlatformRegistrationTest {
 
     @Test
     public void testGeneratingModelFromPlatform() {
-        Platform platform = createPlatform();
+        Platform platform = generatePlatformA();
 
         Model model = HandlerUtils.generateModelFromPlatform(platform);
         assertNotNull(model);
@@ -89,7 +90,7 @@ public class PlatformRegistrationTest {
     public void testSavePlatformThroughSearchStorage() {
         SearchStorage searchStorage = SearchStorage.getInstance( SearchStorage.TESTCASE_STORAGE_NAME );
         PlatformHandler handler = new PlatformHandler(searchStorage);
-        Platform platform = createPlatform();
+        Platform platform = generatePlatformA();
 //        boolean result = handler.registerPlatform(platform);
 //        assert(result);
 //
@@ -163,15 +164,15 @@ public class PlatformRegistrationTest {
 //    }
 
 
-    private Platform createPlatform() {
-        Platform platform = new Platform();
-        platform.setPlatformId(PLATFORM_ID);
-        platform.setInformationModelId(PLATFORM_INFORMATION_MODEL_ID);
-        platform.setDescription(PLATFORM_DESCRIPTION);
-        platform.setName(PLATFORM_NAME);
-        platform.setUrl(PLATFORM_URL);
-        return platform;
-    }
+//    private Platform createPlatform() {
+//        Platform platform = new Platform();
+//        platform.setPlatformId(PLATFORM_ID);
+//        platform.setInformationModelId(PLATFORM_INFORMATION_MODEL_ID);
+//        platform.setDescription(PLATFORM_DESCRIPTION);
+//        platform.setName(PLATFORM_NAME);
+//        platform.setUrl(PLATFORM_URL);
+//        return platform;
+//    }
 
     private ResultSet executeQuery( TripleStore store, String filename ) throws IOException {
         String query = IOUtils.toString(this.getClass()

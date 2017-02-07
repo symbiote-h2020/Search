@@ -29,14 +29,6 @@ public interface IResourceEvents {
     /**
      * Deletes resource representation in the Apache Jena repository.
      *
-     * @param resource Resource to be deleted
-     * @return <code>true</code> if deletion was successful.
-     */
-    public boolean deleteResource( Resource resource );
-
-    /**
-     * Deletes resource representation in the Apache Jena repository.
-     *
      * @param resourceId Id of the resource to be deleted
      * @return <code>true</code> if deletion was successful.
      */
