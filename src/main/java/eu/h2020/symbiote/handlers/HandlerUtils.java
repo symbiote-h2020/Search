@@ -74,6 +74,7 @@ public class HandlerUtils {
         org.apache.jena.rdf.model.Resource res = model.createResource();
         for( String prop: properties ) {
             res.addProperty(CoreInformationModel.RDFS_LABEL,prop);
+            res.addProperty(CoreInformationModel.RDFS_COMMENT,"");
         }
 
         model.createResource(Ontology.getResourceGraphURI(resource.getId()))

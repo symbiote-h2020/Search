@@ -82,6 +82,7 @@ public class ResourceHandler implements IResourceEvents {
 
     @Override
     public boolean deleteResource(String resourceId) {
+        log.debug("Deleting resource " + resourceId);
         UpdateRequest updateRequest = new DeleteRequestGenerator(resourceId).generateRequest();
         this.storage.getTripleStore().executeUpdate(updateRequest);
         return true;
