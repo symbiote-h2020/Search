@@ -24,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
 import java.util.List;
 
 
@@ -34,7 +35,7 @@ import java.util.List;
 @SpringBootApplication
 public class SearchApplication {
 
-    public static final String DIRECTORY = "/coreSearchTriplestore";
+    public static final String DIRECTORY = System.getProperty("user.home") +File.separator+ "coreSearchTriplestore";
 
 	private static Log log = LogFactory.getLog(SearchApplication.class);
 
