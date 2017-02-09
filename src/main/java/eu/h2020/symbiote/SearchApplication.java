@@ -59,6 +59,10 @@ public class SearchApplication {
             PlatformHandler platformHandler = new PlatformHandler( searchStorage );
             manager.registerPlatformCreatedConsumer(platformHandler);
 
+            manager.registerPlatformDeletedConsumer(platformHandler);
+
+            manager.registerPlatformUpdatedConsumer(platformHandler);
+
             ResourceHandler resourceHandler = new ResourceHandler(searchStorage);
             manager.registerResourceCreatedConsumer(resourceHandler);
 
