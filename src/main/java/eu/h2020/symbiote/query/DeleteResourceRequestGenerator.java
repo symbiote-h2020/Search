@@ -10,9 +10,9 @@ import org.apache.jena.update.UpdateRequest;
  *
  * Created by Mael on 26/01/2017.
  */
-public class DeleteRequestGenerator {
+public class DeleteResourceRequestGenerator {
 
-    private static final Log log = LogFactory.getLog(DeleteRequestGenerator.class);
+    private static final Log log = LogFactory.getLog(DeleteResourceRequestGenerator.class);
 
     private UpdateRequest request;
 
@@ -22,7 +22,7 @@ public class DeleteRequestGenerator {
      *
      * @param resourceId Id of the resource to be deleted.
      */
-    public DeleteRequestGenerator( String resourceId ) {
+    public DeleteResourceRequestGenerator(String resourceId ) {
         request = UpdateFactory.create();
         request.add(generateServiceToResourceLinkRemoval(resourceId));
         request.add(generateLocationRemoval(resourceId));

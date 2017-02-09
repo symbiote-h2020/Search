@@ -184,6 +184,44 @@ public class RabbitManager {
     }
 
     /**
+     * Registers consumer for event platform.deleted. Event will trigger translation of the request into SPARQL UPDATE
+     * and executing it in JENA repository.
+     *
+     * @param platformHandler Event handler which will be triggered when platform.deleted event is received.
+     * @throws IOException In case there are problems with RabbitMQ connections.
+     */
+    public void registerPlatformDeletedConsumer( PlatformHandler platformHandler ) throws IOException {
+
+        Channel channel = connection.createChannel();
+        String queueName = channel.queueDeclare().getQueue();
+        channel.queueBind(queueName, platformExchangeName, platformDeletedRoutingKey);
+        PlatformDeletedConsumer consumer = new PlatformDeletedConsumer(channel,platformHandler );
+
+        log.debug("Delete platform consumer");
+        channel.basicConsume(queueName, false, consumer);
+        log.debug( "Consumer delete platform created!!!" );
+    }
+
+    /**
+     * Registers consumer for event platform.updated. Event will trigger translation of the resource into RDF
+     * and writing it into JENA repository.
+     *
+     * @param platformHandler Event handler which will be triggered when platform.updated event is received.
+     * @throws IOException In case there are problems with RabbitMQ connections.
+     */
+    public void registerPlatformUpdatedConsumer(PlatformHandler platformHandler) throws IOException {
+
+        Channel channel = connection.createChannel();
+        String queueName = channel.queueDeclare().getQueue();
+        channel.queueBind(queueName, platformExchangeName, platformModifiedRoutingKey);
+        PlatformModifiedConsumer consumer = new PlatformModifiedConsumer(channel, platformHandler );
+
+        log.debug("Creating platform modified consumer");
+        channel.basicConsume(queueName, false, consumer);
+        log.debug( "Consumer platform modified created!!!" );
+    }
+
+    /**
      * Registers consumer for event resource.created. Event will trigger translation of the resource into RDF
      * and writing it into JENA repository.
      *
@@ -214,30 +252,11 @@ public class RabbitManager {
         Channel channel = connection.createChannel();
         String queueName = channel.queueDeclare().getQueue();
         channel.queueBind(queueName, resourceExchangeName, resourceDeletedRoutingKey);
-        DeleteResourceRequestedConsumer consumer = new DeleteResourceRequestedConsumer(channel,resourceDeleteHandler );
+        ResourceDeletedConsumer consumer = new ResourceDeletedConsumer(channel,resourceDeleteHandler );
 
         log.debug("Delete resource consumer");
         channel.basicConsume(queueName, false, consumer);
         log.debug( "Consumer delete resource created!!!" );
-    }
-
-    /**
-     * Registers consumer for event resource.searchRequested. Event will trigger translation of the request into SPARQL
-     * and executing it in JENA repository.
-     *
-     * @param searchHandler Event handler which will be triggered when resource.searchRequested event is received.
-     * @throws IOException In case there are problems with RabbitMQ connections.
-     */
-    public void registerResourceSearchConsumer( SearchHandler searchHandler ) throws IOException {
-        Channel channel = connection.createChannel();
-        String queueName = channel.queueDeclare().getQueue();
-        channel.queueBind(queueName, resourceExchangeName, resourceSearchRequestedRoutingKey );
-
-        SearchRequestedConsumer consumer = new SearchRequestedConsumer(channel, searchHandler );
-
-        log.debug("Creating search consumer");
-        channel.basicConsume(queueName, false, consumer);
-        log.debug( "Consumer search created!!!" );
     }
 
     /**
@@ -259,4 +278,23 @@ public class RabbitManager {
         log.debug( "Consumer resource modified created!!!" );
     }
 
+
+    /**
+     * Registers consumer for event resource.searchRequested. Event will trigger translation of the request into SPARQL
+     * and executing it in JENA repository.
+     *
+     * @param searchHandler Event handler which will be triggered when resource.searchRequested event is received.
+     * @throws IOException In case there are problems with RabbitMQ connections.
+     */
+    public void registerResourceSearchConsumer( SearchHandler searchHandler ) throws IOException {
+        Channel channel = connection.createChannel();
+        String queueName = channel.queueDeclare().getQueue();
+        channel.queueBind(queueName, resourceExchangeName, resourceSearchRequestedRoutingKey );
+
+        SearchRequestedConsumer consumer = new SearchRequestedConsumer(channel, searchHandler );
+
+        log.debug("Creating search consumer");
+        channel.basicConsume(queueName, false, consumer);
+        log.debug( "Consumer search created!!!" );
+    }
 }

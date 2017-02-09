@@ -3,10 +3,14 @@ package eu.h2020.symbiote.handlers;
 import eu.h2020.symbiote.model.Platform;
 import eu.h2020.symbiote.ontology.model.MetaInformationModel;
 import eu.h2020.symbiote.ontology.model.Ontology;
+import eu.h2020.symbiote.query.DeletePlatformRequestGenerator;
+import eu.h2020.symbiote.query.DeleteResourceRequestGenerator;
+import eu.h2020.symbiote.query.UpdatePlatformRequestGenerator;
 import eu.h2020.symbiote.search.SearchStorage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jena.rdf.model.*;
+import org.apache.jena.update.UpdateRequest;
 
 /**
  * Implementation of the handler for the platform related events.
@@ -65,11 +69,17 @@ public class PlatformHandler implements IPlatformEvents{
 
     @Override
     public boolean updatePlatform(Platform platform) {
-        return false;
+        log.debug("Updating platform " + platform.getPlatformId());
+        UpdateRequest updateRequest = new UpdatePlatformRequestGenerator(platform).generateRequest();
+        this.storage.getTripleStore().executeUpdate(updateRequest);
+        return true;
     }
 
     @Override
     public boolean deletePlatform(String platformId) {
-        return false;
+        log.debug("Deleting platform " + platformId);
+        UpdateRequest updateRequest = new DeletePlatformRequestGenerator(platformId).generateRequest();
+        this.storage.getTripleStore().executeUpdate(updateRequest);
+        return true;
     }
 }

@@ -23,8 +23,17 @@ public class TestSetupConfig {
     public static final String PLATFORM_A_MODEL_ID = "11";
     public static final String PLATFORM_A_DESCRIPTION = "11desc";
     public static final String PLATFORM_A_FILENAME = "/platformA.ttl";
+    //RDF URIs
     public static final String PLATFORM_A_URI = "http://www.symbiote-h2020.eu/ontology/platforms/1";
     public static final String PLATFORM_A_SERVICE_URI = "http://www.symbiote-h2020.eu/ontology/platforms/1/service/somehost1.com/resourceAccessProxy";
+
+    //LINK to Interworking Service
+    public static final String PLATFORM_A_URL = "http://somehost1.com/resourceAccessProxy";
+
+    public static final String PLATFORM_A_NAME_UPDATED = "Platform1Updated";
+    public static final String PLATFORM_A_MODEL_ID_UPDATED = "11Updated";
+    public static final String PLATFORM_A_DESCRIPTION_UPDATED = "11descUpdated";
+    public static final String PLATFORM_A_URL_UPDATED = "http://somehost1.com/resourceAccessProxyUpdated";
 
     public static final String PLATFORM_B_ID = "2";
     public static final String PLATFORM_B_NAME = "Platform2";
@@ -56,6 +65,7 @@ public class TestSetupConfig {
     public static final String RESOURCE_101_LOC_ALT = "200";
     public static final String RESOURCE_101_OBS1_LABEL = "Temperature";
     public static final String RESOURCE_101_OBS2_LABEL = "Humidity";
+    public static final String RESOURCE_101_LABEL_UPDATE = "Resource Hundred One";
 
     public static final String RESOURCE_102_FILENAME = "/resource102.ttl";
     public static final String RESOURCE_102_URI = RESOURCE_PREDICATE + "102";
@@ -98,7 +108,17 @@ public class TestSetupConfig {
         platform.setInformationModelId(PLATFORM_A_MODEL_ID);
         platform.setDescription(PLATFORM_A_DESCRIPTION);
         platform.setName(PLATFORM_A_NAME);
-        platform.setUrl(PLATFORM_A_URI);
+        platform.setUrl(PLATFORM_A_URL);
+        return platform;
+    }
+
+    public static Platform generatePlatformAUpdate() {
+        Platform platform = new Platform();
+        platform.setPlatformId(PLATFORM_A_ID);
+        platform.setInformationModelId(PLATFORM_A_MODEL_ID_UPDATED);
+        platform.setDescription(PLATFORM_A_DESCRIPTION_UPDATED);
+        platform.setName(PLATFORM_A_NAME_UPDATED);
+        platform.setUrl(PLATFORM_A_URL_UPDATED);
         return platform;
     }
 
@@ -110,7 +130,7 @@ public class TestSetupConfig {
         res.setId(RESOURCE_101_ID);
         res.setName(RESOURCE_101_LABEL);
 //        res.setOwner();
-        res.setResourceURL(PLATFORM_A_URI);
+        res.setResourceURL(PLATFORM_A_URL);
         res.setLocation(
                 new Location("id",
                         RESOURCE_101_LOC_LABEL,

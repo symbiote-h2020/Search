@@ -67,10 +67,11 @@ public class SearchStorage {
      * @return Singleton of the storage for location with specified name
      */
     public static SearchStorage getInstance(String storageName ) {
-        SearchStorage storage = null;
+        SearchStorage storage;
         synchronized ( storages ) {
             storage = storages.get(storageName);
             if( storage == null ) {
+                log.debug("Creating Search Storage instance for " + storageName);
                 if( storageName.equals(TESTCASE_STORAGE_NAME) ) {
                     storage = new SearchStorage( null );
                 } else {

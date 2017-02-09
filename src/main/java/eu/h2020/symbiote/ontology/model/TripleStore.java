@@ -186,6 +186,13 @@ public class TripleStore {
         return result;
     }
 
+    public Model getDefaultGraph() {
+        dataset.begin(ReadWrite.READ);
+        Model result = dataset.getDefaultModel();
+        dataset.end();
+        return result;
+    }
+
     public String getGraphAsString(String graph, String syntax) {
         StringWriter out = new StringWriter();
         getGraph(graph).write(out, syntax);

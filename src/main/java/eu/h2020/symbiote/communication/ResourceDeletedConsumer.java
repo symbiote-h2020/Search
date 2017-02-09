@@ -7,7 +7,6 @@ import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 import eu.h2020.symbiote.handlers.ResourceHandler;
 import eu.h2020.symbiote.model.Resource;
-import eu.h2020.symbiote.query.SearchResponseResource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -19,9 +18,9 @@ import java.io.IOException;
  *
  * Created by Mael on 17/01/2017.
  */
-public class DeleteResourceRequestedConsumer extends DefaultConsumer {
+public class ResourceDeletedConsumer extends DefaultConsumer {
 
-    private static Log log = LogFactory.getLog(DeleteResourceRequestedConsumer.class);
+    private static Log log = LogFactory.getLog(ResourceDeletedConsumer.class);
 
     private final ResourceHandler handler;
 
@@ -32,7 +31,7 @@ public class DeleteResourceRequestedConsumer extends DefaultConsumer {
      * @param handler handler to be used by the consumer.
      *
      */
-    public DeleteResourceRequestedConsumer(Channel channel, ResourceHandler handler) {
+    public ResourceDeletedConsumer(Channel channel, ResourceHandler handler) {
         super(channel);
         this.handler = handler;
     }

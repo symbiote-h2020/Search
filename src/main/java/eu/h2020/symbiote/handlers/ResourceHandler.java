@@ -2,15 +2,12 @@ package eu.h2020.symbiote.handlers;
 
 import eu.h2020.symbiote.model.Resource;
 import eu.h2020.symbiote.ontology.model.Ontology;
-import eu.h2020.symbiote.query.DeleteRequestGenerator;
+import eu.h2020.symbiote.query.DeleteResourceRequestGenerator;
 import eu.h2020.symbiote.search.SearchStorage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jena.arq.querybuilder.SelectBuilder;
-import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.update.UpdateRequest;
-import org.objectweb.asm.Handle;
 import org.springframework.util.Assert;
 
 import java.util.List;
@@ -83,7 +80,7 @@ public class ResourceHandler implements IResourceEvents {
     @Override
     public boolean deleteResource(String resourceId) {
         log.debug("Deleting resource " + resourceId);
-        UpdateRequest updateRequest = new DeleteRequestGenerator(resourceId).generateRequest();
+        UpdateRequest updateRequest = new DeleteResourceRequestGenerator(resourceId).generateRequest();
         this.storage.getTripleStore().executeUpdate(updateRequest);
         return true;
     }
