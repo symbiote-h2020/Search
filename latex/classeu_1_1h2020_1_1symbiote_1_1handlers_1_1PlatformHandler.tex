@@ -1,0 +1,126 @@
+\hypertarget{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1PlatformHandler}{}\section{eu.\+h2020.\+symbiote.\+handlers.\+Platform\+Handler Class Reference}
+\label{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1PlatformHandler}\index{eu.\+h2020.\+symbiote.\+handlers.\+Platform\+Handler@{eu.\+h2020.\+symbiote.\+handlers.\+Platform\+Handler}}
+
+
+Inheritance diagram for eu.\+h2020.\+symbiote.\+handlers.\+Platform\+Handler\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=222pt]{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1PlatformHandler__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for eu.\+h2020.\+symbiote.\+handlers.\+Platform\+Handler\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=222pt]{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1PlatformHandler__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1PlatformHandler_ad9131f7d4698a8a04f2a96627564c224}{Platform\+Handler} (\hyperlink{classeu_1_1h2020_1_1symbiote_1_1search_1_1SearchStorage}{Search\+Storage} storage)
+\item 
+boolean \hyperlink{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1PlatformHandler_a88a6b019f2d95821ee3f17c8f6c572a9}{register\+Platform} (\hyperlink{classeu_1_1h2020_1_1symbiote_1_1model_1_1Platform}{Platform} platform)
+\item 
+boolean \hyperlink{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1PlatformHandler_ac4701e47973cb2061607dc9ee2916393}{update\+Platform} (\hyperlink{classeu_1_1h2020_1_1symbiote_1_1model_1_1Platform}{Platform} platform)
+\item 
+boolean \hyperlink{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1PlatformHandler_a3c20ba0a131ad392eb74dd481548a062}{delete\+Platform} (String platform\+Id)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Implementation of the handler for the platform related events.
+
+Created by Mael on 11/01/2017. 
+
+\subsection{Constructor \& Destructor Documentation}
+\index{eu\+::h2020\+::symbiote\+::handlers\+::\+Platform\+Handler@{eu\+::h2020\+::symbiote\+::handlers\+::\+Platform\+Handler}!Platform\+Handler@{Platform\+Handler}}
+\index{Platform\+Handler@{Platform\+Handler}!eu\+::h2020\+::symbiote\+::handlers\+::\+Platform\+Handler@{eu\+::h2020\+::symbiote\+::handlers\+::\+Platform\+Handler}}
+\subsubsection[{\texorpdfstring{Platform\+Handler(\+Search\+Storage storage)}{PlatformHandler(SearchStorage storage)}}]{\setlength{\rightskip}{0pt plus 5cm}eu.\+h2020.\+symbiote.\+handlers.\+Platform\+Handler.\+Platform\+Handler (
+\begin{DoxyParamCaption}
+\item[{{\bf Search\+Storage}}]{storage}
+\end{DoxyParamCaption}
+)}\hypertarget{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1PlatformHandler_ad9131f7d4698a8a04f2a96627564c224}{}\label{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1PlatformHandler_ad9131f7d4698a8a04f2a96627564c224}
+Create a handler of the platform events for specified storage.
+
+
+\begin{DoxyParams}{Parameters}
+{\em storage} & Storage on which the events should be executed. \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\index{eu\+::h2020\+::symbiote\+::handlers\+::\+Platform\+Handler@{eu\+::h2020\+::symbiote\+::handlers\+::\+Platform\+Handler}!delete\+Platform@{delete\+Platform}}
+\index{delete\+Platform@{delete\+Platform}!eu\+::h2020\+::symbiote\+::handlers\+::\+Platform\+Handler@{eu\+::h2020\+::symbiote\+::handlers\+::\+Platform\+Handler}}
+\subsubsection[{\texorpdfstring{delete\+Platform(\+String platform\+Id)}{deletePlatform(String platformId)}}]{\setlength{\rightskip}{0pt plus 5cm}boolean eu.\+h2020.\+symbiote.\+handlers.\+Platform\+Handler.\+delete\+Platform (
+\begin{DoxyParamCaption}
+\item[{String}]{platform\+Id}
+\end{DoxyParamCaption}
+)}\hypertarget{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1PlatformHandler_a3c20ba0a131ad392eb74dd481548a062}{}\label{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1PlatformHandler_a3c20ba0a131ad392eb74dd481548a062}
+Deletes platform representation in the Apache Jena repository.
+
+
+\begin{DoxyParams}{Parameters}
+{\em platform\+Id} & Id of the platform to be deleted \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily true} if delete was successful. 
+\end{DoxyReturn}
+
+
+Implements \hyperlink{interfaceeu_1_1h2020_1_1symbiote_1_1handlers_1_1IPlatformEvents_aaa59c8d1b1d80f4e58e20227a78c1f23}{eu.\+h2020.\+symbiote.\+handlers.\+I\+Platform\+Events}.
+
+\index{eu\+::h2020\+::symbiote\+::handlers\+::\+Platform\+Handler@{eu\+::h2020\+::symbiote\+::handlers\+::\+Platform\+Handler}!register\+Platform@{register\+Platform}}
+\index{register\+Platform@{register\+Platform}!eu\+::h2020\+::symbiote\+::handlers\+::\+Platform\+Handler@{eu\+::h2020\+::symbiote\+::handlers\+::\+Platform\+Handler}}
+\subsubsection[{\texorpdfstring{register\+Platform(\+Platform platform)}{registerPlatform(Platform platform)}}]{\setlength{\rightskip}{0pt plus 5cm}boolean eu.\+h2020.\+symbiote.\+handlers.\+Platform\+Handler.\+register\+Platform (
+\begin{DoxyParamCaption}
+\item[{{\bf Platform}}]{platform}
+\end{DoxyParamCaption}
+)}\hypertarget{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1PlatformHandler_a88a6b019f2d95821ee3f17c8f6c572a9}{}\label{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1PlatformHandler_a88a6b019f2d95821ee3f17c8f6c572a9}
+Registers platform representation in the Apache Jena repository.
+
+
+\begin{DoxyParams}{Parameters}
+{\em platform} & Platform to be saved \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily true} if registration was successful. 
+\end{DoxyReturn}
+
+
+Implements \hyperlink{interfaceeu_1_1h2020_1_1symbiote_1_1handlers_1_1IPlatformEvents_a02c6e32eb7af9a13b584a5c911ab8d8c}{eu.\+h2020.\+symbiote.\+handlers.\+I\+Platform\+Events}.
+
+\index{eu\+::h2020\+::symbiote\+::handlers\+::\+Platform\+Handler@{eu\+::h2020\+::symbiote\+::handlers\+::\+Platform\+Handler}!update\+Platform@{update\+Platform}}
+\index{update\+Platform@{update\+Platform}!eu\+::h2020\+::symbiote\+::handlers\+::\+Platform\+Handler@{eu\+::h2020\+::symbiote\+::handlers\+::\+Platform\+Handler}}
+\subsubsection[{\texorpdfstring{update\+Platform(\+Platform platform)}{updatePlatform(Platform platform)}}]{\setlength{\rightskip}{0pt plus 5cm}boolean eu.\+h2020.\+symbiote.\+handlers.\+Platform\+Handler.\+update\+Platform (
+\begin{DoxyParamCaption}
+\item[{{\bf Platform}}]{platform}
+\end{DoxyParamCaption}
+)}\hypertarget{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1PlatformHandler_ac4701e47973cb2061607dc9ee2916393}{}\label{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1PlatformHandler_ac4701e47973cb2061607dc9ee2916393}
+Updates platform representation in the Apache Jena repository.
+
+
+\begin{DoxyParams}{Parameters}
+{\em platform} & Platform to be updated \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily true} if update was successful. 
+\end{DoxyReturn}
+
+
+Implements \hyperlink{interfaceeu_1_1h2020_1_1symbiote_1_1handlers_1_1IPlatformEvents_ad5b491b150e4015525e9985143bbfcd3}{eu.\+h2020.\+symbiote.\+handlers.\+I\+Platform\+Events}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/main/java/eu/h2020/symbiote/handlers/Platform\+Handler.\+java\end{DoxyCompactItemize}

@@ -1,0 +1,60 @@
+\hypertarget{classeu_1_1h2020_1_1symbiote_1_1communication_1_1ResourceCreatedConsumer}{}\section{eu.\+h2020.\+symbiote.\+communication.\+Resource\+Created\+Consumer Class Reference}
+\label{classeu_1_1h2020_1_1symbiote_1_1communication_1_1ResourceCreatedConsumer}\index{eu.\+h2020.\+symbiote.\+communication.\+Resource\+Created\+Consumer@{eu.\+h2020.\+symbiote.\+communication.\+Resource\+Created\+Consumer}}
+
+
+Inheritance diagram for eu.\+h2020.\+symbiote.\+communication.\+Resource\+Created\+Consumer\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=251pt]{classeu_1_1h2020_1_1symbiote_1_1communication_1_1ResourceCreatedConsumer__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for eu.\+h2020.\+symbiote.\+communication.\+Resource\+Created\+Consumer\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=251pt]{classeu_1_1h2020_1_1symbiote_1_1communication_1_1ResourceCreatedConsumer__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classeu_1_1h2020_1_1symbiote_1_1communication_1_1ResourceCreatedConsumer_a02947dcf2a6ee894d265bd45fe4feefc}{Resource\+Created\+Consumer} (Channel channel, \hyperlink{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1ResourceHandler}{Resource\+Handler} handler)
+\item 
+void {\bfseries handle\+Delivery} (String consumer\+Tag, Envelope envelope, A\+M\+Q\+P.\+Basic\+Properties properties, byte\mbox{[}$\,$\mbox{]} body)  throws I\+O\+Exception \hypertarget{classeu_1_1h2020_1_1symbiote_1_1communication_1_1ResourceCreatedConsumer_a4f7fbccebd994e942892f6621f61f909}{}\label{classeu_1_1h2020_1_1symbiote_1_1communication_1_1ResourceCreatedConsumer_a4f7fbccebd994e942892f6621f61f909}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Consumer of the resource created event. Handler creates R\+DF representation of provided resource and adds it into repository.
+
+Created by Mael on 17/01/2017. 
+
+\subsection{Constructor \& Destructor Documentation}
+\index{eu\+::h2020\+::symbiote\+::communication\+::\+Resource\+Created\+Consumer@{eu\+::h2020\+::symbiote\+::communication\+::\+Resource\+Created\+Consumer}!Resource\+Created\+Consumer@{Resource\+Created\+Consumer}}
+\index{Resource\+Created\+Consumer@{Resource\+Created\+Consumer}!eu\+::h2020\+::symbiote\+::communication\+::\+Resource\+Created\+Consumer@{eu\+::h2020\+::symbiote\+::communication\+::\+Resource\+Created\+Consumer}}
+\subsubsection[{\texorpdfstring{Resource\+Created\+Consumer(\+Channel channel, Resource\+Handler handler)}{ResourceCreatedConsumer(Channel channel, ResourceHandler handler)}}]{\setlength{\rightskip}{0pt plus 5cm}eu.\+h2020.\+symbiote.\+communication.\+Resource\+Created\+Consumer.\+Resource\+Created\+Consumer (
+\begin{DoxyParamCaption}
+\item[{Channel}]{channel, }
+\item[{{\bf Resource\+Handler}}]{handler}
+\end{DoxyParamCaption}
+)}\hypertarget{classeu_1_1h2020_1_1symbiote_1_1communication_1_1ResourceCreatedConsumer_a02947dcf2a6ee894d265bd45fe4feefc}{}\label{classeu_1_1h2020_1_1symbiote_1_1communication_1_1ResourceCreatedConsumer_a02947dcf2a6ee894d265bd45fe4feefc}
+Constructs a new instance and records its association to the passed-\/in channel.
+
+
+\begin{DoxyParams}{Parameters}
+{\em channel} & the channel to which this consumer is attached \\
+\hline
+{\em handler} & handler to be used by the consumer. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/main/java/eu/h2020/symbiote/communication/Resource\+Created\+Consumer.\+java\end{DoxyCompactItemize}

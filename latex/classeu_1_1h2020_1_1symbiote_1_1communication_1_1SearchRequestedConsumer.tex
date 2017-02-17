@@ -1,0 +1,60 @@
+\hypertarget{classeu_1_1h2020_1_1symbiote_1_1communication_1_1SearchRequestedConsumer}{}\section{eu.\+h2020.\+symbiote.\+communication.\+Search\+Requested\+Consumer Class Reference}
+\label{classeu_1_1h2020_1_1symbiote_1_1communication_1_1SearchRequestedConsumer}\index{eu.\+h2020.\+symbiote.\+communication.\+Search\+Requested\+Consumer@{eu.\+h2020.\+symbiote.\+communication.\+Search\+Requested\+Consumer}}
+
+
+Inheritance diagram for eu.\+h2020.\+symbiote.\+communication.\+Search\+Requested\+Consumer\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=251pt]{classeu_1_1h2020_1_1symbiote_1_1communication_1_1SearchRequestedConsumer__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for eu.\+h2020.\+symbiote.\+communication.\+Search\+Requested\+Consumer\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=251pt]{classeu_1_1h2020_1_1symbiote_1_1communication_1_1SearchRequestedConsumer__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classeu_1_1h2020_1_1symbiote_1_1communication_1_1SearchRequestedConsumer_ab7f2928dacf9df2f63cf8c94daa87442}{Search\+Requested\+Consumer} (Channel channel, \hyperlink{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1SearchHandler}{Search\+Handler} handler)
+\item 
+void {\bfseries handle\+Delivery} (String consumer\+Tag, Envelope envelope, A\+M\+Q\+P.\+Basic\+Properties properties, byte\mbox{[}$\,$\mbox{]} body)  throws I\+O\+Exception \hypertarget{classeu_1_1h2020_1_1symbiote_1_1communication_1_1SearchRequestedConsumer_a473b8ac445d9ee29b81727c845f6e7ab}{}\label{classeu_1_1h2020_1_1symbiote_1_1communication_1_1SearchRequestedConsumer_a473b8ac445d9ee29b81727c845f6e7ab}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Consumer of the search requested event. Translates the message as list of query parameters, translates them into S\+P\+A\+R\+QL and queries the repository.
+
+Created by Mael on 17/01/2017. 
+
+\subsection{Constructor \& Destructor Documentation}
+\index{eu\+::h2020\+::symbiote\+::communication\+::\+Search\+Requested\+Consumer@{eu\+::h2020\+::symbiote\+::communication\+::\+Search\+Requested\+Consumer}!Search\+Requested\+Consumer@{Search\+Requested\+Consumer}}
+\index{Search\+Requested\+Consumer@{Search\+Requested\+Consumer}!eu\+::h2020\+::symbiote\+::communication\+::\+Search\+Requested\+Consumer@{eu\+::h2020\+::symbiote\+::communication\+::\+Search\+Requested\+Consumer}}
+\subsubsection[{\texorpdfstring{Search\+Requested\+Consumer(\+Channel channel, Search\+Handler handler)}{SearchRequestedConsumer(Channel channel, SearchHandler handler)}}]{\setlength{\rightskip}{0pt plus 5cm}eu.\+h2020.\+symbiote.\+communication.\+Search\+Requested\+Consumer.\+Search\+Requested\+Consumer (
+\begin{DoxyParamCaption}
+\item[{Channel}]{channel, }
+\item[{{\bf Search\+Handler}}]{handler}
+\end{DoxyParamCaption}
+)}\hypertarget{classeu_1_1h2020_1_1symbiote_1_1communication_1_1SearchRequestedConsumer_ab7f2928dacf9df2f63cf8c94daa87442}{}\label{classeu_1_1h2020_1_1symbiote_1_1communication_1_1SearchRequestedConsumer_ab7f2928dacf9df2f63cf8c94daa87442}
+Constructs a new instance and records its association to the passed-\/in channel.
+
+
+\begin{DoxyParams}{Parameters}
+{\em channel} & the channel to which this consumer is attached \\
+\hline
+{\em handler} & handler to be used by the consumer. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/main/java/eu/h2020/symbiote/communication/Search\+Requested\+Consumer.\+java\end{DoxyCompactItemize}

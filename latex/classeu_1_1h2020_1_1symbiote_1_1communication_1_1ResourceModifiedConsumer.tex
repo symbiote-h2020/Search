@@ -1,0 +1,60 @@
+\hypertarget{classeu_1_1h2020_1_1symbiote_1_1communication_1_1ResourceModifiedConsumer}{}\section{eu.\+h2020.\+symbiote.\+communication.\+Resource\+Modified\+Consumer Class Reference}
+\label{classeu_1_1h2020_1_1symbiote_1_1communication_1_1ResourceModifiedConsumer}\index{eu.\+h2020.\+symbiote.\+communication.\+Resource\+Modified\+Consumer@{eu.\+h2020.\+symbiote.\+communication.\+Resource\+Modified\+Consumer}}
+
+
+Inheritance diagram for eu.\+h2020.\+symbiote.\+communication.\+Resource\+Modified\+Consumer\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=251pt]{classeu_1_1h2020_1_1symbiote_1_1communication_1_1ResourceModifiedConsumer__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for eu.\+h2020.\+symbiote.\+communication.\+Resource\+Modified\+Consumer\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=251pt]{classeu_1_1h2020_1_1symbiote_1_1communication_1_1ResourceModifiedConsumer__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classeu_1_1h2020_1_1symbiote_1_1communication_1_1ResourceModifiedConsumer_afd8d08311937404758901578724865c1}{Resource\+Modified\+Consumer} (Channel channel, \hyperlink{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1ResourceHandler}{Resource\+Handler} handler)
+\item 
+void {\bfseries handle\+Delivery} (String consumer\+Tag, Envelope envelope, A\+M\+Q\+P.\+Basic\+Properties properties, byte\mbox{[}$\,$\mbox{]} body)  throws I\+O\+Exception \hypertarget{classeu_1_1h2020_1_1symbiote_1_1communication_1_1ResourceModifiedConsumer_aed5b3b33a3cbc85f4796da3cf869131e}{}\label{classeu_1_1h2020_1_1symbiote_1_1communication_1_1ResourceModifiedConsumer_aed5b3b33a3cbc85f4796da3cf869131e}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Consumer of the resource modified event. Handler removes existing resource and creates R\+DF representation of the new resource.
+
+Created by Mael on 17/01/2017. 
+
+\subsection{Constructor \& Destructor Documentation}
+\index{eu\+::h2020\+::symbiote\+::communication\+::\+Resource\+Modified\+Consumer@{eu\+::h2020\+::symbiote\+::communication\+::\+Resource\+Modified\+Consumer}!Resource\+Modified\+Consumer@{Resource\+Modified\+Consumer}}
+\index{Resource\+Modified\+Consumer@{Resource\+Modified\+Consumer}!eu\+::h2020\+::symbiote\+::communication\+::\+Resource\+Modified\+Consumer@{eu\+::h2020\+::symbiote\+::communication\+::\+Resource\+Modified\+Consumer}}
+\subsubsection[{\texorpdfstring{Resource\+Modified\+Consumer(\+Channel channel, Resource\+Handler handler)}{ResourceModifiedConsumer(Channel channel, ResourceHandler handler)}}]{\setlength{\rightskip}{0pt plus 5cm}eu.\+h2020.\+symbiote.\+communication.\+Resource\+Modified\+Consumer.\+Resource\+Modified\+Consumer (
+\begin{DoxyParamCaption}
+\item[{Channel}]{channel, }
+\item[{{\bf Resource\+Handler}}]{handler}
+\end{DoxyParamCaption}
+)}\hypertarget{classeu_1_1h2020_1_1symbiote_1_1communication_1_1ResourceModifiedConsumer_afd8d08311937404758901578724865c1}{}\label{classeu_1_1h2020_1_1symbiote_1_1communication_1_1ResourceModifiedConsumer_afd8d08311937404758901578724865c1}
+Constructs a new instance and records its association to the passed-\/in channel.
+
+
+\begin{DoxyParams}{Parameters}
+{\em channel} & the channel to which this consumer is attached \\
+\hline
+{\em handler} & handler to be used by the consumer. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/main/java/eu/h2020/symbiote/communication/Resource\+Modified\+Consumer.\+java\end{DoxyCompactItemize}

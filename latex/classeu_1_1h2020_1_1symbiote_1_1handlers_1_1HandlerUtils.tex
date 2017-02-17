@@ -1,0 +1,146 @@
+\hypertarget{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1HandlerUtils}{}\section{eu.\+h2020.\+symbiote.\+handlers.\+Handler\+Utils Class Reference}
+\label{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1HandlerUtils}\index{eu.\+h2020.\+symbiote.\+handlers.\+Handler\+Utils@{eu.\+h2020.\+symbiote.\+handlers.\+Handler\+Utils}}
+
+
+Collaboration diagram for eu.\+h2020.\+symbiote.\+handlers.\+Handler\+Utils\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=265pt]{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1HandlerUtils__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static Model \hyperlink{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1HandlerUtils_ad6758184c042a53b3dbe986b86f7f45f}{generate\+Model\+From\+Platform} (\hyperlink{classeu_1_1h2020_1_1symbiote_1_1model_1_1Platform}{Platform} platform)
+\item 
+static Model \hyperlink{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1HandlerUtils_a42342da7136ec0aead73f7edde4a77cd}{generate\+Model\+From\+Resource} (\hyperlink{classeu_1_1h2020_1_1symbiote_1_1model_1_1Resource}{Resource} resource)
+\item 
+static Model \hyperlink{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1HandlerUtils_a909e1a5f76a148cfd82c1b9ba5b1dd91}{generate\+Location} (\hyperlink{classeu_1_1h2020_1_1symbiote_1_1model_1_1Resource}{Resource} resource)
+\item 
+static Model \hyperlink{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1HandlerUtils_a7fbf9061d7f1d40a19c1257d7d256488}{generate\+Interworking\+Service} (\hyperlink{classeu_1_1h2020_1_1symbiote_1_1model_1_1Platform}{Platform} platform)
+\item 
+static String \hyperlink{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1HandlerUtils_a292f58eeb374e03ec1591c89b8edced1}{generate\+Interworking\+Service\+Uri} (String platform\+Uri, String service\+Url)
+\item 
+static \hyperlink{classeu_1_1h2020_1_1symbiote_1_1query_1_1QueryGenerator}{Query\+Generator} \hyperlink{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1HandlerUtils_a0973ccf775f6cbbeed1cc294d8370624}{generate\+Query\+From\+Search\+Request} (\hyperlink{classeu_1_1h2020_1_1symbiote_1_1query_1_1SearchRequest}{Search\+Request} request)
+\item 
+static \hyperlink{classeu_1_1h2020_1_1symbiote_1_1query_1_1SearchResponse}{Search\+Response} {\bfseries generate\+Search\+Response\+From\+Result\+Set} (Result\+Set result\+Set)\hypertarget{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1HandlerUtils_a64592fa49275e0f94e6865b3da502f95}{}\label{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1HandlerUtils_a64592fa49275e0f94e6865b3da502f95}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Utility class for translation between event objects and R\+DF models. Contains also some helpers method used by event consumers and executors.
+
+Created by Mael on 12/01/2017. 
+
+\subsection{Member Function Documentation}
+\index{eu\+::h2020\+::symbiote\+::handlers\+::\+Handler\+Utils@{eu\+::h2020\+::symbiote\+::handlers\+::\+Handler\+Utils}!generate\+Interworking\+Service@{generate\+Interworking\+Service}}
+\index{generate\+Interworking\+Service@{generate\+Interworking\+Service}!eu\+::h2020\+::symbiote\+::handlers\+::\+Handler\+Utils@{eu\+::h2020\+::symbiote\+::handlers\+::\+Handler\+Utils}}
+\subsubsection[{\texorpdfstring{generate\+Interworking\+Service(\+Platform platform)}{generateInterworkingService(Platform platform)}}]{\setlength{\rightskip}{0pt plus 5cm}static Model eu.\+h2020.\+symbiote.\+handlers.\+Handler\+Utils.\+generate\+Interworking\+Service (
+\begin{DoxyParamCaption}
+\item[{{\bf Platform}}]{platform}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}\hypertarget{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1HandlerUtils_a7fbf9061d7f1d40a19c1257d7d256488}{}\label{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1HandlerUtils_a7fbf9061d7f1d40a19c1257d7d256488}
+Generates a model containing R\+DF statements describing interworking service of the specified platform.
+
+
+\begin{DoxyParams}{Parameters}
+{\em platform} & Platform, whose interworking Ssrvice will be translated into R\+DF. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Model containing R\+DF statements. 
+\end{DoxyReturn}
+\index{eu\+::h2020\+::symbiote\+::handlers\+::\+Handler\+Utils@{eu\+::h2020\+::symbiote\+::handlers\+::\+Handler\+Utils}!generate\+Interworking\+Service\+Uri@{generate\+Interworking\+Service\+Uri}}
+\index{generate\+Interworking\+Service\+Uri@{generate\+Interworking\+Service\+Uri}!eu\+::h2020\+::symbiote\+::handlers\+::\+Handler\+Utils@{eu\+::h2020\+::symbiote\+::handlers\+::\+Handler\+Utils}}
+\subsubsection[{\texorpdfstring{generate\+Interworking\+Service\+Uri(\+String platform\+Uri, String service\+Url)}{generateInterworkingServiceUri(String platformUri, String serviceUrl)}}]{\setlength{\rightskip}{0pt plus 5cm}static String eu.\+h2020.\+symbiote.\+handlers.\+Handler\+Utils.\+generate\+Interworking\+Service\+Uri (
+\begin{DoxyParamCaption}
+\item[{String}]{platform\+Uri, }
+\item[{String}]{service\+Url}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}\hypertarget{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1HandlerUtils_a292f58eeb374e03ec1591c89b8edced1}{}\label{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1HandlerUtils_a292f58eeb374e03ec1591c89b8edced1}
+Generates interworking service uri combining unique platform (graph) U\+RI with service U\+RL of the interwroking service.
+
+
+\begin{DoxyParams}{Parameters}
+{\em platform\+Uri} & Unique graph U\+RI of the platform for which interworking service is created. \\
+\hline
+{\em service\+Url} & U\+RL of the interworking service. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Graph U\+RI of the interworking service. 
+\end{DoxyReturn}
+\index{eu\+::h2020\+::symbiote\+::handlers\+::\+Handler\+Utils@{eu\+::h2020\+::symbiote\+::handlers\+::\+Handler\+Utils}!generate\+Location@{generate\+Location}}
+\index{generate\+Location@{generate\+Location}!eu\+::h2020\+::symbiote\+::handlers\+::\+Handler\+Utils@{eu\+::h2020\+::symbiote\+::handlers\+::\+Handler\+Utils}}
+\subsubsection[{\texorpdfstring{generate\+Location(\+Resource resource)}{generateLocation(Resource resource)}}]{\setlength{\rightskip}{0pt plus 5cm}static Model eu.\+h2020.\+symbiote.\+handlers.\+Handler\+Utils.\+generate\+Location (
+\begin{DoxyParamCaption}
+\item[{{\bf Resource}}]{resource}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}\hypertarget{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1HandlerUtils_a909e1a5f76a148cfd82c1b9ba5b1dd91}{}\label{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1HandlerUtils_a909e1a5f76a148cfd82c1b9ba5b1dd91}
+Generates a model containing R\+DF statements describing resource\textquotesingle{}s location.
+
+
+\begin{DoxyParams}{Parameters}
+{\em resource} & Resource, for which location model will be created. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Model containing location R\+DF statements. 
+\end{DoxyReturn}
+\index{eu\+::h2020\+::symbiote\+::handlers\+::\+Handler\+Utils@{eu\+::h2020\+::symbiote\+::handlers\+::\+Handler\+Utils}!generate\+Model\+From\+Platform@{generate\+Model\+From\+Platform}}
+\index{generate\+Model\+From\+Platform@{generate\+Model\+From\+Platform}!eu\+::h2020\+::symbiote\+::handlers\+::\+Handler\+Utils@{eu\+::h2020\+::symbiote\+::handlers\+::\+Handler\+Utils}}
+\subsubsection[{\texorpdfstring{generate\+Model\+From\+Platform(\+Platform platform)}{generateModelFromPlatform(Platform platform)}}]{\setlength{\rightskip}{0pt plus 5cm}static Model eu.\+h2020.\+symbiote.\+handlers.\+Handler\+Utils.\+generate\+Model\+From\+Platform (
+\begin{DoxyParamCaption}
+\item[{{\bf Platform}}]{platform}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}\hypertarget{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1HandlerUtils_ad6758184c042a53b3dbe986b86f7f45f}{}\label{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1HandlerUtils_ad6758184c042a53b3dbe986b86f7f45f}
+Generates a model containing R\+DF statements equivalent to specified platform.
+
+
+\begin{DoxyParams}{Parameters}
+{\em platform} & Platform to be translated into R\+DF. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Model containing R\+DF statements. 
+\end{DoxyReturn}
+\index{eu\+::h2020\+::symbiote\+::handlers\+::\+Handler\+Utils@{eu\+::h2020\+::symbiote\+::handlers\+::\+Handler\+Utils}!generate\+Model\+From\+Resource@{generate\+Model\+From\+Resource}}
+\index{generate\+Model\+From\+Resource@{generate\+Model\+From\+Resource}!eu\+::h2020\+::symbiote\+::handlers\+::\+Handler\+Utils@{eu\+::h2020\+::symbiote\+::handlers\+::\+Handler\+Utils}}
+\subsubsection[{\texorpdfstring{generate\+Model\+From\+Resource(\+Resource resource)}{generateModelFromResource(Resource resource)}}]{\setlength{\rightskip}{0pt plus 5cm}static Model eu.\+h2020.\+symbiote.\+handlers.\+Handler\+Utils.\+generate\+Model\+From\+Resource (
+\begin{DoxyParamCaption}
+\item[{{\bf Resource}}]{resource}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}\hypertarget{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1HandlerUtils_a42342da7136ec0aead73f7edde4a77cd}{}\label{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1HandlerUtils_a42342da7136ec0aead73f7edde4a77cd}
+Generates a model containing R\+DF statements equivalent to specified resource.
+
+
+\begin{DoxyParams}{Parameters}
+{\em resource} & Resource to be translated into R\+DF. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Model containing R\+DF statements. 
+\end{DoxyReturn}
+\index{eu\+::h2020\+::symbiote\+::handlers\+::\+Handler\+Utils@{eu\+::h2020\+::symbiote\+::handlers\+::\+Handler\+Utils}!generate\+Query\+From\+Search\+Request@{generate\+Query\+From\+Search\+Request}}
+\index{generate\+Query\+From\+Search\+Request@{generate\+Query\+From\+Search\+Request}!eu\+::h2020\+::symbiote\+::handlers\+::\+Handler\+Utils@{eu\+::h2020\+::symbiote\+::handlers\+::\+Handler\+Utils}}
+\subsubsection[{\texorpdfstring{generate\+Query\+From\+Search\+Request(\+Search\+Request request)}{generateQueryFromSearchRequest(SearchRequest request)}}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf Query\+Generator} eu.\+h2020.\+symbiote.\+handlers.\+Handler\+Utils.\+generate\+Query\+From\+Search\+Request (
+\begin{DoxyParamCaption}
+\item[{{\bf Search\+Request}}]{request}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}\hypertarget{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1HandlerUtils_a0973ccf775f6cbbeed1cc294d8370624}{}\label{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1HandlerUtils_a0973ccf775f6cbbeed1cc294d8370624}
+
+\begin{DoxyParams}{Parameters}
+{\em request} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/main/java/eu/h2020/symbiote/handlers/Handler\+Utils.\+java\end{DoxyCompactItemize}

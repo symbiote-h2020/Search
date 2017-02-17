@@ -1,0 +1,107 @@
+\hypertarget{interfaceeu_1_1h2020_1_1symbiote_1_1handlers_1_1IPlatformEvents}{}\section{eu.\+h2020.\+symbiote.\+handlers.\+I\+Platform\+Events Interface Reference}
+\label{interfaceeu_1_1h2020_1_1symbiote_1_1handlers_1_1IPlatformEvents}\index{eu.\+h2020.\+symbiote.\+handlers.\+I\+Platform\+Events@{eu.\+h2020.\+symbiote.\+handlers.\+I\+Platform\+Events}}
+
+
+Inheritance diagram for eu.\+h2020.\+symbiote.\+handlers.\+I\+Platform\+Events\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=222pt]{interfaceeu_1_1h2020_1_1symbiote_1_1handlers_1_1IPlatformEvents__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for eu.\+h2020.\+symbiote.\+handlers.\+I\+Platform\+Events\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=222pt]{interfaceeu_1_1h2020_1_1symbiote_1_1handlers_1_1IPlatformEvents__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+boolean \hyperlink{interfaceeu_1_1h2020_1_1symbiote_1_1handlers_1_1IPlatformEvents_a02c6e32eb7af9a13b584a5c911ab8d8c}{register\+Platform} (\hyperlink{classeu_1_1h2020_1_1symbiote_1_1model_1_1Platform}{Platform} platform)
+\item 
+boolean \hyperlink{interfaceeu_1_1h2020_1_1symbiote_1_1handlers_1_1IPlatformEvents_ad5b491b150e4015525e9985143bbfcd3}{update\+Platform} (\hyperlink{classeu_1_1h2020_1_1symbiote_1_1model_1_1Platform}{Platform} platform)
+\item 
+boolean \hyperlink{interfaceeu_1_1h2020_1_1symbiote_1_1handlers_1_1IPlatformEvents_aaa59c8d1b1d80f4e58e20227a78c1f23}{delete\+Platform} (String platform\+Id)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Interface containing all relevant interfaces for Platform related events.
+
+Created by Mael on 11/01/2017. 
+
+\subsection{Member Function Documentation}
+\index{eu\+::h2020\+::symbiote\+::handlers\+::\+I\+Platform\+Events@{eu\+::h2020\+::symbiote\+::handlers\+::\+I\+Platform\+Events}!delete\+Platform@{delete\+Platform}}
+\index{delete\+Platform@{delete\+Platform}!eu\+::h2020\+::symbiote\+::handlers\+::\+I\+Platform\+Events@{eu\+::h2020\+::symbiote\+::handlers\+::\+I\+Platform\+Events}}
+\subsubsection[{\texorpdfstring{delete\+Platform(\+String platform\+Id)}{deletePlatform(String platformId)}}]{\setlength{\rightskip}{0pt plus 5cm}boolean eu.\+h2020.\+symbiote.\+handlers.\+I\+Platform\+Events.\+delete\+Platform (
+\begin{DoxyParamCaption}
+\item[{String}]{platform\+Id}
+\end{DoxyParamCaption}
+)}\hypertarget{interfaceeu_1_1h2020_1_1symbiote_1_1handlers_1_1IPlatformEvents_aaa59c8d1b1d80f4e58e20227a78c1f23}{}\label{interfaceeu_1_1h2020_1_1symbiote_1_1handlers_1_1IPlatformEvents_aaa59c8d1b1d80f4e58e20227a78c1f23}
+Deletes platform representation in the Apache Jena repository.
+
+
+\begin{DoxyParams}{Parameters}
+{\em platform\+Id} & Id of the platform to be deleted \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily true} if delete was successful. 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1PlatformHandler_a3c20ba0a131ad392eb74dd481548a062}{eu.\+h2020.\+symbiote.\+handlers.\+Platform\+Handler}.
+
+\index{eu\+::h2020\+::symbiote\+::handlers\+::\+I\+Platform\+Events@{eu\+::h2020\+::symbiote\+::handlers\+::\+I\+Platform\+Events}!register\+Platform@{register\+Platform}}
+\index{register\+Platform@{register\+Platform}!eu\+::h2020\+::symbiote\+::handlers\+::\+I\+Platform\+Events@{eu\+::h2020\+::symbiote\+::handlers\+::\+I\+Platform\+Events}}
+\subsubsection[{\texorpdfstring{register\+Platform(\+Platform platform)}{registerPlatform(Platform platform)}}]{\setlength{\rightskip}{0pt plus 5cm}boolean eu.\+h2020.\+symbiote.\+handlers.\+I\+Platform\+Events.\+register\+Platform (
+\begin{DoxyParamCaption}
+\item[{{\bf Platform}}]{platform}
+\end{DoxyParamCaption}
+)}\hypertarget{interfaceeu_1_1h2020_1_1symbiote_1_1handlers_1_1IPlatformEvents_a02c6e32eb7af9a13b584a5c911ab8d8c}{}\label{interfaceeu_1_1h2020_1_1symbiote_1_1handlers_1_1IPlatformEvents_a02c6e32eb7af9a13b584a5c911ab8d8c}
+Registers platform representation in the Apache Jena repository.
+
+
+\begin{DoxyParams}{Parameters}
+{\em platform} & Platform to be saved \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily true} if registration was successful. 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1PlatformHandler_a88a6b019f2d95821ee3f17c8f6c572a9}{eu.\+h2020.\+symbiote.\+handlers.\+Platform\+Handler}.
+
+\index{eu\+::h2020\+::symbiote\+::handlers\+::\+I\+Platform\+Events@{eu\+::h2020\+::symbiote\+::handlers\+::\+I\+Platform\+Events}!update\+Platform@{update\+Platform}}
+\index{update\+Platform@{update\+Platform}!eu\+::h2020\+::symbiote\+::handlers\+::\+I\+Platform\+Events@{eu\+::h2020\+::symbiote\+::handlers\+::\+I\+Platform\+Events}}
+\subsubsection[{\texorpdfstring{update\+Platform(\+Platform platform)}{updatePlatform(Platform platform)}}]{\setlength{\rightskip}{0pt plus 5cm}boolean eu.\+h2020.\+symbiote.\+handlers.\+I\+Platform\+Events.\+update\+Platform (
+\begin{DoxyParamCaption}
+\item[{{\bf Platform}}]{platform}
+\end{DoxyParamCaption}
+)}\hypertarget{interfaceeu_1_1h2020_1_1symbiote_1_1handlers_1_1IPlatformEvents_ad5b491b150e4015525e9985143bbfcd3}{}\label{interfaceeu_1_1h2020_1_1symbiote_1_1handlers_1_1IPlatformEvents_ad5b491b150e4015525e9985143bbfcd3}
+Updates platform representation in the Apache Jena repository.
+
+
+\begin{DoxyParams}{Parameters}
+{\em platform} & Platform to be updated \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily true} if update was successful. 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1PlatformHandler_ac4701e47973cb2061607dc9ee2916393}{eu.\+h2020.\+symbiote.\+handlers.\+Platform\+Handler}.
+
+
+
+The documentation for this interface was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/main/java/eu/h2020/symbiote/handlers/I\+Platform\+Events.\+java\end{DoxyCompactItemize}

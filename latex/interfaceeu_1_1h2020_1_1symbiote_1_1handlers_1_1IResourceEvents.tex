@@ -1,0 +1,107 @@
+\hypertarget{interfaceeu_1_1h2020_1_1symbiote_1_1handlers_1_1IResourceEvents}{}\section{eu.\+h2020.\+symbiote.\+handlers.\+I\+Resource\+Events Interface Reference}
+\label{interfaceeu_1_1h2020_1_1symbiote_1_1handlers_1_1IResourceEvents}\index{eu.\+h2020.\+symbiote.\+handlers.\+I\+Resource\+Events@{eu.\+h2020.\+symbiote.\+handlers.\+I\+Resource\+Events}}
+
+
+Inheritance diagram for eu.\+h2020.\+symbiote.\+handlers.\+I\+Resource\+Events\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=222pt]{interfaceeu_1_1h2020_1_1symbiote_1_1handlers_1_1IResourceEvents__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for eu.\+h2020.\+symbiote.\+handlers.\+I\+Resource\+Events\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=222pt]{interfaceeu_1_1h2020_1_1symbiote_1_1handlers_1_1IResourceEvents__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+boolean \hyperlink{interfaceeu_1_1h2020_1_1symbiote_1_1handlers_1_1IResourceEvents_a3941d9229b2efc8d5a80106e0ffe73cd}{register\+Resource} (\hyperlink{classeu_1_1h2020_1_1symbiote_1_1model_1_1Resource}{Resource} resource)
+\item 
+boolean \hyperlink{interfaceeu_1_1h2020_1_1symbiote_1_1handlers_1_1IResourceEvents_aaac836b0134ed41ad529b9ac3124a216}{update\+Resource} (\hyperlink{classeu_1_1h2020_1_1symbiote_1_1model_1_1Resource}{Resource} resource)
+\item 
+boolean \hyperlink{interfaceeu_1_1h2020_1_1symbiote_1_1handlers_1_1IResourceEvents_a7c99a8192ec4b06735f641ae3cf2bd99}{delete\+Resource} (String resource\+Id)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Interface containing all relevant interfaces for Resource related events.
+
+Created by Mael on 16/01/2017. 
+
+\subsection{Member Function Documentation}
+\index{eu\+::h2020\+::symbiote\+::handlers\+::\+I\+Resource\+Events@{eu\+::h2020\+::symbiote\+::handlers\+::\+I\+Resource\+Events}!delete\+Resource@{delete\+Resource}}
+\index{delete\+Resource@{delete\+Resource}!eu\+::h2020\+::symbiote\+::handlers\+::\+I\+Resource\+Events@{eu\+::h2020\+::symbiote\+::handlers\+::\+I\+Resource\+Events}}
+\subsubsection[{\texorpdfstring{delete\+Resource(\+String resource\+Id)}{deleteResource(String resourceId)}}]{\setlength{\rightskip}{0pt plus 5cm}boolean eu.\+h2020.\+symbiote.\+handlers.\+I\+Resource\+Events.\+delete\+Resource (
+\begin{DoxyParamCaption}
+\item[{String}]{resource\+Id}
+\end{DoxyParamCaption}
+)}\hypertarget{interfaceeu_1_1h2020_1_1symbiote_1_1handlers_1_1IResourceEvents_a7c99a8192ec4b06735f641ae3cf2bd99}{}\label{interfaceeu_1_1h2020_1_1symbiote_1_1handlers_1_1IResourceEvents_a7c99a8192ec4b06735f641ae3cf2bd99}
+Deletes resource representation in the Apache Jena repository.
+
+
+\begin{DoxyParams}{Parameters}
+{\em resource\+Id} & Id of the resource to be deleted \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily true} if deletion was successful. 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1ResourceHandler_a549c5bae3e5502b436ba353ba8b39a25}{eu.\+h2020.\+symbiote.\+handlers.\+Resource\+Handler}.
+
+\index{eu\+::h2020\+::symbiote\+::handlers\+::\+I\+Resource\+Events@{eu\+::h2020\+::symbiote\+::handlers\+::\+I\+Resource\+Events}!register\+Resource@{register\+Resource}}
+\index{register\+Resource@{register\+Resource}!eu\+::h2020\+::symbiote\+::handlers\+::\+I\+Resource\+Events@{eu\+::h2020\+::symbiote\+::handlers\+::\+I\+Resource\+Events}}
+\subsubsection[{\texorpdfstring{register\+Resource(\+Resource resource)}{registerResource(Resource resource)}}]{\setlength{\rightskip}{0pt plus 5cm}boolean eu.\+h2020.\+symbiote.\+handlers.\+I\+Resource\+Events.\+register\+Resource (
+\begin{DoxyParamCaption}
+\item[{{\bf Resource}}]{resource}
+\end{DoxyParamCaption}
+)}\hypertarget{interfaceeu_1_1h2020_1_1symbiote_1_1handlers_1_1IResourceEvents_a3941d9229b2efc8d5a80106e0ffe73cd}{}\label{interfaceeu_1_1h2020_1_1symbiote_1_1handlers_1_1IResourceEvents_a3941d9229b2efc8d5a80106e0ffe73cd}
+Registers resource representation in the Apache Jena repository.
+
+
+\begin{DoxyParams}{Parameters}
+{\em resource} & Resource to be saved \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily true} if registration was successful. 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1ResourceHandler_ab1eb533aab8bcc871ce752edf66ecebd}{eu.\+h2020.\+symbiote.\+handlers.\+Resource\+Handler}.
+
+\index{eu\+::h2020\+::symbiote\+::handlers\+::\+I\+Resource\+Events@{eu\+::h2020\+::symbiote\+::handlers\+::\+I\+Resource\+Events}!update\+Resource@{update\+Resource}}
+\index{update\+Resource@{update\+Resource}!eu\+::h2020\+::symbiote\+::handlers\+::\+I\+Resource\+Events@{eu\+::h2020\+::symbiote\+::handlers\+::\+I\+Resource\+Events}}
+\subsubsection[{\texorpdfstring{update\+Resource(\+Resource resource)}{updateResource(Resource resource)}}]{\setlength{\rightskip}{0pt plus 5cm}boolean eu.\+h2020.\+symbiote.\+handlers.\+I\+Resource\+Events.\+update\+Resource (
+\begin{DoxyParamCaption}
+\item[{{\bf Resource}}]{resource}
+\end{DoxyParamCaption}
+)}\hypertarget{interfaceeu_1_1h2020_1_1symbiote_1_1handlers_1_1IResourceEvents_aaac836b0134ed41ad529b9ac3124a216}{}\label{interfaceeu_1_1h2020_1_1symbiote_1_1handlers_1_1IResourceEvents_aaac836b0134ed41ad529b9ac3124a216}
+Updates specified resource representation in the Apache Jena repository.
+
+
+\begin{DoxyParams}{Parameters}
+{\em resource} & Updated resource \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily true} if update was successful. 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1ResourceHandler_abeae05c859b45f15b818a6b6640e8ad1}{eu.\+h2020.\+symbiote.\+handlers.\+Resource\+Handler}.
+
+
+
+The documentation for this interface was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/main/java/eu/h2020/symbiote/handlers/I\+Resource\+Events.\+java\end{DoxyCompactItemize}

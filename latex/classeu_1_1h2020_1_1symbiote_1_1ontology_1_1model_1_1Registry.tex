@@ -1,0 +1,59 @@
+\hypertarget{classeu_1_1h2020_1_1symbiote_1_1ontology_1_1model_1_1Registry}{}\section{eu.\+h2020.\+symbiote.\+ontology.\+model.\+Registry Class Reference}
+\label{classeu_1_1h2020_1_1symbiote_1_1ontology_1_1model_1_1Registry}\index{eu.\+h2020.\+symbiote.\+ontology.\+model.\+Registry@{eu.\+h2020.\+symbiote.\+ontology.\+model.\+Registry}}
+
+
+Collaboration diagram for eu.\+h2020.\+symbiote.\+ontology.\+model.\+Registry\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=251pt]{classeu_1_1h2020_1_1symbiote_1_1ontology_1_1model_1_1Registry__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries Registry} (\hyperlink{classeu_1_1h2020_1_1symbiote_1_1ontology_1_1model_1_1TripleStore}{Triple\+Store} triple\+Store)\hypertarget{classeu_1_1h2020_1_1symbiote_1_1ontology_1_1model_1_1Registry_adcb1239b65bdcd80fb3fec88faa9fcb6}{}\label{classeu_1_1h2020_1_1symbiote_1_1ontology_1_1model_1_1Registry_adcb1239b65bdcd80fb3fec88faa9fcb6}
+
+\item 
+void {\bfseries register\+Platform} (String platform\+Id, String rdf, \hyperlink{enumeu_1_1h2020_1_1symbiote_1_1ontology_1_1model_1_1RDFFormat}{R\+D\+F\+Format} format, String model\+Id)\hypertarget{classeu_1_1h2020_1_1symbiote_1_1ontology_1_1model_1_1Registry_aba2012524676d2d17db541224e3e1183}{}\label{classeu_1_1h2020_1_1symbiote_1_1ontology_1_1model_1_1Registry_aba2012524676d2d17db541224e3e1183}
+
+\item 
+void {\bfseries register\+Platform} (String platform\+Id, Model rdf, String model\+Id)\hypertarget{classeu_1_1h2020_1_1symbiote_1_1ontology_1_1model_1_1Registry_a894d145edea63836ff08ab1d05cc07da}{}\label{classeu_1_1h2020_1_1symbiote_1_1ontology_1_1model_1_1Registry_a894d145edea63836ff08ab1d05cc07da}
+
+\item 
+void \hyperlink{classeu_1_1h2020_1_1symbiote_1_1ontology_1_1model_1_1Registry_a0f3f23b348b9033439e8553a4522b8a8}{register\+Resource} (String platform\+Uri, String service\+U\+RI, String resource\+Uri, Model resource\+Model)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\begin{DoxyAuthor}{Author}
+jab 
+\end{DoxyAuthor}
+
+
+\subsection{Member Function Documentation}
+\index{eu\+::h2020\+::symbiote\+::ontology\+::model\+::\+Registry@{eu\+::h2020\+::symbiote\+::ontology\+::model\+::\+Registry}!register\+Resource@{register\+Resource}}
+\index{register\+Resource@{register\+Resource}!eu\+::h2020\+::symbiote\+::ontology\+::model\+::\+Registry@{eu\+::h2020\+::symbiote\+::ontology\+::model\+::\+Registry}}
+\subsubsection[{\texorpdfstring{register\+Resource(\+String platform\+Uri, String service\+U\+R\+I, String resource\+Uri, Model resource\+Model)}{registerResource(String platformUri, String serviceURI, String resourceUri, Model resourceModel)}}]{\setlength{\rightskip}{0pt plus 5cm}void eu.\+h2020.\+symbiote.\+ontology.\+model.\+Registry.\+register\+Resource (
+\begin{DoxyParamCaption}
+\item[{String}]{platform\+Uri, }
+\item[{String}]{service\+U\+RI, }
+\item[{String}]{resource\+Uri, }
+\item[{Model}]{resource\+Model}
+\end{DoxyParamCaption}
+)}\hypertarget{classeu_1_1h2020_1_1symbiote_1_1ontology_1_1model_1_1Registry_a0f3f23b348b9033439e8553a4522b8a8}{}\label{classeu_1_1h2020_1_1symbiote_1_1ontology_1_1model_1_1Registry_a0f3f23b348b9033439e8553a4522b8a8}
+Registers resource of the platform described by specified Uri. Model will be stored in the platform\textquotesingle{}s named graph.
+
+
+\begin{DoxyParams}{Parameters}
+{\em platform\+Uri} & Uri of the platform for which resource is added. \\
+\hline
+{\em resource\+Model} & Model describiding the resource. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/main/java/eu/h2020/symbiote/ontology/model/Registry.\+java\end{DoxyCompactItemize}

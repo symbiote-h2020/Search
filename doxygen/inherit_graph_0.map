@@ -1,0 +1,9 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node2" href="$classeu_1_1h2020_1_1symbiote_1_1communication_1_1PlatformCreatedConsumer.html" title="eu.h2020.symbiote.communication.\lPlatformCreatedConsumer" alt="" coords="177,5,405,47"/>
+<area shape="rect" id="node3" href="$classeu_1_1h2020_1_1symbiote_1_1communication_1_1PlatformDeletedConsumer.html" title="eu.h2020.symbiote.communication.\lPlatformDeletedConsumer" alt="" coords="177,71,405,112"/>
+<area shape="rect" id="node4" href="$classeu_1_1h2020_1_1symbiote_1_1communication_1_1PlatformModifiedConsumer.html" title="eu.h2020.symbiote.communication.\lPlatformModifiedConsumer" alt="" coords="177,136,405,177"/>
+<area shape="rect" id="node5" href="$classeu_1_1h2020_1_1symbiote_1_1communication_1_1ResourceCreatedConsumer.html" title="eu.h2020.symbiote.communication.\lResourceCreatedConsumer" alt="" coords="177,201,405,243"/>
+<area shape="rect" id="node6" href="$classeu_1_1h2020_1_1symbiote_1_1communication_1_1ResourceDeletedConsumer.html" title="eu.h2020.symbiote.communication.\lResourceDeletedConsumer" alt="" coords="177,267,405,308"/>
+<area shape="rect" id="node7" href="$classeu_1_1h2020_1_1symbiote_1_1communication_1_1ResourceModifiedConsumer.html" title="eu.h2020.symbiote.communication.\lResourceModifiedConsumer" alt="" coords="177,332,405,373"/>
+<area shape="rect" id="node8" href="$classeu_1_1h2020_1_1symbiote_1_1communication_1_1SearchRequestedConsumer.html" title="eu.h2020.symbiote.communication.\lSearchRequestedConsumer" alt="" coords="177,397,405,439"/>
+</map>

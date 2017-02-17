@@ -1,0 +1,176 @@
+\hypertarget{classeu_1_1h2020_1_1symbiote_1_1communication_1_1RabbitManager}{}\section{eu.\+h2020.\+symbiote.\+communication.\+Rabbit\+Manager Class Reference}
+\label{classeu_1_1h2020_1_1symbiote_1_1communication_1_1RabbitManager}\index{eu.\+h2020.\+symbiote.\+communication.\+Rabbit\+Manager@{eu.\+h2020.\+symbiote.\+communication.\+Rabbit\+Manager}}
+
+
+Collaboration diagram for eu.\+h2020.\+symbiote.\+communication.\+Rabbit\+Manager\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=268pt]{classeu_1_1h2020_1_1symbiote_1_1communication_1_1RabbitManager__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+Connection {\bfseries get\+Connection} ()\hypertarget{classeu_1_1h2020_1_1symbiote_1_1communication_1_1RabbitManager_aa3cceb0c39fb9f29c209e228861c71f9}{}\label{classeu_1_1h2020_1_1symbiote_1_1communication_1_1RabbitManager_aa3cceb0c39fb9f29c209e228861c71f9}
+
+\item 
+void \hyperlink{classeu_1_1h2020_1_1symbiote_1_1communication_1_1RabbitManager_a7a6a139978888d37dca9e8c28302caf7}{register\+Platform\+Created\+Consumer} (\hyperlink{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1PlatformHandler}{Platform\+Handler} platform\+Handler)  throws I\+O\+Exception 
+\item 
+void \hyperlink{classeu_1_1h2020_1_1symbiote_1_1communication_1_1RabbitManager_a3880a703e3565ec6e3e963bb12dcb172}{register\+Platform\+Deleted\+Consumer} (\hyperlink{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1PlatformHandler}{Platform\+Handler} platform\+Handler)  throws I\+O\+Exception 
+\item 
+void \hyperlink{classeu_1_1h2020_1_1symbiote_1_1communication_1_1RabbitManager_a7ccf45180bab08a9a32b262f41705275}{register\+Platform\+Updated\+Consumer} (\hyperlink{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1PlatformHandler}{Platform\+Handler} platform\+Handler)  throws I\+O\+Exception 
+\item 
+void \hyperlink{classeu_1_1h2020_1_1symbiote_1_1communication_1_1RabbitManager_a0ac5ce822697145440ae35bae985b813}{register\+Resource\+Created\+Consumer} (\hyperlink{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1ResourceHandler}{Resource\+Handler} resource\+Handler)  throws I\+O\+Exception 
+\item 
+void \hyperlink{classeu_1_1h2020_1_1symbiote_1_1communication_1_1RabbitManager_aab1820f1814d33e13341d9fe98e74f2d}{register\+Resource\+Deleted\+Consumer} (\hyperlink{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1ResourceHandler}{Resource\+Handler} resource\+Delete\+Handler)  throws I\+O\+Exception 
+\item 
+void \hyperlink{classeu_1_1h2020_1_1symbiote_1_1communication_1_1RabbitManager_a61d5f93decb2e133b040dd598f387c93}{register\+Resource\+Updated\+Consumer} (\hyperlink{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1ResourceHandler}{Resource\+Handler} resource\+Handler)  throws I\+O\+Exception 
+\item 
+void \hyperlink{classeu_1_1h2020_1_1symbiote_1_1communication_1_1RabbitManager_a9693e85bfdfb097ef357ccbc8c3d8e8a}{register\+Resource\+Search\+Consumer} (\hyperlink{classeu_1_1h2020_1_1symbiote_1_1handlers_1_1SearchHandler}{Search\+Handler} search\+Handler)  throws I\+O\+Exception 
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Bean used to manage internal communication using Rabbit\+MQ. It is responsible for declaring exchanges and using routing keys from centralized config server. 
+
+\subsection{Member Function Documentation}
+\index{eu\+::h2020\+::symbiote\+::communication\+::\+Rabbit\+Manager@{eu\+::h2020\+::symbiote\+::communication\+::\+Rabbit\+Manager}!register\+Platform\+Created\+Consumer@{register\+Platform\+Created\+Consumer}}
+\index{register\+Platform\+Created\+Consumer@{register\+Platform\+Created\+Consumer}!eu\+::h2020\+::symbiote\+::communication\+::\+Rabbit\+Manager@{eu\+::h2020\+::symbiote\+::communication\+::\+Rabbit\+Manager}}
+\subsubsection[{\texorpdfstring{register\+Platform\+Created\+Consumer(\+Platform\+Handler platform\+Handler)}{registerPlatformCreatedConsumer(PlatformHandler platformHandler)}}]{\setlength{\rightskip}{0pt plus 5cm}void eu.\+h2020.\+symbiote.\+communication.\+Rabbit\+Manager.\+register\+Platform\+Created\+Consumer (
+\begin{DoxyParamCaption}
+\item[{{\bf Platform\+Handler}}]{platform\+Handler}
+\end{DoxyParamCaption}
+) throws I\+O\+Exception}\hypertarget{classeu_1_1h2020_1_1symbiote_1_1communication_1_1RabbitManager_a7a6a139978888d37dca9e8c28302caf7}{}\label{classeu_1_1h2020_1_1symbiote_1_1communication_1_1RabbitManager_a7a6a139978888d37dca9e8c28302caf7}
+Registers consumer for event platform.\+created. Event will trigger translation of the platform into R\+DF and writing it into J\+E\+NA repository.
+
+
+\begin{DoxyParams}{Parameters}
+{\em platform\+Handler} & Event handler which will be triggered when platform.\+created event is received. \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em I\+O\+Exception} & In case there are problems with Rabbit\+MQ connections. \\
+\hline
+\end{DoxyExceptions}
+\index{eu\+::h2020\+::symbiote\+::communication\+::\+Rabbit\+Manager@{eu\+::h2020\+::symbiote\+::communication\+::\+Rabbit\+Manager}!register\+Platform\+Deleted\+Consumer@{register\+Platform\+Deleted\+Consumer}}
+\index{register\+Platform\+Deleted\+Consumer@{register\+Platform\+Deleted\+Consumer}!eu\+::h2020\+::symbiote\+::communication\+::\+Rabbit\+Manager@{eu\+::h2020\+::symbiote\+::communication\+::\+Rabbit\+Manager}}
+\subsubsection[{\texorpdfstring{register\+Platform\+Deleted\+Consumer(\+Platform\+Handler platform\+Handler)}{registerPlatformDeletedConsumer(PlatformHandler platformHandler)}}]{\setlength{\rightskip}{0pt plus 5cm}void eu.\+h2020.\+symbiote.\+communication.\+Rabbit\+Manager.\+register\+Platform\+Deleted\+Consumer (
+\begin{DoxyParamCaption}
+\item[{{\bf Platform\+Handler}}]{platform\+Handler}
+\end{DoxyParamCaption}
+) throws I\+O\+Exception}\hypertarget{classeu_1_1h2020_1_1symbiote_1_1communication_1_1RabbitManager_a3880a703e3565ec6e3e963bb12dcb172}{}\label{classeu_1_1h2020_1_1symbiote_1_1communication_1_1RabbitManager_a3880a703e3565ec6e3e963bb12dcb172}
+Registers consumer for event platform.\+deleted. Event will trigger translation of the request into S\+P\+A\+R\+QL U\+P\+D\+A\+TE and executing it in J\+E\+NA repository.
+
+
+\begin{DoxyParams}{Parameters}
+{\em platform\+Handler} & Event handler which will be triggered when platform.\+deleted event is received. \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em I\+O\+Exception} & In case there are problems with Rabbit\+MQ connections. \\
+\hline
+\end{DoxyExceptions}
+\index{eu\+::h2020\+::symbiote\+::communication\+::\+Rabbit\+Manager@{eu\+::h2020\+::symbiote\+::communication\+::\+Rabbit\+Manager}!register\+Platform\+Updated\+Consumer@{register\+Platform\+Updated\+Consumer}}
+\index{register\+Platform\+Updated\+Consumer@{register\+Platform\+Updated\+Consumer}!eu\+::h2020\+::symbiote\+::communication\+::\+Rabbit\+Manager@{eu\+::h2020\+::symbiote\+::communication\+::\+Rabbit\+Manager}}
+\subsubsection[{\texorpdfstring{register\+Platform\+Updated\+Consumer(\+Platform\+Handler platform\+Handler)}{registerPlatformUpdatedConsumer(PlatformHandler platformHandler)}}]{\setlength{\rightskip}{0pt plus 5cm}void eu.\+h2020.\+symbiote.\+communication.\+Rabbit\+Manager.\+register\+Platform\+Updated\+Consumer (
+\begin{DoxyParamCaption}
+\item[{{\bf Platform\+Handler}}]{platform\+Handler}
+\end{DoxyParamCaption}
+) throws I\+O\+Exception}\hypertarget{classeu_1_1h2020_1_1symbiote_1_1communication_1_1RabbitManager_a7ccf45180bab08a9a32b262f41705275}{}\label{classeu_1_1h2020_1_1symbiote_1_1communication_1_1RabbitManager_a7ccf45180bab08a9a32b262f41705275}
+Registers consumer for event platform.\+updated. Event will trigger translation of the resource into R\+DF and writing it into J\+E\+NA repository.
+
+
+\begin{DoxyParams}{Parameters}
+{\em platform\+Handler} & Event handler which will be triggered when platform.\+updated event is received. \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em I\+O\+Exception} & In case there are problems with Rabbit\+MQ connections. \\
+\hline
+\end{DoxyExceptions}
+\index{eu\+::h2020\+::symbiote\+::communication\+::\+Rabbit\+Manager@{eu\+::h2020\+::symbiote\+::communication\+::\+Rabbit\+Manager}!register\+Resource\+Created\+Consumer@{register\+Resource\+Created\+Consumer}}
+\index{register\+Resource\+Created\+Consumer@{register\+Resource\+Created\+Consumer}!eu\+::h2020\+::symbiote\+::communication\+::\+Rabbit\+Manager@{eu\+::h2020\+::symbiote\+::communication\+::\+Rabbit\+Manager}}
+\subsubsection[{\texorpdfstring{register\+Resource\+Created\+Consumer(\+Resource\+Handler resource\+Handler)}{registerResourceCreatedConsumer(ResourceHandler resourceHandler)}}]{\setlength{\rightskip}{0pt plus 5cm}void eu.\+h2020.\+symbiote.\+communication.\+Rabbit\+Manager.\+register\+Resource\+Created\+Consumer (
+\begin{DoxyParamCaption}
+\item[{{\bf Resource\+Handler}}]{resource\+Handler}
+\end{DoxyParamCaption}
+) throws I\+O\+Exception}\hypertarget{classeu_1_1h2020_1_1symbiote_1_1communication_1_1RabbitManager_a0ac5ce822697145440ae35bae985b813}{}\label{classeu_1_1h2020_1_1symbiote_1_1communication_1_1RabbitManager_a0ac5ce822697145440ae35bae985b813}
+Registers consumer for event resource.\+created. Event will trigger translation of the resource into R\+DF and writing it into J\+E\+NA repository.
+
+
+\begin{DoxyParams}{Parameters}
+{\em resource\+Handler} & Event handler which will be triggered when resource.\+created event is received. \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em I\+O\+Exception} & In case there are problems with Rabbit\+MQ connections. \\
+\hline
+\end{DoxyExceptions}
+\index{eu\+::h2020\+::symbiote\+::communication\+::\+Rabbit\+Manager@{eu\+::h2020\+::symbiote\+::communication\+::\+Rabbit\+Manager}!register\+Resource\+Deleted\+Consumer@{register\+Resource\+Deleted\+Consumer}}
+\index{register\+Resource\+Deleted\+Consumer@{register\+Resource\+Deleted\+Consumer}!eu\+::h2020\+::symbiote\+::communication\+::\+Rabbit\+Manager@{eu\+::h2020\+::symbiote\+::communication\+::\+Rabbit\+Manager}}
+\subsubsection[{\texorpdfstring{register\+Resource\+Deleted\+Consumer(\+Resource\+Handler resource\+Delete\+Handler)}{registerResourceDeletedConsumer(ResourceHandler resourceDeleteHandler)}}]{\setlength{\rightskip}{0pt plus 5cm}void eu.\+h2020.\+symbiote.\+communication.\+Rabbit\+Manager.\+register\+Resource\+Deleted\+Consumer (
+\begin{DoxyParamCaption}
+\item[{{\bf Resource\+Handler}}]{resource\+Delete\+Handler}
+\end{DoxyParamCaption}
+) throws I\+O\+Exception}\hypertarget{classeu_1_1h2020_1_1symbiote_1_1communication_1_1RabbitManager_aab1820f1814d33e13341d9fe98e74f2d}{}\label{classeu_1_1h2020_1_1symbiote_1_1communication_1_1RabbitManager_aab1820f1814d33e13341d9fe98e74f2d}
+Registers consumer for event resource.\+deleted. Event will trigger translation of the request into S\+P\+A\+R\+QL U\+P\+D\+A\+TE and executing it in J\+E\+NA repository.
+
+
+\begin{DoxyParams}{Parameters}
+{\em resource\+Delete\+Handler} & Event handler which will be triggered when resource.\+deleted event is received. \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em I\+O\+Exception} & In case there are problems with Rabbit\+MQ connections. \\
+\hline
+\end{DoxyExceptions}
+\index{eu\+::h2020\+::symbiote\+::communication\+::\+Rabbit\+Manager@{eu\+::h2020\+::symbiote\+::communication\+::\+Rabbit\+Manager}!register\+Resource\+Search\+Consumer@{register\+Resource\+Search\+Consumer}}
+\index{register\+Resource\+Search\+Consumer@{register\+Resource\+Search\+Consumer}!eu\+::h2020\+::symbiote\+::communication\+::\+Rabbit\+Manager@{eu\+::h2020\+::symbiote\+::communication\+::\+Rabbit\+Manager}}
+\subsubsection[{\texorpdfstring{register\+Resource\+Search\+Consumer(\+Search\+Handler search\+Handler)}{registerResourceSearchConsumer(SearchHandler searchHandler)}}]{\setlength{\rightskip}{0pt plus 5cm}void eu.\+h2020.\+symbiote.\+communication.\+Rabbit\+Manager.\+register\+Resource\+Search\+Consumer (
+\begin{DoxyParamCaption}
+\item[{{\bf Search\+Handler}}]{search\+Handler}
+\end{DoxyParamCaption}
+) throws I\+O\+Exception}\hypertarget{classeu_1_1h2020_1_1symbiote_1_1communication_1_1RabbitManager_a9693e85bfdfb097ef357ccbc8c3d8e8a}{}\label{classeu_1_1h2020_1_1symbiote_1_1communication_1_1RabbitManager_a9693e85bfdfb097ef357ccbc8c3d8e8a}
+Registers consumer for event resource.\+search\+Requested. Event will trigger translation of the request into S\+P\+A\+R\+QL and executing it in J\+E\+NA repository.
+
+
+\begin{DoxyParams}{Parameters}
+{\em search\+Handler} & Event handler which will be triggered when resource.\+search\+Requested event is received. \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em I\+O\+Exception} & In case there are problems with Rabbit\+MQ connections. \\
+\hline
+\end{DoxyExceptions}
+\index{eu\+::h2020\+::symbiote\+::communication\+::\+Rabbit\+Manager@{eu\+::h2020\+::symbiote\+::communication\+::\+Rabbit\+Manager}!register\+Resource\+Updated\+Consumer@{register\+Resource\+Updated\+Consumer}}
+\index{register\+Resource\+Updated\+Consumer@{register\+Resource\+Updated\+Consumer}!eu\+::h2020\+::symbiote\+::communication\+::\+Rabbit\+Manager@{eu\+::h2020\+::symbiote\+::communication\+::\+Rabbit\+Manager}}
+\subsubsection[{\texorpdfstring{register\+Resource\+Updated\+Consumer(\+Resource\+Handler resource\+Handler)}{registerResourceUpdatedConsumer(ResourceHandler resourceHandler)}}]{\setlength{\rightskip}{0pt plus 5cm}void eu.\+h2020.\+symbiote.\+communication.\+Rabbit\+Manager.\+register\+Resource\+Updated\+Consumer (
+\begin{DoxyParamCaption}
+\item[{{\bf Resource\+Handler}}]{resource\+Handler}
+\end{DoxyParamCaption}
+) throws I\+O\+Exception}\hypertarget{classeu_1_1h2020_1_1symbiote_1_1communication_1_1RabbitManager_a61d5f93decb2e133b040dd598f387c93}{}\label{classeu_1_1h2020_1_1symbiote_1_1communication_1_1RabbitManager_a61d5f93decb2e133b040dd598f387c93}
+Registers consumer for event resource.\+created. Event will trigger translation of the resource into R\+DF and writing it into J\+E\+NA repository.
+
+
+\begin{DoxyParams}{Parameters}
+{\em resource\+Handler} & Event handler which will be triggered when resource.\+created event is received. \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em I\+O\+Exception} & In case there are problems with Rabbit\+MQ connections. \\
+\hline
+\end{DoxyExceptions}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/main/java/eu/h2020/symbiote/communication/Rabbit\+Manager.\+java\end{DoxyCompactItemize}
