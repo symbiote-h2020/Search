@@ -36,7 +36,7 @@ public class SearchHandler implements ISearchEvents{
 
     @Override
     public SearchResponse search(SearchRequest request) {
-        SearchResponse response = null;
+        SearchResponse response = new SearchResponse();
         try {
 
             QueryGenerator q = HandlerUtils.generateQueryFromSearchRequest(request);

@@ -1,5 +1,6 @@
 package eu.h2020.symbiote.query;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -9,7 +10,7 @@ import java.util.List;
  */
 public class SearchResponse {
 
-    private List<SearchResponseResource> resourceList;
+    private List<SearchResponseResource> resourceList = new ArrayList<>();
 
     public SearchResponse() {
     }

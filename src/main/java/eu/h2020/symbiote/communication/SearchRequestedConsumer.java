@@ -53,10 +53,17 @@ public class SearchRequestedConsumer extends DefaultConsumer {
 
             SearchResponse response = handler.search(searchRequest);
             //Send the response back to the client
-            //TODO
-            log.debug( "Calculated response size, sending back to the sender: " + response.getResourceList().size());
+            String responseMessage = "";
+            if( response != null && response.getResourceList() != null ) {
+                responseMessage = "size is " + response.getResourceList().size();
+            } else {
+                responseMessage = "Response is null or empty";
+            }
 
-            byte[] responseBytes = mapper.writeValueAsBytes(response.getResourceList());
+
+            log.debug( "Calculated response, sending back to the sender: " + responseMessage);
+
+            byte[] responseBytes = mapper.writeValueAsBytes(response!=null?response.getResourceList():"[]");
 
             AMQP.BasicProperties replyProps = new AMQP.BasicProperties
                     .Builder()
