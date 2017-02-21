@@ -204,8 +204,9 @@ public class QueryGenerator {
         if( !containsRegex(input) ) {
             throw new InvalidParameterException("Input must contain * character at start and/or end of the string");
         }
-        String result;
-        if( input.startsWith("*") && input.endsWith("*") ) {
+        if( input.equals("*") ) {
+            command = new Command("CONTAINS","");
+        } else if( input.startsWith("*") && input.endsWith("*") ) {
             command = new Command("CONTAINS",input.substring(1,input.length() - 1));
         } else if( input.startsWith("*")){
             command = new Command("STRENDS",input.substring(1));

@@ -1,6 +1,7 @@
 package eu.h2020.symbiote.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.Strings;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,6 @@ public class Resource {
     private String platformId = null;
 
     public Resource() {
-
     }
 
     public Resource(String id, String name, String owner, String description, List<String> observedProperties, String resourceURL, Location location, String featureOfInterest, String platformId ) {

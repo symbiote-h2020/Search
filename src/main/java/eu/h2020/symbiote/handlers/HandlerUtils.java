@@ -81,7 +81,7 @@ public class HandlerUtils {
                 .addProperty(MetaInformationModel.RDF_TYPE,CoreInformationModel.CIM_SENSOR)
                 .addProperty(CoreInformationModel.CIM_ID,resource.getId())
                 .addProperty(CoreInformationModel.RDFS_LABEL,resource.getName())
-                .addProperty(CoreInformationModel.RDFS_COMMENT,resource.getDescription())
+                .addProperty(CoreInformationModel.RDFS_COMMENT,resource.getDescription()!=null?resource.getDescription():"")
                 .addProperty(CoreInformationModel.CIM_LOCATED_AT,model.createResource(Ontology.getResourceGraphURI(resource.getId())+"/location"))
                 .addProperty(CoreInformationModel.CIM_OBSERVES,res);
 
@@ -102,7 +102,7 @@ public class HandlerUtils {
         Model model = ModelFactory.createDefaultModel();
         model.createResource(Ontology.getResourceGraphURI(resource.getId())+"/location")
                 .addProperty(CoreInformationModel.RDFS_LABEL,resource.getLocation().getName())
-                .addProperty(CoreInformationModel.RDFS_COMMENT, resource.getLocation().getDescription())
+                .addProperty(CoreInformationModel.RDFS_COMMENT, resource.getLocation().getDescription()!=null?resource.getLocation().getDescription():"")
                 .addProperty(CoreInformationModel.GEO_LAT, resource.getLocation().getLatitude().toString())
                 .addProperty(CoreInformationModel.GEO_LONG, resource.getLocation().getLongitude().toString())
                 .addProperty(CoreInformationModel.GEO_ALT, resource.getLocation().getAltitude().toString());
