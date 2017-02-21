@@ -37,17 +37,22 @@ public class SearchHandler implements ISearchEvents{
     @Override
     public SearchResponse search(SearchRequest request) {
         SearchResponse response = null;
+        try {
 
-        QueryGenerator q = HandlerUtils.generateQueryFromSearchRequest(request);
+            QueryGenerator q = HandlerUtils.generateQueryFromSearchRequest(request);
 
-        ResultSet results = this.triplestore.executeQuery(q.toString());
+            ResultSet results = this.triplestore.executeQuery(q.toString());
 
-        response = HandlerUtils.generateSearchResponseFromResultSet(results);
+            response = HandlerUtils.generateSearchResponseFromResultSet(results);
 
-        if( q.isMultivaluequery() ) {
-            response.getResourceList().forEach(this::searchForPropertiesOfResource);
+            if (q.isMultivaluequery()) {
+                response.getResourceList().forEach(this::searchForPropertiesOfResource);
+            }
+
+        } catch( Exception e ) {
+            log.error("Error occured during search: " + e.getMessage());
+            e.printStackTrace();
         }
-
         return response;
     }
 
