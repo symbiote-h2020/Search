@@ -53,7 +53,7 @@ public class SearchRequestedConsumer extends DefaultConsumer {
 
             SearchResponse response = handler.search(searchRequest);
             //Send the response back to the client
-            String responseMessage = "";
+            String responseMessage = "msg";
             if( response != null && response.getResourceList() != null ) {
                 responseMessage = "size is " + response.getResourceList().size();
             } else {
