@@ -1,7 +1,8 @@
 language: java
 env:
   global:
-    secure: LOpOipsMRI5rbmrwBBEl0o9goqOYUsPWVnBn43xOCfEcN3qjj4HIYRp2yl+GPoD+NlQx7KZ1IblP+9l8rih79vJ8KZL4N4SmczAKnNscEfZcp+J6p/NkufsN15e3ZhXpYw9sD+4mSyecHEIgR/Jz08xq7TwmmT2c//bpxHhLcb7Bn5v3FsVPxTgd6Z9Taa/H/AkC6KXJYnz8YwRHEmGB3NH65kS8QmiMjO3pHdv3MBfIG5y6C3hhP8qU8z5g8127aPt0PIKxuV5ZsMWSdUQmn98PF38HrIY/E4dBYmDU7TS4e8KjAA4Gq6ccQPq85ucZy7lwPWDv6ijtb1GYPgHYkM1iggPUpxFurBbeawYfsjPgVP2vKRYZRkDIE4Az9fWLFiKoWmXiJPcMF7x3+dxCl0cXRD6qmxFdiMT0Nb19WYpLAYZdMz6jyYqNIc7sZ8/Yii2iXN6Gc923JkLvthRZa5BhHX8ikQOZpCEmwP38RX4BGPFamkByIDEgWHryILGMeNlsKTOV0sIFn9Iwb1axsTlM6gWUBmmF/IZdMYZJmO5BWxoYqjP82qvCBXvv+MSAp7t21vie7BKD0EEexf9d7cdKxJ4/6LrpUeSpaSvOgGf6dqUZ6eKZLFNlBPe69VQpxko1+GJjXL88RhLhNXvYFDRDS1EIfXpC7p4zPhLEl7Q=
+  - GITHUB_REPO=symbiote-h2020/Search
+  - secure: DIW8VM/TumfHfomujun7p+OBLFQ757xotBNxWHRC0Lhn8eKTrB5cWckudY/uQ6W3ab8Ot7FHfy7YRWblUCYpqe6nogAHdJL0X0WHCmA0kJB4jPbcyjbxNJ0u8XUIgOiLN5/hlvnqcn9g1l1yH9y+/Y1d9krJDYdQKVOYgyn5uyFLLZM6c7QG5mmJ7PKSHSN6pyHSj0PSTKRqdm5QZB1nfwPHLHLbYktFfvMitu/0VOsyMRT/NRc42GQiWkcqqaNFoTQ5xDd4V7fBNMjYP/htwXeX7UeToIq1iRkrMWkL34zY7cVNv/THmKb50rsFCo/9WjfTgY9tDGKzSPfPwy9KWTIpmHqrQBV8LtvKiR0avLM06HRXjVbk09ShRJ8VE+YVPtWQFoM0KnFF2ZDSwS5Ccllbusu6fIh0+BzkAllIbuGxPQJGf5JmNjtFkYUnYlOqdk/5bM9ZUGiyK4cmrKSVnKRkBwQWdF4Iy0eWDSGHF1KJPHu031SoIZ5bT2xZwNAPzPPTBuB45SCxoMdtUjPXaOOVxf9YAcGbZ7/TtnBG1lhTSRQdGyF7c3O7ITTtvPxHjvLKM15m5sNcx5u9zzyCDSMjRCDGFmYBderzBp3YbSN5s+jgR0X46sUlXBS3pjosi+UQKB6K2SXFPGHixu0yklChDLmLvN35PCKWcRtFxPA=
 jdk:
 - oraclejdk8
 services:
@@ -11,6 +12,7 @@ sudo: required
 branches:
   only:
   - staging
+install: true
 before_cache:
 - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
 - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
@@ -18,8 +20,14 @@ cache:
   directories:
   - "$HOME/.gradle/caches/"
   - "$HOME/.gradle/wrapper/"
-after_success:
+before_script:
 - chmod a+x merge_script.sh
-- BRANCHES_TO_MERGE_REGEX='staging' BRANCH_TO_MERGE_INTO=develop GITHUB_REPO=symbiote-h2020/Search
-  ./merge_script.sh
+- "./merge_script.sh"
+after_success:
+- chmod a+x pushing_script.sh
+- "./pushing_script.sh"
 - bash <(curl -s https://codecov.io/bash)
+notifications:
+  email:
+    on_success: never
+    on_failure: always
