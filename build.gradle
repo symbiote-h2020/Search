@@ -118,6 +118,10 @@ jacocoTestReport {
     }
 }
 
+test {
+    jvmArgs '-noverify'
+}
+
 // owasp config
 dependencyCheck {
     outputDirectory = "build/reports/security"
