@@ -1,0 +1,19 @@
+{
+  "@context": {
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "pA": "http://www.symbiote-h2020.eu/ontology/platforms/pA#",
+    "pAfoi": "http://www.symbiote-h2020.eu/ontology/platforms/pA/foi#",
+    "pAlocations": "http://www.symbiote-h2020.eu/ontology/platforms/pA/locations#",
+    "bim": "http://www.symbiote-h2020.eu/ontology/bim#",
+    "cim": "http://www.symbiote-h2020.eu/ontology/core#"
+  },
+  "@id": "http://www.symbiote-h2020.eu/ontology/platforms/pA/resources/r1",
+  "rdfs:label":"Sensor1",
+  "rdfs:comment": "First sensor",
+  "cim:locatedAt": "pAlocations:Paris",
+  "cim:featureOfInterest": "pAfoi:Room1",
+  "cim:observesProperty": [
+    "bim:Temperature", "bim:Humidity"
+  ]
+}

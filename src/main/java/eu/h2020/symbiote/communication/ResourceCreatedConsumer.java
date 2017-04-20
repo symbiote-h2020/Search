@@ -7,6 +7,7 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
+import eu.h2020.symbiote.core.internal.CoreResourceRegisteredOrModifiedEventPayload;
 import eu.h2020.symbiote.handlers.ResourceHandler;
 import eu.h2020.symbiote.model.Platform;
 import eu.h2020.symbiote.model.Resource;
@@ -48,7 +49,7 @@ public class ResourceCreatedConsumer extends DefaultConsumer {
 
         try {
             ObjectMapper mapper = new ObjectMapper();
-            Resource resource = mapper.readValue(msg, Resource.class);
+            CoreResourceRegisteredOrModifiedEventPayload resource = mapper.readValue(msg, CoreResourceRegisteredOrModifiedEventPayload.class);
 
             boolean success = handler.registerResource(resource);
             log.debug(success?
@@ -59,6 +60,8 @@ public class ResourceCreatedConsumer extends DefaultConsumer {
             log.error("Error occurred when parsing Resource object JSON: " + msg, e);
         } catch( IOException e ) {
             log.error("I/O Exception occurred when parsing Resource object" , e);
+        } catch( Exception e ) {
+            log.error("Generic occurred when handling rdf resource registration: " + msg, e);
         }
 
         getChannel().basicAck(envelope.getDeliveryTag(),false);

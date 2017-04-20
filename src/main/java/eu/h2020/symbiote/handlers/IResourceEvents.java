@@ -1,5 +1,6 @@
 package eu.h2020.symbiote.handlers;
 
+import eu.h2020.symbiote.core.internal.CoreResourceRegisteredOrModifiedEventPayload;
 import eu.h2020.symbiote.model.Platform;
 import eu.h2020.symbiote.model.Resource;
 
@@ -13,18 +14,18 @@ public interface IResourceEvents {
     /**
      * Registers resource representation in the Apache Jena repository.
      *
-     * @param resource Resource to be saved
+     * @param resources Resource to be saved
      * @return <code>true</code> if registration was successful.
      */
-    public boolean registerResource( Resource resource );
+    public boolean registerResource( CoreResourceRegisteredOrModifiedEventPayload resources );
 
     /**
      * Updates specified resource representation in the Apache Jena repository.
      *
-     * @param resource Updated resource
+     * @param resources Updated resource
      * @return <code>true</code> if update was successful.
      */
-    public boolean updateResource( Resource resource );
+    public boolean updateResource( CoreResourceRegisteredOrModifiedEventPayload resources );
 
     /**
      * Deletes resource representation in the Apache Jena repository.

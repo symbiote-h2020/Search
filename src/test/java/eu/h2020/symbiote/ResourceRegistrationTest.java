@@ -1,10 +1,10 @@
 package eu.h2020.symbiote;
 
+import eu.h2020.symbiote.core.internal.CoreResourceRegisteredOrModifiedEventPayload;
+import eu.h2020.symbiote.core.model.internal.CoreResource;
 import eu.h2020.symbiote.handlers.PlatformHandler;
 import eu.h2020.symbiote.handlers.ResourceHandler;
-import eu.h2020.symbiote.model.Location;
 import eu.h2020.symbiote.model.Platform;
-import eu.h2020.symbiote.model.Resource;
 import eu.h2020.symbiote.search.SearchStorage;
 import org.apache.commons.io.IOUtils;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
@@ -12,18 +12,21 @@ import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertNotNull;
 import static eu.h2020.symbiote.TestSetupConfig.*;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by Mael on 18/01/2017.
  */
+@RunWith(MockitoJUnitRunner.class)
 public class ResourceRegistrationTest {
 
 //    private static final String PLATFORM_A_ID = "1";
@@ -79,10 +82,14 @@ public class ResourceRegistrationTest {
         boolean result = handler.registerPlatform(platform);
         assert(result);
 
-        Resource res = generateResource();
+        CoreResource res = generateResource();
 
         ResourceHandler resHandler = new ResourceHandler(searchStorage);
-        result = resHandler.registerResource(res);
+        CoreResourceRegisteredOrModifiedEventPayload regReq = new CoreResourceRegisteredOrModifiedEventPayload();
+        regReq.setPlatformId(PLATFORM_A_ID);
+
+        regReq.setResources(Arrays.asList(res));
+        result = resHandler.registerResource(regReq);
         assert(result);
     }
 

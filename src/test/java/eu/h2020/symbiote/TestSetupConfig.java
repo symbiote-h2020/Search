@@ -1,15 +1,15 @@
 package eu.h2020.symbiote;
 
-import eu.h2020.symbiote.model.Location;
+import eu.h2020.symbiote.core.model.RDFFormat;
+import eu.h2020.symbiote.core.model.internal.CoreResource;
 import eu.h2020.symbiote.model.Platform;
-import eu.h2020.symbiote.model.Resource;
 import org.apache.commons.io.IOUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by Mael on 23/01/2017.
@@ -81,6 +81,9 @@ public class TestSetupConfig {
     public static final String RESOURCE_501_FILENAME = "/resource501.ttl";
     public static final String RESOURCE_501_URI = RESOURCE_PREDICATE + "501";
 
+    public static final String RESOURCE_JSONLD_FILENAME = "/exampleStationarySensor.json";
+    public static final String RESOURCE_JSONLD_URI = RESOURCE_PREDICATE + "JSONLD";
+
     public static Model loadFileAsModel(String fileLocation ) {
         Model model = null;
         InputStream modelToSave = null;
@@ -122,28 +125,47 @@ public class TestSetupConfig {
         return platform;
     }
 
-    public static Resource generateResource() {
-        Resource res = new Resource();
-        res.setPlatformId(PLATFORM_A_ID);
-        res.setDescription(RESOURCE_101_COMMENT);
-//        res.setFeatureOfInterest();
+//    public static Resource generateResource() {
+//        Resource res = new Resource();
+//        res.setPlatformId(PLATFORM_A_ID);
+//        res.setDescription(RESOURCE_101_COMMENT);
+////        res.setFeatureOfInterest();
+//        res.setId(RESOURCE_101_ID);
+//        res.setName(RESOURCE_101_LABEL);
+////        res.setOwner();
+//        res.setResourceURL(PLATFORM_A_URL);
+//        res.setLocation(
+//                new Location("id",
+//                        RESOURCE_101_LOC_LABEL,
+//                        RESOURCE_101_LOC_COMMENT,
+//                        Double.valueOf(RESOURCE_101_LOC_LAT),
+//                        Double.valueOf(RESOURCE_101_LOC_LONG),
+//                        Double.valueOf(RESOURCE_101_LOC_ALT)));
+//        ArrayList<String> list = new ArrayList<>();
+//        list.add(RESOURCE_101_OBS1_LABEL);
+//        list.add(RESOURCE_101_OBS2_LABEL);
+//        res.setObservedProperties(list);
+//        return res;
+//    }
+
+
+    public static CoreResource generateResource() {
+        CoreResource res = new CoreResource();
+        res.setComments(Arrays.asList(RESOURCE_101_COMMENT));
+        res.setLabels(Arrays.asList(RESOURCE_101_LABEL));
         res.setId(RESOURCE_101_ID);
-        res.setName(RESOURCE_101_LABEL);
-//        res.setOwner();
-        res.setResourceURL(PLATFORM_A_URL);
-        res.setLocation(
-                new Location("id",
-                        RESOURCE_101_LOC_LABEL,
-                        RESOURCE_101_LOC_COMMENT,
-                        Double.valueOf(RESOURCE_101_LOC_LAT),
-                        Double.valueOf(RESOURCE_101_LOC_LONG),
-                        Double.valueOf(RESOURCE_101_LOC_ALT)));
-        ArrayList<String> list = new ArrayList<>();
-        list.add(RESOURCE_101_OBS1_LABEL);
-        list.add(RESOURCE_101_OBS2_LABEL);
-        res.setObservedProperties(list);
+        res.setInterworkingServiceURL(PLATFORM_A_URL);
+        try {
+            res.setRdf(IOUtils.toString(TestSetupConfig.class
+                    .getResourceAsStream(RESOURCE_JSONLD_FILENAME)));
+            res.setRdfFormat(RDFFormat.JSONLD);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         return res;
     }
+
 
 
 }

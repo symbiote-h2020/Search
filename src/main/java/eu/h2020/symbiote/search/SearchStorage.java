@@ -1,8 +1,6 @@
 package eu.h2020.symbiote.search;
 
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import eu.h2020.symbiote.SearchApplication;
 import eu.h2020.symbiote.ontology.model.Registry;
 import eu.h2020.symbiote.ontology.model.SearchEngine;
