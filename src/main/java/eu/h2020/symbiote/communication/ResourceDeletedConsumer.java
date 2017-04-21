@@ -1,5 +1,6 @@
 package eu.h2020.symbiote.communication;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
@@ -11,6 +12,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Consumer of the search requested event. Translates the message as list of query parameters, translates them into
@@ -43,12 +46,16 @@ public class ResourceDeletedConsumer extends DefaultConsumer {
 
         //Try to parse the message
         ObjectMapper mapper = new ObjectMapper();
-        Resource resourceToDel = mapper.readValue(msg, Resource.class);
+        List<String> toDelete = mapper.readValue(msg, new TypeReference<List<String>>() {
+        });
 
-        handler.deleteResource(resourceToDel.getId());
-        //Send the response back to the client
-        //TODO
+        for( String delId: toDelete ) {
+            log.debug( "Deleting resource " + delId );
+            handler.deleteResource(delId);
+            //Send the response back to the client
+            //TODO
 
+        }
         getChannel().basicAck(envelope.getDeliveryTag(),false);
     }
 }
