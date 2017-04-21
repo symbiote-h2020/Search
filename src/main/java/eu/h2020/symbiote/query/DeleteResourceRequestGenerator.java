@@ -24,8 +24,8 @@ public class DeleteResourceRequestGenerator {
      */
     public DeleteResourceRequestGenerator(String resourceId ) {
         request = UpdateFactory.create();
-        request.add(generateServiceToResourceLinkRemoval(resourceId));
-        request.add(generateLocationRemoval(resourceId));
+//        request.add(generateServiceToResourceLinkRemoval(resourceId));
+//        request.add(generateLocationRemoval(resourceId));
         request.add(generateResourceRemoval(resourceId));
     }
 
