@@ -71,7 +71,7 @@ public class ResourceHandler implements IResourceEvents {
 
             log.debug( "Querying for interworking service URI... ");
             String query = "PREFIX core: <https://www.symbiote-h2020.eu/ontology/core#>\n" +
-                    "PREFIX mim: <http://www.symbiote-h2020.eu/ontology/meta.owl#>" +
+                    "PREFIX mim: <http://www.symbiote-h2020.eu/ontology/meta#>" +
                     "\n" +
                     "SELECT ?service WHERE {\n" +
                     "\t?service a mim:InterworkingService;\n" +
