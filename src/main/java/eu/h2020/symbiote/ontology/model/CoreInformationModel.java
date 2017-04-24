@@ -25,7 +25,7 @@ public class CoreInformationModel {
 
     public static final Property RDFS_COMMENT;
 
-    public static final Property CIM_SENSOR;
+    public static final Property CIM_RESOURCE;
 
     public static final Property CIM_ID;
 
@@ -43,7 +43,7 @@ public class CoreInformationModel {
         Model m = ModelFactory.createDefaultModel();
         RDFS_LABEL = m.createProperty(RDFS_PREFIX + "label");
         RDFS_COMMENT = m.createProperty(RDFS_PREFIX + "comment");
-        CIM_SENSOR = m.createProperty(CIM_PREFIX + "Sensor");
+        CIM_RESOURCE = m.createProperty(CIM_PREFIX + "Resource");
         CIM_ID = m.createProperty(CIM_PREFIX + "id");
         CIM_LOCATED_AT = m.createProperty(CIM_PREFIX + "locatedAt");
         GEO_LAT = m.createProperty(GEO_PREFIX + "lat");

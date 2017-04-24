@@ -19,11 +19,12 @@ public class SearchResponseResource {
     private Double locationLongitude;
     private Double locationAltitude;
     private List<String> observedProperties;
+    private String type;
 
     public SearchResponseResource() {
     }
 
-    public SearchResponseResource(String id, String name, String description, String platformId, String platformName, String locationName, Double locationLatitude, Double locationLongitude, Double locationAltitude, List<String> observedProperties) {
+    public SearchResponseResource(String id, String name, String description, String platformId, String platformName, String locationName, Double locationLatitude, Double locationLongitude, Double locationAltitude, List<String> observedProperties, String type) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -34,6 +35,7 @@ public class SearchResponseResource {
         this.locationLongitude = locationLongitude;
         this.locationAltitude = locationAltitude;
         this.observedProperties = observedProperties;
+        this.type = type;
     }
 
     public String getId() {
@@ -114,5 +116,13 @@ public class SearchResponseResource {
 
     public void setObservedProperties(List<String> observedProperties) {
         this.observedProperties = observedProperties;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

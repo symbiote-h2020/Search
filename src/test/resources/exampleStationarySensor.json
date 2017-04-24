@@ -1,6 +1,6 @@
 {
   "@id" : "http://www.symbiote-h2020.eu/ontology/resources/stationary1",
-  "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#StationarySensor", "http://www.symbiote-h2020.eu/ontology/core#Sensor" ],
+  "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#StationarySensor", "http://www.symbiote-h2020.eu/ontology/core#Resource" ],
   "hasFeatureOfInterest" : "http://www.symbiote-h2020.eu/ontology/platforms/Platform1/foi/Room1",
   "id" : "stationary1",
   "locatedAt" : "http://www.symbiote-h2020.eu/ontology/platforms/Platform1/location/Paris",

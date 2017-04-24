@@ -72,8 +72,9 @@ public class QueryGenerator {
 //        query.append("\t\tmim:hasName ?platformName .\n");
 
         //wszystko
-        query.append("SELECT ?resId ?resName ?resDescription ?locationName ?platformId ?platformName ?propName WHERE {\n" );
-        query.append("\t?sensor a cim:Sensor ;\n");
+        query.append("SELECT ?resId ?resName ?resDescription ?locationName ?platformId ?platformName ?propName ?type WHERE {\n" );
+        query.append("\t?sensor a cim:Resource ;\n");
+        query.append("\t\ta ?type ;\n");
         query.append("\t\tcim:id ?resId ;\n");
         query.append("\t\trdfs:label ?resName ;\n");
         query.append("\t\trdfs:comment ?resDescription;\n");
@@ -81,6 +82,7 @@ public class QueryGenerator {
         query.append("\t\tcim:observes ?propName .\n");
         query.append("\t?platform cim:id ?platformId ;\n");
         query.append("\t\tmim:hasName ?platformName .\n");
+//        query.append("\t?type rdfs:subClassOf cim:Sensor .\n");
 
 //        query.append("\t?property rdfs:label ?propName .\n");
 //        query.append("\t?item rdfs:label ?propertyName .\n" );

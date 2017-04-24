@@ -180,13 +180,13 @@ public class QueryGenerationTests {
 
         System.out.println("----------- TEST -------------");
         String query = new QueryGenerator()
-                .addResourceName(RESOURCE_MOBILE_LABEL)
+                .addResourceName(RESOURCE_STATIONARY_LABEL)
                 .toString();
         ResultSet resultSet = triplestore.executeQuery(query);
 //        int size = countResultSetSize(resultSet);
 //        System.out.println("SIze " + size);
-//        printSearchResponses(resultSet);
-        printSearchResponsesFormatter(resultSet);
+        printSearchResponses(resultSet);
+//        printSearchResponsesFormatter(resultSet);
 //        assertEquals("Resource query should return " + 2 + " but got " + size, 2, size);
 //
 //        //Platform 2
@@ -491,7 +491,9 @@ public class QueryGenerationTests {
         int i = 0;
         for(SearchResponseResource response: searchResponse.getResourceList()) {
             i++;
-            System.out.println(i + "  " + response.getName() + "  |  " + response.getObservedProperties());
+            System.out.println(i + "  " + response.getName() + "  |  " + response.getObservedProperties() );
+            System.out.println("     " + response.getType() );
+
         }
     }
 

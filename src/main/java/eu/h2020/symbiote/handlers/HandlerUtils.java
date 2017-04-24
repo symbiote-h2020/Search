@@ -78,7 +78,7 @@ public class HandlerUtils {
         }
 
         model.createResource(Ontology.getResourceGraphURI(resource.getId()))
-                .addProperty(MetaInformationModel.RDF_TYPE,CoreInformationModel.CIM_SENSOR)
+                .addProperty(MetaInformationModel.RDF_TYPE,CoreInformationModel.CIM_RESOURCE)
                 .addProperty(CoreInformationModel.CIM_ID,resource.getId())
                 .addProperty(CoreInformationModel.RDFS_LABEL,resource.getName())
                 .addProperty(CoreInformationModel.RDFS_COMMENT,resource.getDescription()!=null?resource.getDescription():"")
@@ -200,23 +200,26 @@ public class HandlerUtils {
 //            String locationLong = solution.get(LOCATION_LONG).toString();
 //            String locationAlt = solution.get(LOCATION_ALT).toString();
             String propertyName = solution.get(PROPERTY_NAME).toString();
+            String type = solution.get(TYPE).toString();
 
-            if( !responses.containsKey(resId) ) {
-                String platformId = "platformId";
-                String platformName = "platformName";
-                Double val = Double.valueOf(0.0d);
-                List<String> properties = new ArrayList<>();
-                properties.add(propertyName);
+            if( !type.equals(CoreInformationModel.CIM_RESOURCE.toString()) ) {
 
-                SearchResponseResource resource = new SearchResponseResource(resId, resName, resDescription, platformId, platformName, locationName, val,val,val, properties);
-                responses.put(resId,resource);
-            } else {
-                //ensure all other params are the same, add to list of properties
-                SearchResponseResource existingResource = responses.get(resId);
+                if (!responses.containsKey(resId)) {
+                    String platformId = "platformId";
+                    String platformName = "platformName";
+                    Double val = Double.valueOf(0.0d);
+                    List<String> properties = new ArrayList<>();
+                    properties.add(propertyName);
+
+                    SearchResponseResource resource = new SearchResponseResource(resId, resName, resDescription, platformId, platformName, locationName, val, val, val, properties,type);
+                    responses.put(resId, resource);
+                } else {
+                    //ensure all other params are the same, add to list of properties
+                    SearchResponseResource existingResource = responses.get(resId);
 //                //Do equals
-                existingResource.getObservedProperties().add(propertyName);
+                    existingResource.getObservedProperties().add(propertyName);
+                }
             }
-
 
             //Original below
 //            if( !responses.containsKey(resId) ) {

@@ -1,6 +1,6 @@
 {
   "@id" : "http://www.symbiote-h2020.eu/ontology/resources/actuator1",
-  "@type" : "http://www.symbiote-h2020.eu/ontology/core#Actuator",
+  "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#Actuator", "http://www.symbiote-h2020.eu/ontology/core#Resource" ],
   "hasCapability" : "http://www.symbiote-h2020.eu/ontology/resources/actuatingService1",
   "id" : "actuator1",
   "locatedAt" : "http://www.symbiote-h2020.eu/ontology/platforms/Platform1/location/Paris",

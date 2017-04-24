@@ -1,6 +1,6 @@
 {
   "@id" : "http://www.symbiote-h2020.eu/ontology/resources/mobile1",
-  "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#MobileSensor", "http://www.symbiote-h2020.eu/ontology/core#Sensor" ],
+  "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#MobileSensor", "http://www.symbiote-h2020.eu/ontology/core#Resource" ],
   "id" : "mobile1",
   "locatedAt" : "http://www.symbiote-h2020.eu/ontology/platforms/Platform1/location/Paris",
   "observes" : "http://www.symbiote-h2020.eu/ontology/bim/Temperature",
