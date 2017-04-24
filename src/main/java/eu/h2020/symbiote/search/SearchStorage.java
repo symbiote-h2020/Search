@@ -120,7 +120,7 @@ public class SearchStorage {
      * @param rdfModel
      */
     public void registerResource( String platformUri, String serviceUri, String resourceUri, Model rdfModel ) {
-        log.info( "Registering resource " + resourceUri + " ...");
+        log.info( "Registering resource: | platformUri: " + platformUri + " | serviceUri: " + serviceUri + " | resourceUri: " + resourceUri + " ...");
         core.registerResource(platformUri, serviceUri, resourceUri, rdfModel );
         log.info( "Resource registered!");
     }
