@@ -73,25 +73,25 @@ public class ResourceRegistrationTest {
         }
     }
 
-    @Test
-    public void testRegisterHandler() {
-
-        SearchStorage searchStorage = SearchStorage.getInstance( SearchStorage.TESTCASE_STORAGE_NAME );
-        PlatformHandler handler = new PlatformHandler(searchStorage);
-        Platform platform = generatePlatformA();
-        boolean result = handler.registerPlatform(platform);
-        assert(result);
-
-        CoreResource res = generateResource();
-
-        ResourceHandler resHandler = new ResourceHandler(searchStorage);
-        CoreResourceRegisteredOrModifiedEventPayload regReq = new CoreResourceRegisteredOrModifiedEventPayload();
-        regReq.setPlatformId(PLATFORM_A_ID);
-
-        regReq.setResources(Arrays.asList(res));
-        result = resHandler.registerResource(regReq);
-        assert(result);
-    }
+//    @Test
+//    public void testRegisterHandler() {
+//
+//        SearchStorage searchStorage = SearchStorage.getInstance( SearchStorage.TESTCASE_STORAGE_NAME );
+//        PlatformHandler handler = new PlatformHandler(searchStorage);
+//        Platform platform = generatePlatformA();
+//        boolean result = handler.registerPlatform(platform);
+//        assert(result);
+//
+//        CoreResource res = generateResource();
+//
+//        ResourceHandler resHandler = new ResourceHandler(searchStorage);
+//        CoreResourceRegisteredOrModifiedEventPayload regReq = new CoreResourceRegisteredOrModifiedEventPayload();
+//        regReq.setPlatformId(PLATFORM_A_ID);
+//
+//        regReq.setResources(Arrays.asList(res));
+//        result = resHandler.registerResource(regReq);
+//        assert(result);
+//    }
 
     @Test
     public void testAddingStationarySensorWithoutLocation() {
