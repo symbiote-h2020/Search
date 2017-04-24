@@ -78,7 +78,7 @@ public class QueryGenerationTests {
             Model actautingServiceModel = loadFileAsModel(RESOURCE_ACTUATING_SERVICE_FILENAME, "JSONLD" );
             Model actuatorModel = loadFileAsModel(RESOURCE_ACTUATOR_FILENAME, "JSONLD" );
 
-            registry.registerResource(PLATFORM_A_URI,"http://symbiote-h2020.eu/example/interworkingService/","http://www.symbiote-h2020.eu/ontology/resources/58fdc87713b7d70d6b1b9153",stationaryModel);
+            registry.registerResource(PLATFORM_A_URI,PLATFORM_A_SERVICE_URI,RESOURCE_STATIONARY_URI,stationaryModel);
             registry.registerResource(PLATFORM_B_URI,PLATFORM_B_SERVICE_URI,RESOURCE_MOBILE_URI,mobileModel);
             registry.registerResource(PLATFORM_A_URI,PLATFORM_A_SERVICE_URI,RESOURCE_SERVICE_URI,serviceModel);
             registry.registerResource(PLATFORM_A_URI,PLATFORM_A_SERVICE_URI,RESOURCE_ACTUATOR_URI,actuatorModel);

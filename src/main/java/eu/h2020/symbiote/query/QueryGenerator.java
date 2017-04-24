@@ -81,7 +81,7 @@ public class QueryGenerator {
         query.append("\t\tcim:locatedAt ?locationName;\n");
         query.append("\t\tcim:observes ?propName .\n");
         query.append("\t?platform cim:id ?platformId ;\n");
-        query.append("\t\tmim:hasName ?platformName .\n");
+        query.append("\t\trdfs:label ?platformName .\n");
 //        query.append("\t?type rdfs:subClassOf cim:Sensor .\n");
 
 //        query.append("\t?property rdfs:label ?propName .\n");
