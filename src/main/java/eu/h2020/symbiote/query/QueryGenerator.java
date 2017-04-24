@@ -38,13 +38,13 @@ public class QueryGenerator {
 //        query.append("SELECT ?sensor WHERE {\n");
 //        query.append("\t?sensor a cim:Sensor .\n");
 
-          //Trying service...
+//          //Trying service...
 //        query.append("SELECT ?service ?sensor WHERE {\n" );
 ////        query.append("\t?platform a owl:Ontology ;\n");
 ////        query.append("\t\tmim:hasService ?service .\n");
 //        query.append("\t?service mim:hasResource ?sensor .\n");
 ////        query.append("\t?service mim: ?sensor .\n");
-//        query.append("\t?sensor rdfs:label \"Stationary 1\" .\n");
+////        query.append("\t?sensor rdfs:label \"Stationary 1\" .\n");
 
         //Working res + location name + properties
 //        query.append("SELECT ?resId ?resName ?resDescription ?locationName ?propName WHERE {\n" );
