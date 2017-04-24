@@ -70,17 +70,20 @@ public class ResourceHandler implements IResourceEvents {
             String resourceURL = coreResource.getInterworkingServiceURL(); //match this with
 
             log.debug( "Querying for interworking service URI... ");
-            String query = "PREFIX core: <https://www.symbiote-h2020.eu/ontology/core#>\n" +
+            String query = "PREFIX cim: <http://www.symbiote-h2020.eu/ontology/core#>\n" +
                     "PREFIX mim: <http://www.symbiote-h2020.eu/ontology/meta#>" +
                     "\n" +
                     "SELECT ?service WHERE {\n" +
                     "\t?service a mim:InterworkingService;\n" +
                     "\t\t\tmim:hasURL \"" + resourceURL + "\".\n" +
+                    "\t\t?platform cim:id \"" + platformId + "\";\n" +
+                    "\t\t\tmim:hasService ?service.\n" +
                     "} ";
 
             List<String> response = this.storage.query(Ontology.getPlatformGraphURI(platformId), query);
             String registeredServiceURI = null;
             if (response != null && response.size() == 1) {
+                System.out.println("response: " + response.get(0));
                 registeredServiceURI = response.get(0).substring(response.get(0).indexOf("=") + 2);
                 log.debug("Found resource URL: " + registeredServiceURI);
             } else {
