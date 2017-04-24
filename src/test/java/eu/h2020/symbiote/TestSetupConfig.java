@@ -51,7 +51,7 @@ public class TestSetupConfig {
     public static final String PLATFORM_C_URI = "http://www.symbiote-h2020.eu/ontology/platforms/3";
     public static final String PLATFORM_C_SERVICE_URI = "http://www.symbiote-h2020.eu/ontology/platforms/3/service/somehost3.com/resourceAccessProxy";
 
-    public static final String RESOURCE_PREDICATE = "https://www.symbiote-h2020.eu/ontology/resources/";
+    public static final String RESOURCE_PREDICATE = "http://www.symbiote-h2020.eu/ontology/resources/";
 
     public static final String RESOURCE_101_FILENAME = "/resource101.ttl";
     public static final String RESOURCE_101_URI = RESOURCE_PREDICATE + "101";
@@ -81,17 +81,32 @@ public class TestSetupConfig {
     public static final String RESOURCE_501_FILENAME = "/resource501.ttl";
     public static final String RESOURCE_501_URI = RESOURCE_PREDICATE + "501";
 
-    public static final String RESOURCE_JSONLD_FILENAME = "/exampleStationarySensor.json";
-    public static final String RESOURCE_JSONLD_URI = RESOURCE_PREDICATE + "JSONLD";
+    public static final String RESOURCE_STATIONARY_FILENAME = "/exampleStationarySensor.json";
+    public static final String RESOURCE_STATIONARY_LABEL = "Stationary 1";
+    public static final String RESOURCE_STATIONARY_URI = RESOURCE_PREDICATE + "stationary1";
 
-    public static Model loadFileAsModel(String fileLocation ) {
+    public static final String RESOURCE_MOBILE_FILENAME = "/exampleMobileSensor.json";
+    public static final String RESOURCE_MOBILE_LABEL = "Mobile 1";
+    public static final String RESOURCE_MOBILE_URI = RESOURCE_PREDICATE + "mobile1";
+
+    public static final String RESOURCE_SERVICE_FILENAME = "/exampleService.json";
+    public static final String RESOURCE_SERVICE_URI = RESOURCE_PREDICATE + "service1";
+
+    public static final String RESOURCE_ACTUATING_SERVICE_FILENAME = "/exampleActuatingService.json";
+    public static final String RESOURCE_ACTUATING_SERVICE_URI = RESOURCE_PREDICATE + "actuatingService1";
+
+    public static final String RESOURCE_ACTUATOR_FILENAME = "/exampleActuator.json";
+    public static final String RESOURCE_ACTUATOR_URI = RESOURCE_PREDICATE + "actuator1";
+
+
+    public static Model loadFileAsModel(String fileLocation, String format ) {
         Model model = null;
         InputStream modelToSave = null;
         try {
             modelToSave = IOUtils.toInputStream(IOUtils.toString(TestSetupConfig.class
                     .getResource(fileLocation)));
             model = ModelFactory.createDefaultModel();
-            model.read(modelToSave, null, "TURTLE");
+            model.read(modelToSave, null, format);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -157,7 +172,7 @@ public class TestSetupConfig {
         res.setInterworkingServiceURL(PLATFORM_A_URL);
         try {
             res.setRdf(IOUtils.toString(TestSetupConfig.class
-                    .getResourceAsStream(RESOURCE_JSONLD_FILENAME)));
+                    .getResourceAsStream(RESOURCE_STATIONARY_FILENAME)));
             res.setRdfFormat(RDFFormat.JSONLD);
         } catch (IOException e) {
             e.printStackTrace();

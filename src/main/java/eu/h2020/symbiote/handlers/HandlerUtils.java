@@ -48,8 +48,8 @@ public class HandlerUtils {
                 model.createResource(Ontology.getPlatformGraphURI(platform.getPlatformId()))
                 .addProperty(MetaInformationModel.RDF_TYPE,MetaInformationModel.OWL_ONTOLOGY)
                 .addProperty(MetaInformationModel.CIM_HASID,platform.getPlatformId())
-                .addProperty(MetaInformationModel.MIM_HASDESCRIPTION, platform.getDescription())
-                .addProperty(MetaInformationModel.MIM_HASNAME, platform.getName())
+                .addProperty(MetaInformationModel.RDFS_COMMENT, platform.getDescription())
+                .addProperty(MetaInformationModel.RDFS_LABEL, platform.getName())
                 .addProperty(MetaInformationModel.MIM_HASSERVICE, model.createResource(generateInterworkingServiceUri(Ontology.getPlatformGraphURI(platform.getPlatformId()),platform.getUrl())));
 
 
@@ -193,29 +193,47 @@ public class HandlerUtils {
             String resId = solution.get(RESOURCE_ID).toString();
             String resName = solution.get(RESOURCE_NAME).toString();
             String resDescription = solution.get(RESOURCE_DESCRIPTION).toString();
-            String platformId = solution.get(PLATFORM_ID).toString();
-            String platformName = solution.get(PLATFORM_NAME).toString();
+//            String platformId = solution.get(PLATFORM_ID).toString();
+//            String platformName = solution.get(PLATFORM_NAME).toString();
             String locationName = solution.get(LOCATION_NAME).toString();
-            String locationLat = solution.get(LOCATION_LAT).toString();
-            String locationLong = solution.get(LOCATION_LONG).toString();
-            String locationAlt = solution.get(LOCATION_ALT).toString();
+//            String locationLat = solution.get(LOCATION_LAT).toString();
+//            String locationLong = solution.get(LOCATION_LONG).toString();
+//            String locationAlt = solution.get(LOCATION_ALT).toString();
             String propertyName = solution.get(PROPERTY_NAME).toString();
 
             if( !responses.containsKey(resId) ) {
-                Double latitude = Double.valueOf(locationLat);
-                Double longitude = Double.valueOf(locationLong);
-                Double altitude = Double.valueOf(locationAlt);
-
+                String platformId = "platformId";
+                String platformName = "platformName";
+                Double val = Double.valueOf(0.0d);
                 List<String> properties = new ArrayList<>();
                 properties.add(propertyName);
-                SearchResponseResource resource = new SearchResponseResource(resId, resName, resDescription, platformId, platformName, locationName, latitude, longitude, altitude, properties);
+
+                SearchResponseResource resource = new SearchResponseResource(resId, resName, resDescription, platformId, platformName, locationName, val,val,val, properties);
                 responses.put(resId,resource);
             } else {
                 //ensure all other params are the same, add to list of properties
                 SearchResponseResource existingResource = responses.get(resId);
-                //Do equals
+//                //Do equals
                 existingResource.getObservedProperties().add(propertyName);
             }
+
+
+            //Original below
+//            if( !responses.containsKey(resId) ) {
+//                Double latitude = Double.valueOf(locationLat);
+//                Double longitude = Double.valueOf(locationLong);
+//                Double altitude = Double.valueOf(locationAlt);
+//
+//                List<String> properties = new ArrayList<>();
+//                properties.add(propertyName);
+//                SearchResponseResource resource = new SearchResponseResource(resId, resName, resDescription, platformId, platformName, locationName, latitude, longitude, altitude, properties);
+//                responses.put(resId,resource);
+//            } else {
+//                //ensure all other params are the same, add to list of properties
+//                SearchResponseResource existingResource = responses.get(resId);
+//                //Do equals
+//                existingResource.getObservedProperties().add(propertyName);
+//            }
         }
 
         SearchResponse response = responses!=null?new SearchResponse( responses.values().stream().collect(Collectors.toList())):null;

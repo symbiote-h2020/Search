@@ -1,19 +1,30 @@
 {
-  "@context": {
-    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
-    "pA": "http://www.symbiote-h2020.eu/ontology/platforms/pA#",
-    "pAfoi": "http://www.symbiote-h2020.eu/ontology/platforms/pA/foi#",
-    "pAlocations": "http://www.symbiote-h2020.eu/ontology/platforms/pA/locations#",
-    "bim": "http://www.symbiote-h2020.eu/ontology/bim#",
-    "cim": "http://www.symbiote-h2020.eu/ontology/core#"
-  },
-  "@id": "http://www.symbiote-h2020.eu/ontology/platforms/pA/resources/r1",
-  "rdfs:label":"Sensor1",
-  "rdfs:comment": "First sensor",
-  "cim:locatedAt": "pAlocations:Paris",
-  "cim:featureOfInterest": "pAfoi:Room1",
-  "cim:observesProperty": [
-    "bim:Temperature", "bim:Humidity"
-  ]
+  "@id" : "http://www.symbiote-h2020.eu/ontology/resources/stationary1",
+  "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#StationarySensor", "http://www.symbiote-h2020.eu/ontology/core#Sensor" ],
+  "hasFeatureOfInterest" : "http://www.symbiote-h2020.eu/ontology/platforms/Platform1/foi/Room1",
+  "id" : "stationary1",
+  "locatedAt" : "http://www.symbiote-h2020.eu/ontology/platforms/Platform1/location/Paris",
+  "observes" : [ "http://www.symbiote-h2020.eu/ontology/bim/Humidity", "http://www.symbiote-h2020.eu/ontology/bim/Temperature" ],
+  "comment" : "This is stationary 1",
+  "label" : "Stationary 1",
+  "@context" : {
+    "locatedAt" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#locatedAt"
+    },
+    "observes" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#observes"
+    },
+    "hasFeatureOfInterest" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasFeatureOfInterest"
+    },
+    "comment" : {
+      "@id" : "http://www.w3.org/2000/01/rdf-schema#comment"
+    },
+    "label" : {
+      "@id" : "http://www.w3.org/2000/01/rdf-schema#label"
+    },
+    "id" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#id"
+    }
+  }
 }

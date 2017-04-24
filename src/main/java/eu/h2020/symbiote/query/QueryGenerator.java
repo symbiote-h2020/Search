@@ -28,12 +28,80 @@ public class QueryGenerator {
     private void generateBaseQuery() {
 
         query.append("PREFIX cim: <http://www.symbiote-h2020.eu/ontology/core#> \n");
-        query.append("PREFIX cimowl: <http://www.symbiote-h2020.eu/ontology/core.owl#> \n");
-        query.append("PREFIX mim: <http://www.symbiote-h2020.eu/ontology/meta.owl#> \n");
+//        query.append("PREFIX cimowl: <http://www.symbiote-h2020.eu/ontology/core.owl#> \n");
+        query.append("PREFIX mim: <http://www.symbiote-h2020.eu/ontology/meta#> \n");
         query.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n");
         query.append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
         query.append("PREFIX owl: <http://www.w3.org/2002/07/owl#> \n");
         query.append("PREFIX spatial: <http://jena.apache.org/spatial#> \n");
+
+//        query.append("SELECT ?sensor WHERE {\n");
+//        query.append("\t?sensor a cim:Sensor .\n");
+
+          //Trying service...
+//        query.append("SELECT ?service ?sensor WHERE {\n" );
+////        query.append("\t?platform a owl:Ontology ;\n");
+////        query.append("\t\tmim:hasService ?service .\n");
+//        query.append("\t?service mim:hasResource ?sensor .\n");
+////        query.append("\t?service mim: ?sensor .\n");
+//        query.append("\t?sensor rdfs:label \"Stationary 1\" .\n");
+
+        //Working res + location name + properties
+//        query.append("SELECT ?resId ?resName ?resDescription ?locationName ?propName WHERE {\n" );
+//        query.append("\t?sensor a cim:Sensor ;\n");
+//        query.append("\t\tcim:id ?resId ;\n");
+//        query.append("\t\trdfs:label ?resName ;\n");
+//        query.append("\t\trdfs:comment ?resDescription;\n");
+//        query.append("\t\tcim:locatedAt ?locationName;\n");
+//        query.append("\t\tcim:observes ?propName .\n");
+
+
+
+//        query.append("\t?platform cim:id ?platformId ;\n");
+//        query.append("\t\tmim:hasName ?platformName .\n");
+
+        //dzialajace platformy tez
+//        query.append("SELECT ?resId ?resName ?resDescription ?locationName ?platformId ?platformName ?propName WHERE {\n" );
+//        query.append("\t?sensor a cim:Sensor ;\n");
+//        query.append("\t\tcim:id ?resId ;\n");
+//        query.append("\t\trdfs:label ?resName ;\n");
+//        query.append("\t\trdfs:comment ?resDescription;\n");
+//        query.append("\t\tcim:locatedAt ?locationName;\n");
+//        query.append("\t\tcim:observes ?propName .\n");
+//        query.append("\t?platform cim:id ?platformId ;\n");
+//        query.append("\t\tmim:hasName ?platformName .\n");
+
+        //wszystko
+        query.append("SELECT ?resId ?resName ?resDescription ?locationName ?platformId ?platformName ?propName WHERE {\n" );
+        query.append("\t?sensor a cim:Sensor ;\n");
+        query.append("\t\tcim:id ?resId ;\n");
+        query.append("\t\trdfs:label ?resName ;\n");
+        query.append("\t\trdfs:comment ?resDescription;\n");
+        query.append("\t\tcim:locatedAt ?locationName;\n");
+        query.append("\t\tcim:observes ?propName .\n");
+        query.append("\t?platform cim:id ?platformId ;\n");
+        query.append("\t\tmim:hasName ?platformName .\n");
+
+//        query.append("\t?property rdfs:label ?propName .\n");
+//        query.append("\t?item rdfs:label ?propertyName .\n" );
+
+//        query.append("SELECT ?resId ?resName WHERE {\n" );
+//        query.append("\t?sensor a cim:Sensor;\n");
+//        query.append("\t\tcim:id ?resId ;\n");
+//        query.append("\t\trdfs:label ?resName .\n");
+        ensurePlatformAdded();
+    }
+
+    private void generateBaseQueryR1() {
+
+        query.append("PREFIX cim: <http://www.symbiote-h2020.eu/ontology/core#> \n");
+//        query.append("PREFIX cimowl: <http://www.symbiote-h2020.eu/ontology/core.owl#> \n");
+        query.append("PREFIX mim: <http://www.symbiote-h2020.eu/ontology/meta#> \n");
+        query.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n");
+        query.append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
+        query.append("PREFIX owl: <http://www.w3.org/2002/07/owl#> \n");
+        query.append("PREFIX spatial: <http://jena.apache.org/spatial#> \n");
+        query.append("PREFIX geo: <http://www.w3.org/2006/time#> \n");
         query.append("PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> \n\n");
 
 //        query.append("SELECT ?sensor WHERE {\n");
@@ -46,7 +114,7 @@ public class QueryGenerator {
         query.append("\t\trdfs:comment ?resDescription ;\n");
         query.append("\t\tcim:locatedAt ?location ;\n");
         query.append("\t\tcim:observes ?property .\n");
-        query.append("\t?platform cimowl:hasID ?platformId ;\n");
+        query.append("\t?platform cim:id ?platformId ;\n");
         query.append("\t\tmim:hasName ?platformName .\n");
         query.append("\t?location rdfs:label ?locationName ;\n");
         query.append("\t\tgeo:lat ?locationLat ;\n");

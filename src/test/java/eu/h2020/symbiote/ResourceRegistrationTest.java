@@ -93,6 +93,22 @@ public class ResourceRegistrationTest {
         assert(result);
     }
 
+    @Test
+    public void testAddingStationarySensorWithoutLocation() {
+        try {
+
+            InputStream modelToSave = IOUtils.toInputStream( IOUtils.toString(this.getClass()
+                    .getResource(RESOURCE_STATIONARY_FILENAME)));
+            Model mFromFile = ModelFactory.createDefaultModel();
+            mFromFile.read(modelToSave,null,"JSONLD");
+            SearchStorage searchStorage = SearchStorage.getInstance( SearchStorage.TESTCASE_STORAGE_NAME );
+            searchStorage.registerResource(PLATFORM_A_URI,PLATFORM_A_SERVICE_URI,RESOURCE_STATIONARY_URI, mFromFile);
+            searchStorage.getTripleStore().printDataset();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void fireQueryAll(SearchStorage storage) {
         Query informationServiceQuery;
         SelectBuilder sb = new SelectBuilder()

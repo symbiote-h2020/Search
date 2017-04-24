@@ -5,17 +5,17 @@
  */
 package eu.h2020.symbiote.ontology.model;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jena.query.*;
 import org.apache.jena.query.spatial.EntityDefinition;
 import org.apache.jena.query.spatial.SpatialDatasetFactory;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.sparql.util.QueryExecUtils;
 import org.apache.jena.tdb.TDBFactory;
 import org.apache.jena.update.UpdateAction;
-import org.apache.jena.update.UpdateExecutionFactory;
-import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -28,8 +28,6 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import static org.apache.jena.sparql.vocabulary.VocabTestQuery.query;
 
 /**
  * Class representing a triplestore - connected to in-memory or disk (TDB) jena repository. Creates a spatial index
@@ -46,6 +44,9 @@ public class TripleStore {
     private static final String BASE_REPO = "base";
     private static final String SPATIAL_REPO = "spatial";
 
+    private static final String CIM_FILE = "/core-v0.6.owl";
+
+    private static final Log log = LogFactory.getLog(TripleStore.class);
 
     //For tests only - in memory
     public TripleStore() {
@@ -69,11 +70,22 @@ public class TripleStore {
         Directory ramDir = new RAMDirectory();
 
         dataset = SpatialDatasetFactory.createLucene(baseDataset, ramDir, entDef);
+        try {
+            String cim_data = IOUtils.toString(TripleStore.class
+                    .getResourceAsStream(CIM_FILE));
+            insertGraph("", cim_data, RDFFormat.Turtle);
+
+//            printDataset();
+        } catch (IOException e) {
+            log.fatal("Could not load CIM file: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
 
 
     public TripleStore( String directory ) {
+        boolean newRepo = false;
         currentDirectory = directory;
 
         EntityDefinition entDef = new EntityDefinition("entityField", "geoField");
@@ -86,7 +98,11 @@ public class TripleStore {
 
         String baseRepoLocation = directory + (directory.endsWith("/") ? "" : "/") + BASE_REPO;
         File baseDir = new File( baseRepoLocation );
-        baseDir.mkdirs();
+        if( !baseDir.exists() ) {
+            baseDir.mkdirs();
+
+            newRepo = true;
+        }
         Dataset baseDataset= TDBFactory.createDataset(baseRepoLocation);
         Directory realDir = null;
         try {
@@ -96,6 +112,19 @@ public class TripleStore {
         }
 
         dataset = SpatialDatasetFactory.createLucene(baseDataset, realDir, entDef);
+        if( newRepo ) {
+            //TODO Load CIM, BIM and PIMs (?)
+            try {
+                String cim_data = IOUtils.toString(TripleStore.class
+                        .getResourceAsStream(CIM_FILE));
+                insertGraph("", cim_data, RDFFormat.Turtle);
+
+//                printDataset();
+            } catch (IOException e) {
+                log.fatal("Could not load CIM file: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
     }
 
     private static void deleteOldFiles(File indexDir) {

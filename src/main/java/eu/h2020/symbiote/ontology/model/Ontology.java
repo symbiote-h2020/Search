@@ -22,7 +22,7 @@ public class Ontology {
     /**
      * Graphs
      */
-    public static final String MIM_GRAPH = ROOT_URI + "meta.owl";
+    public static final String MIM_GRAPH = ROOT_URI + "meta";
     public static final String CORE_GRAPH = ROOT_URI + "core";
     public static final String MAPPING_GRAPH = ROOT_URI + "mappings";
     public static final String PLATFORMS_GRAPH = ROOT_URI + "platforms";
