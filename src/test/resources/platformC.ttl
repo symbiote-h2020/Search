@@ -16,6 +16,6 @@
 
 <http://www.symbiote-h2020.eu/ontology/platforms/3> rdf:type owl:Ontology ;
      mim:hasDescription "Test platform C" ;
-     mim:hasName "Platform C" ;
+     rdfs:label "Platform C" ;
      cim:id "3" ;
      mim:hasService <http://www.symbiote-h2020.eu/ontology/platforms/3/service/somehost3.com/resourceAccessProxy> .

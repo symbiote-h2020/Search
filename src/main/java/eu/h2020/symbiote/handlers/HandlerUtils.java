@@ -193,31 +193,37 @@ public class HandlerUtils {
             String resId = solution.get(RESOURCE_ID).toString();
             String resName = solution.get(RESOURCE_NAME).toString();
             String resDescription = solution.get(RESOURCE_DESCRIPTION).toString();
-//            String platformId = solution.get(PLATFORM_ID).toString();
-//            String platformName = solution.get(PLATFORM_NAME).toString();
-            String locationName = solution.get(LOCATION_NAME).toString();
+            String platformId = solution.get(PLATFORM_ID).toString();
+            String platformName = solution.get(PLATFORM_NAME).toString();
+            RDFNode locationNode = solution.get(LOCATION_NAME);
+            String locationName = locationNode!=null?locationNode.toString():"";
 //            String locationLat = solution.get(LOCATION_LAT).toString();
 //            String locationLong = solution.get(LOCATION_LONG).toString();
 //            String locationAlt = solution.get(LOCATION_ALT).toString();
-            String propertyName = solution.get(PROPERTY_NAME).toString();
+            RDFNode propertyNode = solution.get(PROPERTY_NAME);
+            String propertyName = propertyNode!=null?propertyNode.toString():"";
             String type = solution.get(TYPE).toString();
 
             if( !type.equals(CoreInformationModel.CIM_RESOURCE.toString()) ) {
 
                 if (!responses.containsKey(resId)) {
-                    String platformId = "platformId";
-                    String platformName = "platformName";
-                    Double val = Double.valueOf(0.0d);
+
+                    Double latVal = Double.valueOf(43.687241d);
+                    Double longVal = Double.valueOf(10.486193d);
+                    Double altVal = Double.valueOf(10);
+
                     List<String> properties = new ArrayList<>();
                     properties.add(propertyName);
 
-                    SearchResponseResource resource = new SearchResponseResource(resId, resName, resDescription, platformId, platformName, locationName, val, val, val, properties,type);
+                    SearchResponseResource resource = new SearchResponseResource(resId, resName, resDescription, platformId, platformName, locationName, latVal,longVal,altVal, properties,type);
                     responses.put(resId, resource);
                 } else {
                     //ensure all other params are the same, add to list of properties
                     SearchResponseResource existingResource = responses.get(resId);
 //                //Do equals
-                    existingResource.getObservedProperties().add(propertyName);
+                    if( propertyName != null && !propertyName.isEmpty()) {
+                        existingResource.getObservedProperties().add(propertyName);
+                    }
                 }
             }
 

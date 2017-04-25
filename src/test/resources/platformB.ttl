@@ -16,6 +16,6 @@
 
 <http://www.symbiote-h2020.eu/ontology/platforms/2> rdf:type owl:Ontology ;
      mim:hasDescription "Test platform B" ;
-     mim:hasName "Platform B" ;
+     rdfs:label "Platform B" ;
      cim:id "2" ;
      mim:hasService <http://www.symbiote-h2020.eu/ontology/platforms/2/service/somehost2.com/resourceAccessProxy> .

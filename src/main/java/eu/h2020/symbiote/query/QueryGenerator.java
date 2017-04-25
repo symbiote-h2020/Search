@@ -77,11 +77,14 @@ public class QueryGenerator {
         query.append("\t\ta ?type ;\n");
         query.append("\t\tcim:id ?resId ;\n");
         query.append("\t\trdfs:label ?resName ;\n");
-        query.append("\t\trdfs:comment ?resDescription;\n");
-        query.append("\t\tcim:locatedAt ?locationName;\n");
-        query.append("\t\tcim:observes ?propName .\n");
+        query.append("\t\trdfs:comment ?resDescription.\n");
+
         query.append("\t?platform cim:id ?platformId ;\n");
         query.append("\t\trdfs:label ?platformName .\n");
+
+        query.append("OPTIONAL { ");
+        query.append("\t?sensor cim:locatedAt ?locationName;\n");
+        query.append("\t\tcim:observes ?propName .\n }");
 //        query.append("\t?type rdfs:subClassOf cim:Sensor .\n");
 
 //        query.append("\t?property rdfs:label ?propName .\n");
@@ -129,7 +132,7 @@ public class QueryGenerator {
 
     public QueryGenerator addPlatformId( String platformId ) {
         ensurePlatformAdded();
-        query.append("\t?platform cimowl:hasID \"" + platformId + "\" .\n");
+        query.append("\t?platform cim:id \"" + platformId + "\" .\n");
         return this;
     }
 
@@ -139,14 +142,14 @@ public class QueryGenerator {
             Command command = modifyInputAndGetCommand(platformName);
             addLikePlatformName(command.getRegex(), command.getRegexCommand());
         } else {
-            query.append("\t?platform mim:hasName \"" + platformName + "\" .\n");
+            query.append("\t?platform rdfs:label \"" + platformName + "\" .\n");
         }
         return this;
     }
 
     public QueryGenerator addLikePlatformName( String platformName, String command ) {
         ensurePlatformAdded();
-        query.append("\t?platform mim:hasName ?platNamePattern . \n");
+        query.append("\t?platform rdfs:label ?platNamePattern . \n");
         query.append("\tFILTER ("+command+"(LCASE(?platNamePattern), LCASE(\"" + platformName + "\"))) .");
         return this;
     }
@@ -193,16 +196,23 @@ public class QueryGenerator {
             Command command = modifyInputAndGetCommand(locationName);
             addLikeResourceLocationName(command.getRegex(), command.getRegexCommand());
         } else {
-            query.append("\t?sensor cim:locatedAt ?location .\n");
-            query.append("\t?location rdfs:label \"" + locationName + "\" .\n");
+            //TODO check back
+//            query.append("\t?sensor cim:locatedAt ?location .\n");
+//            query.append("\t?location rdfs:label \"" + locationName + "\" .\n");
+
+            //TODO temp fix
+            query.append("\t?sensor cim:locatedAt \"" + locationName + "\" .\n");
         }
         return this;
     }
 
     public QueryGenerator addLikeResourceLocationName( String locationName, String command ) {
-        query.append("\t?sensor cim:locatedAt ?location .\n");
-        query.append("\t?location rdfs:label ?resLocationNamePattern .\n");
-        query.append("\tFILTER ("+command+"(LCASE(?resLocationNamePattern), LCASE(\"" + locationName + "\"))) .");
+        //TODO original
+//        query.append("\t?sensor cim:locatedAt ?location .\n");
+//        query.append("\t?location rdfs:label ?resLocationNamePattern .\n");
+//        query.append("\tFILTER ("+command+"(LCASE(?resLocationNamePattern), LCASE(\"" + locationName + "\"))) .");
+        //TODO temp
+        query.append("\t?sensor cim:locatedAt ?resLocationNamePattern .\n");
         return this;
     }
 
