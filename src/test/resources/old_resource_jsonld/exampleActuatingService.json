@@ -1,17 +1,11 @@
 {
   "@graph" : [ {
     "@id" : "_:b0",
-    "@type" : "http://www.symbiote-h2020.eu/ontology/core#FeatureOfInterest",
-    "hasProperty" : [ "http://www.symbiote-h2020.eu/ontology/bim/Humidity", "http://www.symbiote-h2020.eu/ontology/bim/Temperature" ],
-    "comment" : "This is room 1",
-    "label" : "Room1"
-  }, {
-    "@id" : "_:b1",
     "@type" : "http://www.symbiote-h2020.eu/ontology/core#Parameter",
     "datatype" : "xsd:string",
     "isArray" : "false"
   }, {
-    "@id" : "_:b2",
+    "@id" : "_:b1",
     "@type" : "http://www.symbiote-h2020.eu/ontology/core#InputParameter",
     "datatype" : "xsd:string",
     "hasRestriction" : "_:b5",
@@ -19,50 +13,41 @@
     "mandatory" : "true",
     "name" : "inputParam1"
   }, {
+    "@id" : "_:b2",
+    "@type" : "http://www.symbiote-h2020.eu/ontology/core#Parameter",
+    "datatype" : "xsd:string",
+    "isArray" : "false"
+  }, {
     "@id" : "_:b3",
     "@type" : "http://www.symbiote-h2020.eu/ontology/core#InputParameter",
     "datatype" : "xsd:string",
-    "hasRestriction" : "_:b6",
+    "hasRestriction" : "_:b4",
     "isArray" : "false",
     "mandatory" : "true",
     "name" : "inputParam1"
   }, {
     "@id" : "_:b4",
-    "@type" : "http://www.symbiote-h2020.eu/ontology/core#Parameter",
-    "datatype" : "xsd:string",
-    "isArray" : "false"
+    "@type" : "http://www.symbiote-h2020.eu/ontology/core#RangeRestriction",
+    "max" : "10.0",
+    "min" : "2.0"
   }, {
     "@id" : "_:b5",
     "@type" : "http://www.symbiote-h2020.eu/ontology/core#RangeRestriction",
     "max" : "10.0",
     "min" : "2.0"
   }, {
-    "@id" : "_:b6",
-    "@type" : "http://www.symbiote-h2020.eu/ontology/core#RangeRestriction",
-    "max" : "10.0",
-    "min" : "2.0"
-  }, {
     "@id" : "http://www.symbiote-h2020.eu/ontology/resources/actuatingService1",
     "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#ActuatingService", "http://www.symbiote-h2020.eu/ontology/core#Resource", "http://www.symbiote-h2020.eu/ontology/core#Service" ],
+    "actsOn" : "http://www.symbiote-h2020.eu/ontology/platforms/Platform1/foi/Room1",
     "affects" : "http://www.symbiote-h2020.eu/ontology/bim/Temperature",
-    "hasFeatureOfInterest" : "_:b0",
-    "hasInputParameter" : [ "_:b2", "_:b3" ],
-    "hasOutputParameter" : [ "_:b1", "_:b4" ],
+    "hasInputParameter" : [ "_:b1", "_:b3" ],
+    "hasOutputParameter" : [ "_:b2", "_:b0" ],
     "id" : "actuatingService1",
     "name" : "actuatingService1Name",
     "comment" : "This is actuating service 1",
     "label" : "Actuating Service 1"
   } ],
   "@context" : {
-    "hasProperty" : {
-      "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasProperty"
-    },
-    "comment" : {
-      "@id" : "http://www.w3.org/2000/01/rdf-schema#comment"
-    },
-    "label" : {
-      "@id" : "http://www.w3.org/2000/01/rdf-schema#label"
-    },
     "datatype" : {
       "@id" : "http://www.symbiote-h2020.eu/ontology/core#datatype"
     },
@@ -73,19 +58,24 @@
       "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasInputParameter",
       "@type" : "@id"
     },
+    "actsOn" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#actsOn"
+    },
+    "label" : {
+      "@id" : "http://www.w3.org/2000/01/rdf-schema#label"
+    },
+    "comment" : {
+      "@id" : "http://www.w3.org/2000/01/rdf-schema#comment"
+    },
     "id" : {
       "@id" : "http://www.symbiote-h2020.eu/ontology/core#id"
-    },
-    "affects" : {
-      "@id" : "http://www.symbiote-h2020.eu/ontology/core#affects"
     },
     "hasOutputParameter" : {
       "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasOutputParameter",
       "@type" : "@id"
     },
-    "hasFeatureOfInterest" : {
-      "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasFeatureOfInterest",
-      "@type" : "@id"
+    "affects" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#affects"
     },
     "name" : {
       "@id" : "http://www.symbiote-h2020.eu/ontology/core#name"

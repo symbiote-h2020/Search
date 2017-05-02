@@ -17,16 +17,20 @@ public class QueryGenerator {
 
     private StringBuilder query;
 
+    private StringBuilder extension;
+
     private boolean platformAdded = false;
     private boolean multivaluequery = false;
+    private boolean locationquery = false;
 
     public QueryGenerator() {
         query = new StringBuilder();
-        generateBaseQuery();
+        extension = new StringBuilder();
+//        generateBaseQuery();
     }
 
     private void generateBaseQuery() {
-
+        query = new StringBuilder();
         query.append("PREFIX cim: <http://www.symbiote-h2020.eu/ontology/core#> \n");
 //        query.append("PREFIX cimowl: <http://www.symbiote-h2020.eu/ontology/core.owl#> \n");
         query.append("PREFIX mim: <http://www.symbiote-h2020.eu/ontology/meta#> \n");
@@ -83,9 +87,28 @@ public class QueryGenerator {
         query.append("\t\trdfs:label ?platformName .\n");
 
         query.append("OPTIONAL { ");
-        query.append("\t?sensor cim:locatedAt ?locationName;\n");
-        query.append("\t\tcim:observes ?propName .\n }");
-//        query.append("\t?type rdfs:subClassOf cim:Sensor .\n");
+        query.append("\t?sensor cim:locatedAt ?location;\n");
+        query.append("\t\tcim:observes ?propName .\n");
+        query.append("\t?location rdfs:label ?locationName.}\n");
+//        //query.append("\t?type rdfs:subClassOf cim:Sensor .\n");
+        //----------
+
+        //Location test //dziala ok
+//        query.append("SELECT ?resId ?resName ?resDescription ?locationName ?platformId ?platformName ?propName ?type WHERE {\n" );
+//        query.append("\t?sensor a cim:Resource ;\n");
+//        query.append("\t\ta ?type ;\n");
+//        query.append("\t\tcim:id ?resId ;\n");
+//        query.append("\t\trdfs:label ?resName ;\n");
+//        query.append("\t\trdfs:comment ?resDescription;\n");
+//        query.append("\t\tcim:locatedAt ?location.\n");
+//
+//        query.append("\t?platform cim:id ?platformId ;\n");
+//        query.append("\t\trdfs:label ?platformName .\n");
+//
+//        query.append("	?location rdfs:label ?locationName.\n");
+//        query.append("OPTIONAL { ");
+//        query.append("\t?sensor cim:observes ?propName} .\n");
+        //---Location test
 
 //        query.append("\t?property rdfs:label ?propName .\n");
 //        query.append("\t?item rdfs:label ?propertyName .\n" );
@@ -94,8 +117,48 @@ public class QueryGenerator {
 //        query.append("\t?sensor a cim:Sensor;\n");
 //        query.append("\t\tcim:id ?resId ;\n");
 //        query.append("\t\trdfs:label ?resName .\n");
-        ensurePlatformAdded();
+
+        query.append("\t?platform a owl:Ontology ;\n");
+        query.append("\t\tmim:hasService ?service .\n");
+        query.append("\t?service mim:hasResource ?sensor .\n");
+
     }
+
+    private void generateLocationQuery() {
+
+        query = new StringBuilder();
+
+        query.append("PREFIX cim: <http://www.symbiote-h2020.eu/ontology/core#> \n");
+        query.append("PREFIX mim: <http://www.symbiote-h2020.eu/ontology/meta#> \n");
+        query.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n");
+        query.append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
+        query.append("PREFIX owl: <http://www.w3.org/2002/07/owl#> \n");
+        query.append("PREFIX spatial: <http://jena.apache.org/spatial#> \n");
+
+        //Location test //dziala ok
+        query.append("SELECT ?resId ?resName ?resDescription ?locationName ?platformId ?platformName ?propName ?type WHERE {\n" );
+        query.append("\t?sensor a cim:Resource ;\n");
+        query.append("\t\ta ?type ;\n");
+        query.append("\t\tcim:id ?resId ;\n");
+        query.append("\t\trdfs:label ?resName ;\n");
+        query.append("\t\trdfs:comment ?resDescription;\n");
+        query.append("\t\tcim:locatedAt ?location.\n");
+
+        query.append("\t?platform cim:id ?platformId ;\n");
+        query.append("\t\trdfs:label ?platformName .\n");
+
+        query.append("	?location rdfs:label ?locationName.\n");
+        query.append("OPTIONAL { ");
+        query.append("\t?sensor cim:observes ?propName} .\n");
+        //---Location test
+
+        query.append("\t?platform a owl:Ontology ;\n");
+        query.append("\t\tmim:hasService ?service .\n");
+        query.append("\t?service mim:hasResource ?sensor .\n");
+
+    }
+
+
 
     private void generateBaseQueryR1() {
 
@@ -127,30 +190,31 @@ public class QueryGenerator {
         query.append("\t\tgeo:alt ?locationAlt .\n");
         query.append("\t?property rdfs:label ?propName .\n");
 //        query.append("\t?item rdfs:label ?propertyName .\n" );
-        ensurePlatformAdded();
+
+
     }
 
     public QueryGenerator addPlatformId( String platformId ) {
-        ensurePlatformAdded();
-        query.append("\t?platform cim:id \"" + platformId + "\" .\n");
+//        ensurePlatformAdded();
+        extension.append("\t?platform cim:id \"" + platformId + "\" .\n");
         return this;
     }
 
     public QueryGenerator addPlatformName( String platformName ) {
-        ensurePlatformAdded();
+//        ensurePlatformAdded();
         if( containsRegex(platformName) ) {
             Command command = modifyInputAndGetCommand(platformName);
             addLikePlatformName(command.getRegex(), command.getRegexCommand());
         } else {
-            query.append("\t?platform rdfs:label \"" + platformName + "\" .\n");
+            extension.append("\t?platform rdfs:label \"" + platformName + "\" .\n");
         }
         return this;
     }
 
     public QueryGenerator addLikePlatformName( String platformName, String command ) {
-        ensurePlatformAdded();
-        query.append("\t?platform rdfs:label ?platNamePattern . \n");
-        query.append("\tFILTER ("+command+"(LCASE(?platNamePattern), LCASE(\"" + platformName + "\"))) .");
+//        ensurePlatformAdded();
+        extension.append("\t?platform rdfs:label ?platNamePattern . \n");
+        extension.append("\tFILTER ("+command+"(LCASE(?platNamePattern), LCASE(\"" + platformName + "\"))) .");
         return this;
     }
 
@@ -159,19 +223,19 @@ public class QueryGenerator {
             Command command = modifyInputAndGetCommand(resourceName);
             addLikeResourceName(command.getRegex(), command.getRegexCommand());
         } else {
-            query.append("\t?sensor rdfs:label \"" + resourceName + "\" .\n");
+            extension.append("\t?sensor rdfs:label \"" + resourceName + "\" .\n");
         }
         return this;
     }
 
     public QueryGenerator addLikeResourceName( String resourceName, String command ) {
-        query.append("\t?sensor rdfs:label ?resNamePattern .\n");
-        query.append("\tFILTER ("+command+"(LCASE(?resNamePattern), LCASE(\"" + resourceName + "\"))) .");
+        extension.append("\t?sensor rdfs:label ?resNamePattern .\n");
+        extension.append("\tFILTER ("+command+"(LCASE(?resNamePattern), LCASE(\"" + resourceName + "\"))) .");
         return this;
     }
 
     public QueryGenerator addResourceId( String resourceId ) {
-        query.append("\t?sensor cim:id \"" + resourceId + "\" .\n");
+        extension.append("\t?sensor cim:id \"" + resourceId + "\" .\n");
         return this;
     }
 
@@ -180,14 +244,14 @@ public class QueryGenerator {
             Command command = modifyInputAndGetCommand(resourceDescription);
             addLikeResourceDescription(command.getRegex(), command.getRegexCommand());
         } else {
-            query.append("\t?sensor rdfs:comment \"" + resourceDescription + "\" .\n");
+            extension.append("\t?sensor rdfs:comment \"" + resourceDescription + "\" .\n");
         }
         return this;
     }
 
     public QueryGenerator addLikeResourceDescription( String resourceDescription, String command ) {
-        query.append("\t?sensor rdfs:comment ?resDescriptionPattern .\n");
-        query.append("\tFILTER ("+command+"(LCASE(?resDescriptionPattern), LCASE(\"" + resourceDescription + "\"))) .");
+        extension.append("\t?sensor rdfs:comment ?resDescriptionPattern .\n");
+        extension.append("\tFILTER ("+command+"(LCASE(?resDescriptionPattern), LCASE(\"" + resourceDescription + "\"))) .");
         return this;
     }
 
@@ -198,27 +262,29 @@ public class QueryGenerator {
         } else {
             //TODO check back
 //            query.append("\t?sensor cim:locatedAt ?location .\n");
-//            query.append("\t?location rdfs:label \"" + locationName + "\" .\n");
+            extension.append("\t?location rdfs:label \"" + locationName + "\" .\n");
 
-            //TODO temp fix
-            query.append("\t?sensor cim:locatedAt \"" + locationName + "\" .\n");
+//            //TODO temp fix
+//            query.append("\t?sensor cim:locatedAt \"" + locationName + "\" .\n");
         }
+        locationquery = true;
         return this;
     }
 
     public QueryGenerator addLikeResourceLocationName( String locationName, String command ) {
         //TODO original
 //        query.append("\t?sensor cim:locatedAt ?location .\n");
-//        query.append("\t?location rdfs:label ?resLocationNamePattern .\n");
-//        query.append("\tFILTER ("+command+"(LCASE(?resLocationNamePattern), LCASE(\"" + locationName + "\"))) .");
+        extension.append("\t?location rdfs:label ?resLocationNamePattern .\n");
+        extension.append("\tFILTER ("+command+"(LCASE(?resLocationNamePattern), LCASE(\"" + locationName + "\"))) .");
         //TODO temp
-        query.append("\t?sensor cim:locatedAt ?resLocationNamePattern .\n");
+//        extension.append("\t?sensor cim:locatedAt ?resLocationNamePattern .\n");
+        locationquery = true;
         return this;
     }
 
     public QueryGenerator addResourceLocationDistance( Double latitude, Double longitude, Integer distance ) {
-        query.append("\t?location spatial:nearby ("+latitude.toString()+" " + longitude.toString() + " " + distance + " 'm') .\n");
-        query.append("\t?sensor cim:locatedAt ?location .\n");
+        extension.append("\t?location spatial:nearby ("+latitude.toString()+" " + longitude.toString() + " " + distance + " 'm') .\n");
+        extension.append("\t?sensor cim:locatedAt ?location .\n");
         return this;
     }
 
@@ -229,16 +295,16 @@ public class QueryGenerator {
             addLikeResourceObservedPropertyName(command.getRegex(), command.getRegexCommand());
         } else {
 //            query.append("\t?sensor cim:observes ?property .\n");
-            query.append("\t?property rdfs:label \"" + propertyName + "\" .\n");
+            extension.append("\t?property rdfs:label \"" + propertyName + "\" .\n");
         }
         return this;
     }
 
     public QueryGenerator addLikeResourceObservedPropertyName( String propertyName, String command ) {
         multivaluequery = true;
-        query.append("\t?sensor cim:observes ?property .\n");
-        query.append("\t?property rdfs:label ?propertyNamePattern .\n");
-        query.append("\tFILTER ("+command+"(LCASE(?propertyNamePattern), LCASE(\"" + propertyName + "\"))) .");
+        extension.append("\t?sensor cim:observes ?property .\n");
+        extension.append("\t?property rdfs:label ?propertyNamePattern .\n");
+        extension.append("\tFILTER ("+command+"(LCASE(?propertyNamePattern), LCASE(\"" + propertyName + "\"))) .");
         return this;
     }
 
@@ -248,24 +314,24 @@ public class QueryGenerator {
         for( String property: propertyNames ) {
             i++;
             if( i == 1 ) {
-                query.append("\t?property rdfs:label \"" + property + "\" .\n");
+                extension.append("\t?property rdfs:label \"" + property + "\" .\n");
             } else {
-                query.append("\t?sensor cim:observes ?property" + i + " .\n");
-                query.append("\t?property" + i + " rdfs:label \"" + property + "\" .\n");
+                extension.append("\t?sensor cim:observes ?property" + i + " .\n");
+                extension.append("\t?property" + i + " rdfs:label \"" + property + "\" .\n");
             }
         }
         return this;
     }
 
 
-    private void ensurePlatformAdded() {
-        if( !platformAdded ) {
-            query.append("\t?platform a owl:Ontology ;\n");
-            query.append("\t\tmim:hasService ?service .\n");
-            query.append("\t?service mim:hasResource ?sensor .\n");
-            platformAdded = true;
-        }
-    }
+//    private void ensurePlatformAdded() {
+//        if( !platformAdded ) {
+//            query.append("\t?platform a owl:Ontology ;\n");
+//            query.append("\t\tmim:hasService ?service .\n");
+//            query.append("\t?service mim:hasResource ?sensor .\n");
+//            platformAdded = true;
+//        }
+//    }
 
     private boolean containsRegex( String input ) {
         return input.startsWith("*")||input.endsWith("*");
@@ -299,7 +365,13 @@ public class QueryGenerator {
 
     @Override
     public String toString() {
-        String resp = query.toString() +"\n}";
+        if( locationquery ) {
+            generateLocationQuery();
+        } else {
+            generateBaseQuery();
+        }
+
+        String resp = query.toString() + extension.toString() +"\n}";
         log.debug( "SPARQL: " + resp );
         return resp;
     }

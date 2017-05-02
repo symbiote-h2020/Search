@@ -7,6 +7,30 @@
     "label" : "Room1"
   }, {
     "@id" : "_:b1",
+    "@type" : "http://www.symbiote-h2020.eu/ontology/core#RangeRestriction",
+    "max" : "10.0",
+    "min" : "2.0"
+  }, {
+    "@id" : "_:b2",
+    "@type" : "http://www.symbiote-h2020.eu/ontology/core#FeatureOfInterest",
+    "hasProperty" : [ "http://www.symbiote-h2020.eu/ontology/bim/Humidity", "http://www.symbiote-h2020.eu/ontology/bim/Temperature" ],
+    "comment" : "This is room 1",
+    "label" : "Room1"
+  }, {
+    "@id" : "_:b3",
+    "@type" : "http://www.symbiote-h2020.eu/ontology/core#Parameter",
+    "datatype" : "xsd:string",
+    "isArray" : "false"
+  }, {
+    "@id" : "_:b4",
+    "@type" : "http://www.symbiote-h2020.eu/ontology/core#InputParameter",
+    "datatype" : "xsd:string",
+    "hasRestriction" : "_:b1",
+    "isArray" : "false",
+    "mandatory" : "true",
+    "name" : "inputParam1"
+  }, {
+    "@id" : "_:b5",
     "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#WGS84Location", "http://www.symbiote-h2020.eu/ontology/core#Location" ],
     "comment" : "This is paris",
     "label" : "Paris",
@@ -14,42 +38,26 @@
     "lat" : "48.864716",
     "long" : "2.349014"
   }, {
-    "@id" : "_:b2",
-    "@type" : "http://www.symbiote-h2020.eu/ontology/core#Parameter",
-    "datatype" : "xsd:string",
-    "isArray" : "false"
-  }, {
-    "@id" : "_:b3",
-    "@type" : "http://www.symbiote-h2020.eu/ontology/core#InputParameter",
-    "datatype" : "xsd:string",
-    "hasRestriction" : "_:b4",
-    "isArray" : "false",
-    "mandatory" : "true",
-    "name" : "inputParam1"
-  }, {
-    "@id" : "_:b4",
-    "@type" : "http://www.symbiote-h2020.eu/ontology/core#RangeRestriction",
-    "max" : "10.0",
-    "min" : "2.0"
-  }, {
     "@id" : "http://www.symbiote-h2020.eu/ontology/resources/actuatingService1",
     "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#ActuatingService", "http://www.symbiote-h2020.eu/ontology/core#Resource" ],
     "affects" : "http://www.symbiote-h2020.eu/ontology/bim/Temperature",
-    "hasFeatureOfInterest" : "_:b0",
-    "hasInputParameter" : "_:b3",
-    "hasOutputParameter" : "_:b2",
+    "hasFeatureOfInterest" : "_:b2",
+    "hasInputParameter" : "_:b4",
+    "hasOutputParameter" : "_:b3",
     "id" : "actuatingService1",
     "name" : "actuatingService1Name",
     "comment" : "This is actuating service 1",
     "label" : "Actuating Service 1"
   }, {
-    "@id" : "http://www.symbiote-h2020.eu/ontology/resources/actuator1",
-    "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#Actuator", "http://www.symbiote-h2020.eu/ontology/core#Resource" ],
+    "@id" : "http://www.symbiote-h2020.eu/ontology/resources/stationardevice1",
+    "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#Actuator", "http://www.symbiote-h2020.eu/ontology/core#Resource", "http://www.symbiote-h2020.eu/ontology/core#StationarySensor" ],
     "hasCapability" : "http://www.symbiote-h2020.eu/ontology/resources/actuatingService1",
-    "id" : "actuator1",
-    "locatedAt" : "_:b1",
-    "comment" : "This is actuator 1",
-    "label" : "Actuator 1"
+    "hasFeatureOfInterest" : "_:b0",
+    "id" : "stationardevice1",
+    "locatedAt" : "_:b5",
+    "observes" : [ "http://www.symbiote-h2020.eu/ontology/bim/Humidity", "http://www.symbiote-h2020.eu/ontology/bim/Temperature" ],
+    "comment" : "This is stationary device 1",
+    "label" : "Stationary device 1"
   } ],
   "@context" : {
     "hasProperty" : {
@@ -61,31 +69,29 @@
     "label" : {
       "@id" : "http://www.w3.org/2000/01/rdf-schema#label"
     },
-    "hasCapability" : {
-      "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasCapability",
-      "@type" : "@id"
+    "max" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#max"
     },
-    "locatedAt" : {
-      "@id" : "http://www.symbiote-h2020.eu/ontology/core#locatedAt",
-      "@type" : "@id"
-    },
-    "id" : {
-      "@id" : "http://www.symbiote-h2020.eu/ontology/core#id"
-    },
-    "hasFeatureOfInterest" : {
-      "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasFeatureOfInterest",
-      "@type" : "@id"
+    "min" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#min"
     },
     "hasOutputParameter" : {
       "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasOutputParameter",
       "@type" : "@id"
     },
-    "affects" : {
-      "@id" : "http://www.symbiote-h2020.eu/ontology/core#affects"
+    "hasFeatureOfInterest" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasFeatureOfInterest",
+      "@type" : "@id"
+    },
+    "id" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#id"
     },
     "hasInputParameter" : {
       "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasInputParameter",
       "@type" : "@id"
+    },
+    "affects" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#affects"
     },
     "name" : {
       "@id" : "http://www.symbiote-h2020.eu/ontology/core#name"
@@ -103,6 +109,17 @@
     "mandatory" : {
       "@id" : "http://www.symbiote-h2020.eu/ontology/core#mandatory"
     },
+    "observes" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#observes"
+    },
+    "hasCapability" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasCapability",
+      "@type" : "@id"
+    },
+    "locatedAt" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#locatedAt",
+      "@type" : "@id"
+    },
     "alt" : {
       "@id" : "http://www.w3.org/2003/01/geo/wgs84_pos#alt"
     },
@@ -111,12 +128,6 @@
     },
     "lat" : {
       "@id" : "http://www.w3.org/2003/01/geo/wgs84_pos#lat"
-    },
-    "max" : {
-      "@id" : "http://www.symbiote-h2020.eu/ontology/core#max"
-    },
-    "min" : {
-      "@id" : "http://www.symbiote-h2020.eu/ontology/core#min"
     }
   }
 }

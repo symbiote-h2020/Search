@@ -1,0 +1,26 @@
+{
+  "@id" : "http://www.symbiote-h2020.eu/ontology/resources/mobile1",
+  "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#MobileSensor", "http://www.symbiote-h2020.eu/ontology/core#Resource" ],
+  "id" : "mobile1",
+  "locatedAt" : "http://www.symbiote-h2020.eu/ontology/platforms/Platform1/location/Paris",
+  "observes" : "http://www.symbiote-h2020.eu/ontology/bim/Temperature",
+  "comment" : "This is mobile 1",
+  "label" : "Mobile 1",
+  "@context" : {
+    "locatedAt" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#locatedAt"
+    },
+    "observes" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#observes"
+    },
+    "comment" : {
+      "@id" : "http://www.w3.org/2000/01/rdf-schema#comment"
+    },
+    "label" : {
+      "@id" : "http://www.w3.org/2000/01/rdf-schema#label"
+    },
+    "id" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#id"
+    }
+  }
+}

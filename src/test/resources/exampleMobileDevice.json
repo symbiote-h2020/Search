@@ -7,12 +7,12 @@
     "label" : "Room1"
   }, {
     "@id" : "_:b1",
-    "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#WGS84Location", "http://www.symbiote-h2020.eu/ontology/core#Location" ],
-    "comment" : "This is paris",
-    "label" : "Paris",
-    "alt" : "15.0",
-    "lat" : "48.864716",
-    "long" : "2.349014"
+    "@type" : "http://www.symbiote-h2020.eu/ontology/core#InputParameter",
+    "datatype" : "xsd:string",
+    "hasRestriction" : "_:b3",
+    "isArray" : "false",
+    "mandatory" : "true",
+    "name" : "inputParam1"
   }, {
     "@id" : "_:b2",
     "@type" : "http://www.symbiote-h2020.eu/ontology/core#Parameter",
@@ -20,36 +20,37 @@
     "isArray" : "false"
   }, {
     "@id" : "_:b3",
-    "@type" : "http://www.symbiote-h2020.eu/ontology/core#InputParameter",
-    "datatype" : "xsd:string",
-    "hasRestriction" : "_:b4",
-    "isArray" : "false",
-    "mandatory" : "true",
-    "name" : "inputParam1"
-  }, {
-    "@id" : "_:b4",
     "@type" : "http://www.symbiote-h2020.eu/ontology/core#RangeRestriction",
     "max" : "10.0",
     "min" : "2.0"
+  }, {
+    "@id" : "_:b4",
+    "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#WGS84Location", "http://www.symbiote-h2020.eu/ontology/core#Location" ],
+    "comment" : "This is paris",
+    "label" : "Paris",
+    "alt" : "15.0",
+    "lat" : "48.864716",
+    "long" : "2.349014"
   }, {
     "@id" : "http://www.symbiote-h2020.eu/ontology/resources/actuatingService1",
     "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#ActuatingService", "http://www.symbiote-h2020.eu/ontology/core#Resource" ],
     "affects" : "http://www.symbiote-h2020.eu/ontology/bim/Temperature",
     "hasFeatureOfInterest" : "_:b0",
-    "hasInputParameter" : "_:b3",
+    "hasInputParameter" : "_:b1",
     "hasOutputParameter" : "_:b2",
     "id" : "actuatingService1",
     "name" : "actuatingService1Name",
     "comment" : "This is actuating service 1",
     "label" : "Actuating Service 1"
   }, {
-    "@id" : "http://www.symbiote-h2020.eu/ontology/resources/actuator1",
-    "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#Actuator", "http://www.symbiote-h2020.eu/ontology/core#Resource" ],
+    "@id" : "http://www.symbiote-h2020.eu/ontology/resources/mobiledevice1",
+    "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#MobileSensor", "http://www.symbiote-h2020.eu/ontology/core#Actuator", "http://www.symbiote-h2020.eu/ontology/core#Resource" ],
     "hasCapability" : "http://www.symbiote-h2020.eu/ontology/resources/actuatingService1",
-    "id" : "actuator1",
-    "locatedAt" : "_:b1",
-    "comment" : "This is actuator 1",
-    "label" : "Actuator 1"
+    "id" : "mobiledevice1",
+    "locatedAt" : "_:b4",
+    "observes" : "http://www.symbiote-h2020.eu/ontology/bim/Temperature",
+    "comment" : "This is mobile device 1",
+    "label" : "Mobile device 1"
   } ],
   "@context" : {
     "hasProperty" : {
@@ -61,12 +62,8 @@
     "label" : {
       "@id" : "http://www.w3.org/2000/01/rdf-schema#label"
     },
-    "hasCapability" : {
-      "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasCapability",
-      "@type" : "@id"
-    },
-    "locatedAt" : {
-      "@id" : "http://www.symbiote-h2020.eu/ontology/core#locatedAt",
+    "hasInputParameter" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasInputParameter",
       "@type" : "@id"
     },
     "id" : {
@@ -76,19 +73,15 @@
       "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasFeatureOfInterest",
       "@type" : "@id"
     },
-    "hasOutputParameter" : {
-      "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasOutputParameter",
-      "@type" : "@id"
-    },
     "affects" : {
       "@id" : "http://www.symbiote-h2020.eu/ontology/core#affects"
     },
-    "hasInputParameter" : {
-      "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasInputParameter",
-      "@type" : "@id"
-    },
     "name" : {
       "@id" : "http://www.symbiote-h2020.eu/ontology/core#name"
+    },
+    "hasOutputParameter" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasOutputParameter",
+      "@type" : "@id"
     },
     "datatype" : {
       "@id" : "http://www.symbiote-h2020.eu/ontology/core#datatype"
@@ -117,6 +110,17 @@
     },
     "min" : {
       "@id" : "http://www.symbiote-h2020.eu/ontology/core#min"
+    },
+    "observes" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#observes"
+    },
+    "hasCapability" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasCapability",
+      "@type" : "@id"
+    },
+    "locatedAt" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#locatedAt",
+      "@type" : "@id"
     }
   }
 }

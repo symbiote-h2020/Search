@@ -1,23 +1,43 @@
 {
-  "@id" : "http://www.symbiote-h2020.eu/ontology/resources/mobile1",
-  "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#MobileSensor", "http://www.symbiote-h2020.eu/ontology/core#Resource" ],
-  "id" : "mobile1",
-  "locatedAt" : "http://www.symbiote-h2020.eu/ontology/platforms/Platform1/location/Paris",
-  "observes" : "http://www.symbiote-h2020.eu/ontology/bim/Temperature",
-  "comment" : "This is mobile 1",
-  "label" : "Mobile 1",
+  "@graph" : [ {
+    "@id" : "_:b0",
+    "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#WGS84Location", "http://www.symbiote-h2020.eu/ontology/core#Location" ],
+    "comment" : "This is paris",
+    "label" : "Paris",
+    "alt" : "15.0",
+    "lat" : "48.864716",
+    "long" : "2.349014"
+  }, {
+    "@id" : "http://www.symbiote-h2020.eu/ontology/resources/mobile1",
+    "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#MobileSensor", "http://www.symbiote-h2020.eu/ontology/core#Resource" ],
+    "id" : "mobile1",
+    "locatedAt" : "_:b0",
+    "observes" : "http://www.symbiote-h2020.eu/ontology/bim/Temperature",
+    "comment" : "This is mobile 1",
+    "label" : "Mobile 1"
+  } ],
   "@context" : {
-    "locatedAt" : {
-      "@id" : "http://www.symbiote-h2020.eu/ontology/core#locatedAt"
+    "alt" : {
+      "@id" : "http://www.w3.org/2003/01/geo/wgs84_pos#alt"
     },
-    "observes" : {
-      "@id" : "http://www.symbiote-h2020.eu/ontology/core#observes"
+    "long" : {
+      "@id" : "http://www.w3.org/2003/01/geo/wgs84_pos#long"
+    },
+    "lat" : {
+      "@id" : "http://www.w3.org/2003/01/geo/wgs84_pos#lat"
     },
     "comment" : {
       "@id" : "http://www.w3.org/2000/01/rdf-schema#comment"
     },
     "label" : {
       "@id" : "http://www.w3.org/2000/01/rdf-schema#label"
+    },
+    "locatedAt" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#locatedAt",
+      "@type" : "@id"
+    },
+    "observes" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#observes"
     },
     "id" : {
       "@id" : "http://www.symbiote-h2020.eu/ontology/core#id"
