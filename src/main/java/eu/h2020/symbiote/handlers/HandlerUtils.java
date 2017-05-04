@@ -1,12 +1,12 @@
 package eu.h2020.symbiote.handlers;
 
+import eu.h2020.symbiote.core.internal.CoreQueryRequest;
 import eu.h2020.symbiote.model.Platform;
 import eu.h2020.symbiote.model.Resource;
 import eu.h2020.symbiote.ontology.model.CoreInformationModel;
 import eu.h2020.symbiote.ontology.model.MetaInformationModel;
 import eu.h2020.symbiote.ontology.model.Ontology;
 import eu.h2020.symbiote.query.QueryGenerator;
-import eu.h2020.symbiote.query.SearchRequest;
 import eu.h2020.symbiote.query.SearchResponse;
 import eu.h2020.symbiote.query.SearchResponseResource;
 import org.apache.commons.logging.Log;
@@ -17,7 +17,10 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static eu.h2020.symbiote.query.QueryVarName.*;
@@ -149,7 +152,7 @@ public class HandlerUtils {
      * @param request
      * @return
      */
-    public static QueryGenerator generateQueryFromSearchRequest( SearchRequest request ) {
+    public static QueryGenerator generateQueryFromSearchRequest( CoreQueryRequest request ) {
         QueryGenerator q = new QueryGenerator();
 
         if( request.getPlatform_id() != null && !request.getPlatform_id().isEmpty()) {
@@ -197,9 +200,21 @@ public class HandlerUtils {
             String platformName = solution.get(PLATFORM_NAME).toString();
             RDFNode locationNode = solution.get(LOCATION_NAME);
             String locationName = locationNode!=null?locationNode.toString():"";
-//            String locationLat = solution.get(LOCATION_LAT).toString();
-//            String locationLong = solution.get(LOCATION_LONG).toString();
-//            String locationAlt = solution.get(LOCATION_ALT).toString();
+
+            RDFNode locationLatNode = solution.get(LOCATION_LAT);
+            RDFNode locationLongNode = solution.get(LOCATION_LONG);
+            RDFNode locationAltNode = solution.get(LOCATION_ALT);
+            Double latVal = null;
+            Double longVal = null;
+            Double altVal = null;
+            try {
+                latVal = locationLatNode != null ? Double.valueOf(locationLatNode.toString()) : null;
+                longVal = locationLongNode != null ? Double.valueOf(locationLongNode.toString()) : null;
+                altVal = locationAltNode != null ? Double.valueOf(locationAltNode.toString()) : null;
+            } catch( NumberFormatException e ) {
+                log.error("Number format exception occurred when reading location values: " + e.getMessage(), e);
+            }
+
             RDFNode propertyNode = solution.get(PROPERTY_NAME);
             String propertyName = propertyNode!=null?propertyNode.toString():"";
             String type = solution.get(TYPE).toString();
@@ -208,9 +223,9 @@ public class HandlerUtils {
 
                 if (!responses.containsKey(resId)) {
 
-                    Double latVal = Double.valueOf(43.687241d);
-                    Double longVal = Double.valueOf(10.486193d);
-                    Double altVal = Double.valueOf(10);
+//                    Double latVal = Double.valueOf(43.687241d);
+//                    Double longVal = Double.valueOf(10.486193d);
+//                    Double altVal = Double.valueOf(10);
 
                     List<String> properties = new ArrayList<>();
                     properties.add(propertyName);

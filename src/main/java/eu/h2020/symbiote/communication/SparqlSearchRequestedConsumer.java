@@ -7,9 +7,8 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
-import eu.h2020.symbiote.core.internal.CoreQueryRequest;
+import eu.h2020.symbiote.core.internal.CoreSparqlQueryRequest;
 import eu.h2020.symbiote.handlers.SearchHandler;
-import eu.h2020.symbiote.query.SearchResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -21,9 +20,9 @@ import java.io.IOException;
  *
  * Created by Mael on 17/01/2017.
  */
-public class SearchRequestedConsumer extends DefaultConsumer {
+public class SparqlSearchRequestedConsumer extends DefaultConsumer {
 
-    private static Log log = LogFactory.getLog(SearchRequestedConsumer.class);
+    private static Log log = LogFactory.getLog(SparqlSearchRequestedConsumer.class);
 
     private final SearchHandler handler;
 
@@ -34,7 +33,7 @@ public class SearchRequestedConsumer extends DefaultConsumer {
      * @param handler handler to be used by the consumer.
      *
      */
-    public SearchRequestedConsumer(Channel channel, SearchHandler handler) {
+    public SparqlSearchRequestedConsumer(Channel channel, SearchHandler handler) {
         super(channel);
         this.handler = handler;
     }
@@ -42,28 +41,25 @@ public class SearchRequestedConsumer extends DefaultConsumer {
     @Override
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
         String msg = new String(body);
-        log.debug( "Consume search requested message: " + msg );
+        log.debug( "Consume sparql search requested message: " + msg );
 
         //Try to parse the message
         try {
             ObjectMapper mapper = new ObjectMapper();
-            CoreQueryRequest searchRequest = mapper.readValue(msg, CoreQueryRequest.class);
+            CoreSparqlQueryRequest searchRequest = mapper.readValue(msg, CoreSparqlQueryRequest.class);
 
-            
-
-            SearchResponse response = handler.search(searchRequest);
+            String response = handler.sparqlSearch(searchRequest);
             //Send the response back to the client
-            String responseMessage = "msg";
-            if( response != null && response.getResourceList() != null ) {
-                responseMessage = "size is " + response.getResourceList().size();
-            } else {
-                responseMessage = "Response is null or empty";
-            }
+//            String responseMessage = "msg";
+//            if( response != null && response.getResourceList() != null ) {
+//                responseMessage = "size is " + response.getResourceList().size();
+//            } else {
+//                responseMessage = "Response is null or empty";
+//            }
 
+            log.debug( "Got Sparql response : " + response );
 
-            log.debug( "Calculated response, sending back to the sender: " + responseMessage);
-
-            byte[] responseBytes = mapper.writeValueAsBytes(response!=null?response.getResourceList():"[]");
+            byte[] responseBytes = mapper.writeValueAsBytes(response!=null?response:"[]");
 
             AMQP.BasicProperties replyProps = new AMQP.BasicProperties
                     .Builder()

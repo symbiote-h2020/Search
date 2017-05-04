@@ -1,5 +1,7 @@
 package eu.h2020.symbiote.handlers;
 
+import eu.h2020.symbiote.core.internal.CoreQueryRequest;
+import eu.h2020.symbiote.core.internal.CoreSparqlQueryRequest;
 import eu.h2020.symbiote.model.Platform;
 import eu.h2020.symbiote.ontology.model.TripleStore;
 import eu.h2020.symbiote.query.*;
@@ -8,8 +10,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
+import org.apache.jena.query.ResultSetFormatter;
 import org.apache.jena.rdf.model.*;
+import org.apache.jena.sparql.ARQException;
+import org.apache.jena.sparql.resultset.ResultsFormat;
 
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +45,7 @@ public class SearchHandler implements ISearchEvents{
 
 
     @Override
-    public SearchResponse search(SearchRequest request) {
+    public SearchResponse search(CoreQueryRequest request) {
         SearchResponse response = new SearchResponse();
         try {
 
@@ -50,12 +60,36 @@ public class SearchHandler implements ISearchEvents{
             }
 
         } catch( Exception e ) {
-            log.error("Error occured during search: " + e.getMessage());
+            log.error("Error occurred during search: " + e.getMessage());
             e.printStackTrace();
         }
         return response;
     }
 
+    @Override
+    public String sparqlSearch(CoreSparqlQueryRequest request) {
+        ResultSet resultSet = this.triplestore.executeQuery(request.getQuery());
+        String resultOfSearch = "";
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+        String formatString = request.getOutputFormat().toString();
+        ResultsFormat format = ResultsFormat.lookup(formatString);
+        try {
+            ResultSetFormatter.output(stream, resultSet, format);
+        } catch ( ARQException e ) {
+            log.warn("Got unsupported format exception, switching to text output format... " + e.getMessage());
+            //use default formatter in case of unsupported format/other errors
+            ResultSetFormatter.out(stream, resultSet);
+        }
+        try {
+            resultOfSearch = stream.toString("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            log.error("Error occurred when doing sparqlSearch formatting: " + e.getMessage(),e);
+            e.printStackTrace();
+        }
+        return resultOfSearch;
+    }
 
     private void searchForPropertiesOfResource(SearchResponseResource resource) {
         ResourceAndObservedPropertyQueryGenerator q = new ResourceAndObservedPropertyQueryGenerator(resource.getId());

@@ -1,6 +1,6 @@
 {
   "@graph" : [ {
-    "@id" : "http://www.symbiote-h2020.eu/ontology/resources/actuator1/location",
+    "@id" : "_:b0",
     "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#WGS84Location", "http://www.symbiote-h2020.eu/ontology/core#Location" ],
     "comment" : "This is paris",
     "label" : "Paris",
@@ -47,7 +47,7 @@
     "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#Actuator", "http://www.symbiote-h2020.eu/ontology/core#Resource" ],
     "hasCapability" : "http://www.symbiote-h2020.eu/ontology/resources/actuatingService1",
     "id" : "actuator1",
-    "locatedAt" : "http://www.symbiote-h2020.eu/ontology/resources/actuator1/location",
+    "locatedAt" : "_:b0",
     "comment" : "This is actuator 1",
     "label" : "Actuator 1"
   } ],

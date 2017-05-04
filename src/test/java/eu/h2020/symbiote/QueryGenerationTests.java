@@ -82,7 +82,7 @@ public class QueryGenerationTests {
             registry.registerResource(PLATFORM_A_URI,PLATFORM_A_SERVICE_URI,RESOURCE_ACTUATOR_URI,actuatorModel);
             registry.registerResource(PLATFORM_A_URI,PLATFORM_A_SERVICE_URI,RESOURCE_ACTUATING_SERVICE_URI,actuatingServiceModel);
 
-            triplestore.printDataset();
+//            triplestore.printDataset();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -372,116 +372,126 @@ public class QueryGenerationTests {
         assertEquals("Resource query should return " + 0 + " but got " + size, 0, size);
     }
 
-//    @Test
-//    public void testSearchByResourceObservedPropertyName() {
-//        String query = new QueryGenerator().addResourceObservedPropertyName("Temperature").toString();
-//        ResultSet resultSet = triplestore.executeQuery(query);
-//        int size = countResultSetSize(resultSet);
-//        assertEquals("Resource query should return " + 3 + " but got " + size, 3, size);
+    @Test
+    public void testSearchByResourceObservedPropertyName() {
+        String query = new QueryGenerator()
+                .addResourceObservedPropertyName("temperature")
+                .toString();
+        ResultSet resultSet = triplestore.executeQuery(query);
+        int size = countAndPrintSearchResponses(resultSet);
+        assertEquals("Resource query should return " + 2 + " but got " + size, 2, size);
+//        printSearchResponsesFormatter(resultSet);
+
+        //Platform 2
+        query = new QueryGenerator().addResourceObservedPropertyName("humidity").toString();
+        resultSet = triplestore.executeQuery(query);
+        size = countAndPrintSearchResponses(resultSet);
+        assertEquals("Resource query should return " + 1 + " but got " + size, 1, size);
+    }
+
+    @Test
+    public void testSearchByResourceObservedPropertyName_NotExistingResource() {
+        //Not existing platform
+        String query = new QueryGenerator().addResourceObservedPropertyName("12345property").toString();
+        ResultSet resultSet = triplestore.executeQuery(query);
+        int size = countResultSetSize(resultSet);
+        assertEquals("Resource query should return " + 0 + " but got " + size, 0, size);
+    }
 //
-//        //Platform 2
-//        query = new QueryGenerator().addResourceObservedPropertyName("Humidity").toString();
-//        resultSet = triplestore.executeQuery(query);
-//        size = countResultSetSize(resultSet);
-//        assertEquals("Resource query should return " + 2 + " but got " + size, 2, size);
-//    }
-//
-//    @Test
-//    public void testSearchByResourceObservedPropertyName_NotExistingResource() {
-//        //Not existing platform
-//        String query = new QueryGenerator().addResourceObservedPropertyName("12345property").toString();
-//        ResultSet resultSet = triplestore.executeQuery(query);
-//        int size = countResultSetSize(resultSet);
-//        assertEquals("Resource query should return " + 0 + " but got " + size, 0, size);
-//    }
-//
-//    @Test
-//    public void testSearchByLikeResourceObservedPropertyName() {
-//        String query = new QueryGenerator().addLikeResourceObservedPropertyName("Temp","CONTAINS").toString();
-//        ResultSet resultSet = triplestore.executeQuery(query);
-//        int size = countResultSetSize(resultSet);
-//        assertEquals("Resource query should return " + 3 + " but got " + size, 3, size);
-//
-//        //Platform 2
-//        query = new QueryGenerator().addLikeResourceObservedPropertyName("Hum","CONTAINS").toString();
-//        resultSet = triplestore.executeQuery(query);
-//        size = countResultSetSize(resultSet);
-//        assertEquals("Resource query should return " + 2 + " but got " + size, 2, size);
-//    }
-//
-//    @Test
-//    public void testSearchByLikeResourceObservedPropertyName_NotExistingResource() {
-//        //Not existing platform
-//        String query = new QueryGenerator().addLikeResourceObservedPropertyName("12345property","CONTAINS").toString();
-//        ResultSet resultSet = triplestore.executeQuery(query);
-//        int size = countResultSetSize(resultSet);
-//        assertEquals("Resource query should return " + 0 + " but got " + size, 0, size);
-//    }
-//
-//    @Test
-//    public void testSearchByResourceObservedPropertyNames() {
-//        List<String> names = new ArrayList<String>();
-//        names.add("Temperature");
-//        names.add("Humidity");
-//
-//        String query = new QueryGenerator().addResourceObservedPropertyNames(names).toString();
-//        ResultSet resultSet = triplestore.executeQuery(query);
-//        int size = countResultSetSize(resultSet);
-//        assertEquals("Resource query should return " + 1 + " but got " + size, 1, size);
-//    }
-//
-//    @Test
-//    public void testSearchByNearby() {
-//        Double latitude = Double.valueOf("52.401790");
-//        Double longitude = Double.valueOf("16.960144");
-//        Integer distance = Integer.valueOf("1000");
-//
-//        String query = new QueryGenerator().addResourceLocationDistance(latitude,longitude,distance).toString();
-//        ResultSet resultSet = triplestore.executeQuery(query);
-//        int size = countResultSetSize(resultSet);
-//        assertEquals("Resource query should return " + 4 + " but got " + size, 4, size);
-//    }
-//
-//    @Test
-//    public void testSearchByNearby_NotExisting() {
-//        Double latitude = Double.valueOf("72.401790");
-//        Double longitude = Double.valueOf("26.960144");
-//        Integer distance = Integer.valueOf("1000");
-//
-//        String query = new QueryGenerator().addResourceLocationDistance(latitude,longitude,distance).toString();
-//        ResultSet resultSet = triplestore.executeQuery(query);
-//        int size = countResultSetSize(resultSet);
-//        assertEquals("Resource query should return " + 0 + " but got " + size, 0, size);
-//    }
-//
-//    @Test
-//    public void testNearbyAndObservedProperty() {
-//        Double latitude = Double.valueOf("52.401790");
-//        Double longitude = Double.valueOf("16.960144");
-//        Integer distance = Integer.valueOf("1000");
-//
-//        String query = new QueryGenerator().addResourceLocationDistance(latitude,longitude,distance)
-//                .addResourceObservedPropertyName("Temperature").toString();
-//        ResultSet resultSet = triplestore.executeQuery(query);
-//        int size = countResultSetSize(resultSet);
-//        assertEquals("Resource query should return " + 2 + " but got " + size, 2, size);
-//    }
-//
-//    @Test
-//    public void testNearbyAndObservedPropertyAndComment() {
-//        Double latitude = Double.valueOf("52.401790");
-//        Double longitude = Double.valueOf("16.960144");
-//        Integer distance = Integer.valueOf("1000");
-//
-//        String query = new QueryGenerator().addResourceObservedPropertyName("Temperature")
-//                .addResourceLocationDistance(latitude,longitude,distance)
-//                .addLikeResourceDescription("01","CONTAINS")
-//                .toString();
-//        ResultSet resultSet = triplestore.executeQuery(query);
-//        int size = countResultSetSize(resultSet);
-//        assertEquals("Resource query should return " + 1 + " but got " + size, 1, size);
-//    }
-//
+    @Test
+    public void testSearchByLikeResourceObservedPropertyName() {
+        String query = new QueryGenerator().addLikeResourceObservedPropertyName("temp","CONTAINS").toString();
+        ResultSet resultSet = triplestore.executeQuery(query);
+        int size = countAndPrintSearchResponses(resultSet);
+        assertEquals("Resource query should return " + 2 + " but got " + size, 2, size);
+
+        query = new QueryGenerator().addLikeResourceObservedPropertyName("mperat","CONTAINS").toString();
+        resultSet = triplestore.executeQuery(query);
+        size = countAndPrintSearchResponses(resultSet);
+        assertEquals("Resource query should return " + 2 + " but got " + size, 2, size);
+
+        //Platform 2
+        query = new QueryGenerator().addLikeResourceObservedPropertyName("hum","CONTAINS").toString();
+        resultSet = triplestore.executeQuery(query);
+        size = countAndPrintSearchResponses(resultSet);
+        assertEquals("Resource query should return " + 1 + " but got " + size, 1, size);
+    }
+
+    @Test
+    public void testSearchByLikeResourceObservedPropertyName_NotExistingResource() {
+        //Not existing platform
+        String query = new QueryGenerator().addLikeResourceObservedPropertyName("12345property","CONTAINS").toString();
+        ResultSet resultSet = triplestore.executeQuery(query);
+        int size = countAndPrintSearchResponses(resultSet);
+        assertEquals("Resource query should return " + 0 + " but got " + size, 0, size);
+    }
+
+    @Test
+    public void testSearchByResourceObservedPropertyNames() {
+        List<String> names = new ArrayList<>();
+        names.add("temperature");
+        names.add("humidity");
+
+        String query = new QueryGenerator().addResourceObservedPropertyNames(names).toString();
+        ResultSet resultSet = triplestore.executeQuery(query);
+        int size = countResultSetSize(resultSet);
+        assertEquals("Resource query should return " + 1 + " but got " + size, 1, size);
+    }
+
+    @Test
+    public void testSearchByNearby() {
+        Double latitude = Double.valueOf("48.864716");
+        Double longitude = Double.valueOf("2.349014");
+        Integer distance = Integer.valueOf("1000");
+
+        String query = new QueryGenerator().addResourceLocationDistance(latitude,longitude,distance).toString();
+        ResultSet resultSet = triplestore.executeQuery(query);
+//        printSearchResponsesFormatter(resultSet);
+
+        int size = countAndPrintSearchResponses(resultSet);
+        assertEquals("Resource query should return " + 3 + " but got " + size, 3, size);
+    }
+
+    @Test
+    public void testSearchByNearby_NotExisting() {
+        Double latitude = Double.valueOf("72.401790");
+        Double longitude = Double.valueOf("26.960144");
+        Integer distance = Integer.valueOf("1000");
+
+        String query = new QueryGenerator().addResourceLocationDistance(latitude,longitude,distance).toString();
+        ResultSet resultSet = triplestore.executeQuery(query);
+        int size = countResultSetSize(resultSet);
+        assertEquals("Resource query should return " + 0 + " but got " + size, 0, size);
+    }
+
+    @Test
+    public void testNearbyAndObservedProperty() {
+        Double latitude = Double.valueOf("48.864716");
+        Double longitude = Double.valueOf("2.349014");
+        Integer distance = Integer.valueOf("1000");
+
+        String query = new QueryGenerator().addResourceLocationDistance(latitude,longitude,distance)
+                .addResourceObservedPropertyName("humidity").toString();
+        ResultSet resultSet = triplestore.executeQuery(query);
+        int size = countResultSetSize(resultSet);
+        assertEquals("Resource query should return " + 1 + " but got " + size, 1, size);
+    }
+
+    @Test
+    public void testNearbyAndObservedPropertyAndComment() {
+        Double latitude = Double.valueOf("48.864716");
+        Double longitude = Double.valueOf("2.349014");
+        Integer distance = Integer.valueOf("1000");
+
+        String query = new QueryGenerator().addResourceObservedPropertyName("temperature")
+                .addResourceLocationDistance(latitude,longitude,distance)
+                .addLikeResourceDescription("stat","CONTAINS")
+                .toString();
+        ResultSet resultSet = triplestore.executeQuery(query);
+        int size = countResultSetSize(resultSet);
+        assertEquals("Resource query should return " + 1 + " but got " + size, 1, size);
+    }
+
     private int countResultSetSize( ResultSet resultSet ) {
 //        int i = 0;
 //        while (resultSet.hasNext()) {
@@ -514,21 +524,24 @@ public class QueryGenerationTests {
         String query = IOUtils.toString(this.getClass()
                 .getResource(filename));
         ResultSet resultSet = store.executeQuery(query);
-        System.out.println(">>>>>>>>>>>>> Executing query " + filename);
-        while (resultSet.hasNext()) {
-            QuerySolution solution = resultSet.next();
-            Iterator<String> varNames = solution.varNames();
-            String temp = "";
-            while (varNames.hasNext()) {
-                String var = varNames.next();
-                if (!temp.isEmpty()) {
-                    temp += ", ";
-                }
-                temp += var + " = " + solution.get(var).toString();
-            }
-            System.out.println( temp );
-        }
-        System.out.println("<<<<<<<<<<<<< SearchRequest finished ");
+        printSearchResponsesFormatter(resultSet);
+
+
+//        System.out.println(">>>>>>>>>>>>> Executing query " + filename);
+//        while (resultSet.hasNext()) {
+//            QuerySolution solution = resultSet.next();
+//            Iterator<String> varNames = solution.varNames();
+//            String temp = "";
+//            while (varNames.hasNext()) {
+//                String var = varNames.next();
+//                if (!temp.isEmpty()) {
+//                    temp += ", ";
+//                }
+//                temp += var + " = " + solution.get(var).toString();
+//            }
+//            System.out.println( temp );
+//        }
+//        System.out.println("<<<<<<<<<<<<< SearchRequest finished ");
     }
 
 }

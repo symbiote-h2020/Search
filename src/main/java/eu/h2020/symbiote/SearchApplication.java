@@ -73,6 +73,7 @@ public class SearchApplication {
 
             SearchHandler searchHandler = new SearchHandler(searchStorage.getTripleStore() );
             manager.registerResourceSearchConsumer(searchHandler);
+            manager.registerResourceSparqlSearchConsumer(searchHandler);
 
         }
     }

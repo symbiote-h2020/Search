@@ -45,6 +45,9 @@ public class TripleStore {
     private static final String SPATIAL_REPO = "spatial";
 
     private static final String CIM_FILE = "/core-v0.6.owl";
+    private static final String BIM_FILE = "/bim-0.3.owl";
+    private static final String MIM_FILE = "/meta-v0.3.owl";
+    private static final String QU_FILE = "/qu-rec20.owl";
 
     private static final Log log = LogFactory.getLog(TripleStore.class);
 
@@ -74,6 +77,19 @@ public class TripleStore {
             String cim_data = IOUtils.toString(TripleStore.class
                     .getResourceAsStream(CIM_FILE));
             insertGraph("", cim_data, RDFFormat.Turtle);
+
+            String bim_data = IOUtils.toString(TripleStore.class
+                    .getResourceAsStream(BIM_FILE));
+            insertGraph("", bim_data, RDFFormat.Turtle);
+
+            String mim_data = IOUtils.toString(TripleStore.class
+                    .getResourceAsStream(MIM_FILE));
+            insertGraph("", mim_data, RDFFormat.Turtle);
+
+            String qureq20_data = IOUtils.toString(TripleStore.class
+                    .getResourceAsStream(QU_FILE));
+            insertGraph("", qureq20_data, RDFFormat.RDFXML);
+
 
 //            printDataset();
         } catch (IOException e) {
@@ -113,11 +129,23 @@ public class TripleStore {
 
         dataset = SpatialDatasetFactory.createLucene(baseDataset, realDir, entDef);
         if( newRepo ) {
-            //TODO Load CIM, BIM and PIMs (?)
+            //TODO Load CIM, BIM and MIM (& PIMs?)
             try {
                 String cim_data = IOUtils.toString(TripleStore.class
                         .getResourceAsStream(CIM_FILE));
                 insertGraph("", cim_data, RDFFormat.Turtle);
+
+                String bim_data = IOUtils.toString(TripleStore.class
+                        .getResourceAsStream(BIM_FILE));
+                insertGraph("", bim_data, RDFFormat.Turtle);
+
+                String mim_data = IOUtils.toString(TripleStore.class
+                        .getResourceAsStream(MIM_FILE));
+                insertGraph("", mim_data, RDFFormat.Turtle);
+
+                String qureq20_data = IOUtils.toString(TripleStore.class
+                        .getResourceAsStream(QU_FILE));
+                insertGraph("", qureq20_data, RDFFormat.RDFXML);
 
 //                printDataset();
             } catch (IOException e) {

@@ -80,6 +80,13 @@ public class RabbitManager {
     @Value("${rabbit.routingKey.resource.searchPerformed}")
     private String resourceSearchPerformedRoutingKey;
 
+    @Value("${rabbit.routingKey.resource.sparqlSearchRequested}")
+    private String resourceSparqlSearchRequestedRoutingKey;
+
+    @Value("${rabbit.routingKey.resource.sparqlSearchPerformed}")
+    private String resourceSparqlSearchPerformedRoutingKey;
+
+
     private Connection connection;
 
     /**
@@ -297,4 +304,24 @@ public class RabbitManager {
         channel.basicConsume(queueName, false, consumer);
         log.debug( "Consumer search created!!!" );
     }
+
+    /**
+     * Registers consumer for event resource.sparqlSearchRequested. Event will trigger translation of the request into SPARQL
+     * and executing it in JENA repository.
+     *
+     * @param searchHandler Event handler which will be triggered when resource.sparqlSearchRequested event is received.
+     * @throws IOException In case there are problems with RabbitMQ connections.
+     */
+    public void registerResourceSparqlSearchConsumer( SearchHandler searchHandler ) throws IOException {
+        Channel channel = connection.createChannel();
+        String queueName = channel.queueDeclare().getQueue();
+        channel.queueBind(queueName, resourceExchangeName, resourceSparqlSearchRequestedRoutingKey );
+
+        SparqlSearchRequestedConsumer consumer = new SparqlSearchRequestedConsumer(channel, searchHandler );
+
+        log.debug("Creating search consumer");
+        channel.basicConsume(queueName, false, consumer);
+        log.debug( "Consumer search created!!!" );
+    }
+
 }

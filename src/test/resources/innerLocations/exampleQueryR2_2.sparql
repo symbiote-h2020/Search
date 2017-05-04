@@ -1,0 +1,10 @@
+PREFIX cim: <http://www.symbiote-h2020.eu/ontology/core#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX spatial: <http://jena.apache.org/spatial#>
+
+SELECT ?location ?locationName WHERE {
+    ?sensor a cim:Resource.
+	?sensor cim:locatedAt ?location .
+	?location rdfs:label ?locationName .
+    ?location spatial:nearby (48.864716 2.349014 1000 'm') .
+}
