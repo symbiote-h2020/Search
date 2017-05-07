@@ -17,9 +17,13 @@ import org.apache.jena.update.UpdateAction;
 import org.apache.jena.update.UpdateExecutionFactory;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
+import org.apache.jena.tdb.base.block.FileMode;
+import org.apache.jena.tdb.base.file.Location;
+import org.apache.jena.tdb.setup.StoreParams;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
+
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -40,7 +44,6 @@ import static org.apache.jena.sparql.vocabulary.VocabTestQuery.query;
  * @author jab
  */
 public class TripleStore {
-
     private final String currentDirectory;
     private final Dataset dataset;
     private static final String BASE_REPO = "base";
@@ -87,6 +90,15 @@ public class TripleStore {
         String baseRepoLocation = directory + (directory.endsWith("/") ? "" : "/") + BASE_REPO;
         File baseDir = new File( baseRepoLocation );
         baseDir.mkdirs();
+
+        // This is initialization to use direct file mode because mapped mode does not work in docker. See https://github.com/stain/jena-docker/issues/1
+        Location location = Location.create(baseRepoLocation);
+        StoreParams storeParams = StoreParams.builder()
+        	.fileMode(FileMode.direct)
+        	.build();
+        TDBFactory.setup(location, storeParams);
+
+
         Dataset baseDataset= TDBFactory.createDataset(baseRepoLocation);
         Directory realDir = null;
         try {
