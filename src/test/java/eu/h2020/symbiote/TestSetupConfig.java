@@ -99,7 +99,7 @@ public class TestSetupConfig {
 
     public static final String RESOURCE_ACTUATOR_FILENAME = "/exampleActuator.json";
     public static final String RESOURCE_ACTUATOR_LABEL = "Actuator 1";
-    public static final String RESOURCE_ACTUATOR_URI = RESOURCE_PREDICATE + "actuator1";
+    public static final String RESOURCE_ACTUATOR_URI = RESOURCE_PREDICATE + "590b617566e02516806462e4";
 
 
     public static Model loadFileAsModel(String fileLocation, String format ) {

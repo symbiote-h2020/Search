@@ -72,6 +72,7 @@ public class PlatformHandler implements IPlatformEvents{
         log.debug("Updating platform " + platform.getPlatformId());
         UpdateRequest updateRequest = new UpdatePlatformRequestGenerator(platform).generateRequest();
         this.storage.getTripleStore().executeUpdate(updateRequest);
+        storage.getTripleStore().printDataset();
         return true;
     }
 
@@ -80,6 +81,7 @@ public class PlatformHandler implements IPlatformEvents{
         log.debug("Deleting platform " + platformId);
         UpdateRequest updateRequest = new DeletePlatformRequestGenerator(platformId).generateRequest();
         this.storage.getTripleStore().executeUpdate(updateRequest);
+        storage.getTripleStore().printDataset();
         return true;
     }
 }

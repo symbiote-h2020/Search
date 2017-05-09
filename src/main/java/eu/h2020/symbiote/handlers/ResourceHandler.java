@@ -101,6 +101,7 @@ public class ResourceHandler implements IResourceEvents {
                 this.storage.registerResource(Ontology.getPlatformGraphURI(platformId), registeredServiceURI, Ontology.getResourceGraphURI(coreResource.getId()), model);
             }
         }
+        storage.getTripleStore().printDataset();
         return true;
     }
 
@@ -122,6 +123,7 @@ public class ResourceHandler implements IResourceEvents {
             log.error("Registering of the resources failed during update execution");
             return false;
         }
+        storage.getTripleStore().printDataset();
         return true;
     }
 
@@ -130,6 +132,7 @@ public class ResourceHandler implements IResourceEvents {
         log.debug("Deleting resource " + resourceId);
         UpdateRequest updateRequest = new DeleteResourceRequestGenerator(resourceId).generateRequest();
         this.storage.getTripleStore().executeUpdate(updateRequest);
+        storage.getTripleStore().printDataset();
         return true;
     }
 }

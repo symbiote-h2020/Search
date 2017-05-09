@@ -48,10 +48,6 @@ public class QueryGenerationTests {
                     .getResource(PLATFORM_B_FILENAME));
             registry.registerPlatform(PLATFORM_B_ID, platformB, RDFFormat.Turtle, PLATFORM_B_MODEL_ID);
 
-            String platformC = IOUtils.toString(this.getClass()
-                    .getResource(PLATFORM_C_FILENAME));
-            registry.registerPlatform(PLATFORM_C_ID, platformC, RDFFormat.Turtle, PLATFORM_C_MODEL_ID);
-
 //            Model res101Model = loadFileAsModel( RESOURCE_101_FILENAME );
 //            Model res102Model = loadFileAsModel( RESOURCE_102_FILENAME);
 //            Model res103Model = loadFileAsModel( RESOURCE_103_FILENAME);
@@ -82,7 +78,7 @@ public class QueryGenerationTests {
             registry.registerResource(PLATFORM_A_URI,PLATFORM_A_SERVICE_URI,RESOURCE_ACTUATOR_URI,actuatorModel);
             registry.registerResource(PLATFORM_A_URI,PLATFORM_A_SERVICE_URI,RESOURCE_ACTUATING_SERVICE_URI,actuatingServiceModel);
 
-//            triplestore.printDataset();
+            triplestore.printDataset();
 
         } catch (IOException e) {
             e.printStackTrace();
