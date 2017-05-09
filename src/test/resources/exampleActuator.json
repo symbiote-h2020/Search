@@ -38,7 +38,7 @@
     "id" : "590b617566e02516806462e4",
     "locatedAt" : "http://www.symbiote-h2020.eu/ontology/resources/stationary1/location2",
     "comment" : "This is actuator 1",
-    "label" : "Inner actuating service 1"
+    "label" : "Actuator 1"
   }, {
     "@id" : "http://www.symbiote-h2020.eu/ontology/resources/590b617566e02516806462e5",
     "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#Resource", "http://www.symbiote-h2020.eu/ontology/core#ActuatingService" ],
