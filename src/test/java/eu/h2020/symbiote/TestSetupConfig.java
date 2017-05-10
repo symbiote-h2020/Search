@@ -82,8 +82,12 @@ public class TestSetupConfig {
     public static final String RESOURCE_501_URI = RESOURCE_PREDICATE + "501";
 
     public static final String RESOURCE_STATIONARY_FILENAME = "/exampleStationarySensor.json";
+    public static final String RESOURCE_STATIONARY_FILENAME_MODIFIED = "/exampleStationarySensorModified.json";
     public static final String RESOURCE_STATIONARY_LABEL = "Stationary 1";
+    public static final String RESOURCE_STATIONARY_LABEL_MODIFIED = "New sensor 1";
+    public static final String RESOURCE_STATIONARY_COMMENT = "This is stationary 1";
     public static final String RESOURCE_STATIONARY_URI = RESOURCE_PREDICATE + "stationary1";
+    public static final String RESOURCE_STATIONARY_ID = "stationary1";
 
     public static final String RESOURCE_MOBILE_FILENAME = "/exampleMobileSensor.json";
     public static final String RESOURCE_MOBILE_LABEL = "Mobile 1";
@@ -168,22 +172,33 @@ public class TestSetupConfig {
 
 
     public static CoreResource generateResource() {
+        return generateSensor(RESOURCE_101_LABEL, RESOURCE_101_COMMENT, RESOURCE_101_ID, PLATFORM_A_URL, RESOURCE_STATIONARY_FILENAME, RDFFormat.JSONLD);
+    }
+
+    public static CoreResource generateStationarySensor() {
+        return generateSensor(RESOURCE_STATIONARY_LABEL,RESOURCE_STATIONARY_COMMENT,RESOURCE_STATIONARY_ID,PLATFORM_A_URL, RESOURCE_STATIONARY_FILENAME, RDFFormat.JSONLD );
+    }
+
+    public static CoreResource generateModifiedStationarySensor() {
+        return generateSensor(RESOURCE_STATIONARY_LABEL_MODIFIED,RESOURCE_STATIONARY_COMMENT,RESOURCE_STATIONARY_ID,PLATFORM_A_URL, RESOURCE_STATIONARY_FILENAME_MODIFIED, RDFFormat.JSONLD );
+    }
+
+    public static CoreResource generateSensor(String label, String comment, String id, String serviceUrl, String rdfFilename, RDFFormat format) {
         CoreResource res = new CoreResource();
-        res.setComments(Arrays.asList(RESOURCE_101_COMMENT));
-        res.setLabels(Arrays.asList(RESOURCE_101_LABEL));
-        res.setId(RESOURCE_101_ID);
-        res.setInterworkingServiceURL(PLATFORM_A_URL);
+        res.setComments(Arrays.asList(comment));
+        res.setLabels(Arrays.asList(label));
+        res.setId(id);
+        res.setInterworkingServiceURL(serviceUrl);
         try {
             res.setRdf(IOUtils.toString(TestSetupConfig.class
-                    .getResourceAsStream(RESOURCE_STATIONARY_FILENAME)));
-            res.setRdfFormat(RDFFormat.JSONLD);
+                    .getResourceAsStream(rdfFilename)));
+            res.setRdfFormat(format);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         return res;
     }
-
 
 
 }

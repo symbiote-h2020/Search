@@ -32,7 +32,7 @@ public class DeleteResourceRequestGenerator {
     private StringBuilder generateBaseQuery() {
         StringBuilder query = new StringBuilder();
         query.append("PREFIX cim: <http://www.symbiote-h2020.eu/ontology/core#> \n");
-        query.append("PREFIX mim: <http://www.symbiote-h2020.eu/ontology/meta.owl#> \n");
+        query.append("PREFIX mim: <http://www.symbiote-h2020.eu/ontology/meta#> \n");
         query.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n");
 
         return query;
@@ -61,16 +61,19 @@ public class DeleteResourceRequestGenerator {
 
     private String generateResourceRemoval( String resourceId ) {
         StringBuilder q = generateBaseQuery();
-        q.append("DELETE { ?sensor ?p ?o ; \n" );
-        q.append( " \tcim:observes ?property . \n");
-        q.append( " ?property rdfs:label ?label ; \n");
-        q.append( " \trdfs:comment ?comment . \n");
+        q.append("DELETE { ?sensor ?p ?o . \n" );
+        q.append( " \t?service mim:hasResource ?sensor . \n");
+//        q.append( " \tcim:observes ?property . \n");
+//        q.append( " ?property rdfs:label ?label ; \n");
+//        q.append( " \trdfs:comment ?comment . \n");
         q.append( "} WHERE {\n");
         q.append("\t?sensor ?p ?o ;\n");
-        q.append("\t\tcim:observes ?property ;\n");
+//        q.append("\t\tcim:observes ?property ;\n");
+//        q.append("\t\trdfs:type cim:Resource ;\n");
         q.append("\t\tcim:id \""+resourceId+"\" .\n");
-        q.append("\t?property rdfs:label ?label ; \n");
-        q.append("\t\trdfs:comment ?comment . \n");
+        q.append("\t?service mim:hasResource ?sensor .\n" );
+//        q.append("\t?property rdfs:label ?label ; \n");
+//        q.append("\t\trdfs:comment ?comment . \n");
         q.append("}");
         return q.toString();
     }

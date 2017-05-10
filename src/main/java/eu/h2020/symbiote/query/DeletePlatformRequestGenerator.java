@@ -32,8 +32,7 @@ public class DeletePlatformRequestGenerator {
     private StringBuilder generateBaseQuery() {
         StringBuilder query = new StringBuilder();
         query.append("PREFIX cim: <http://www.symbiote-h2020.eu/ontology/core#> \n");
-        query.append("PREFIX cimowl: <http://www.symbiote-h2020.eu/ontology/core.owl#> \n");
-        query.append("PREFIX mim: <http://www.symbiote-h2020.eu/ontology/meta.owl#> \n");
+        query.append("PREFIX mim: <http://www.symbiote-h2020.eu/ontology/meta#> \n");
         query.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n");
 
         return query;
@@ -43,34 +42,34 @@ public class DeletePlatformRequestGenerator {
         StringBuilder q = generateBaseQuery();
         q.append("DELETE { ?platform ?p ?o } WHERE {\n");
         q.append("\t?platform ?p ?o ;\n");
-        q.append("\t\tcimowl:hasID \""+platformId+"\" .\n");
+        q.append("\t\tcim:id \""+platformId+"\" .\n");
         q.append("}");
         System.out.println(q.toString());
         return q.toString();
     }
 
-    private String generateInformationServiceDelete3( String platformId ) {
-        StringBuilder q = generateBaseQuery();
-        q.append("DELETE { ?service ?p ?o } WHERE {\n");
-        q.append("\t?service ?p ?o .\n");
-        q.append("\t?platform mim:hasService ?service ;\n");
-        q.append("\t\tcimowl:hasID \""+platformId+"\" .\n");
-        q.append("}");
-        System.out.println(q.toString());
-        return q.toString();
-    }
+//    private String generateInformationServiceDelete3( String platformId ) {
+//        StringBuilder q = generateBaseQuery();
+//        q.append("DELETE { ?service ?p ?o } WHERE {\n");
+//        q.append("\t?service ?p ?o .\n");
+//        q.append("\t?platform mim:hasService ?service ;\n");
+//        q.append("\t\tcimowl:hasID \""+platformId+"\" .\n");
+//        q.append("}");
+//        System.out.println(q.toString());
+//        return q.toString();
+//    }
 
     private String generateInformationServiceDelete( String platformId ) {
         StringBuilder q = generateBaseQuery();
         q.append("DELETE { ?service ?p ?o ; \n" );
         q.append("\t\tmim:hasInformationModel ?imodel .\n");
-        q.append("\t?imodel cimowl:hasID ?id . \n");
+        q.append("\t?imodel cim:id ?id . \n");
         q.append("} WHERE {\n");
         q.append("\t?service ?p ?o ;\n");
         q.append("\t\tmim:hasInformationModel ?imodel .\n");
-        q.append("\t?imodel cimowl:hasID ?id . \n");
+        q.append("\t?imodel cim:id ?id . \n");
         q.append("\t?platform mim:hasService ?service ;\n");
-        q.append("\t\tcimowl:hasID \""+platformId+"\" .\n");
+        q.append("\t\tcim:id \""+platformId+"\" .\n");
         q.append("}");
         System.out.println( q.toString());
         return q.toString();
