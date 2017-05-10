@@ -63,7 +63,7 @@ public class SearchRequestedConsumer extends DefaultConsumer {
 
             log.debug( "Calculated response, sending back to the sender: " + responseMessage);
 
-            byte[] responseBytes = mapper.writeValueAsBytes(response!=null?response.getResources():"[]");
+            byte[] responseBytes = mapper.writeValueAsBytes(response!=null?response:"[]");
 
             AMQP.BasicProperties replyProps = new AMQP.BasicProperties
                     .Builder()
