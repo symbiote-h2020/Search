@@ -1,5 +1,6 @@
 package eu.h2020.symbiote;
 
+import eu.h2020.symbiote.core.ci.QueryResourceResult;
 import eu.h2020.symbiote.core.ci.SparqlQueryOutputFormat;
 import eu.h2020.symbiote.core.internal.CoreSparqlQueryRequest;
 import eu.h2020.symbiote.core.model.WGS84Location;
@@ -7,18 +8,13 @@ import eu.h2020.symbiote.handlers.SearchHandler;
 import eu.h2020.symbiote.ontology.model.RDFFormat;
 import eu.h2020.symbiote.ontology.model.Registry;
 import eu.h2020.symbiote.ontology.model.TripleStore;
-import eu.h2020.symbiote.query.SearchResponseResource;
 import org.apache.commons.io.IOUtils;
-import org.apache.jena.atlas.json.io.parserjavacc.javacc.JSON_Parser;
-import org.apache.jena.query.ResultSet;
-import org.apache.jena.query.ResultSetFactory;
 import org.apache.jena.rdf.model.Model;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
@@ -201,7 +197,7 @@ public class SearchHandlerTests {
     }
 
 
-    private void ensureFieldsNotNull( SearchResponseResource response ) {
+    private void ensureFieldsNotNull( QueryResourceResult response ) {
         assertNotNull(response.getId());
         assertFalse(response.getId().isEmpty());
         assertNotNull(response.getName());

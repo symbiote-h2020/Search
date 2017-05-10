@@ -1,5 +1,7 @@
 package eu.h2020.symbiote.handlers;
 
+import eu.h2020.symbiote.core.ci.QueryResourceResult;
+import eu.h2020.symbiote.core.ci.QueryResponse;
 import eu.h2020.symbiote.core.internal.CoreQueryRequest;
 import eu.h2020.symbiote.model.Platform;
 import eu.h2020.symbiote.model.Resource;
@@ -7,8 +9,6 @@ import eu.h2020.symbiote.ontology.model.CoreInformationModel;
 import eu.h2020.symbiote.ontology.model.MetaInformationModel;
 import eu.h2020.symbiote.ontology.model.Ontology;
 import eu.h2020.symbiote.query.QueryGenerator;
-import eu.h2020.symbiote.query.SearchResponse;
-import eu.h2020.symbiote.query.SearchResponseResource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jena.query.QuerySolution;
@@ -186,8 +186,8 @@ public class HandlerUtils {
         return q;
     }
 
-    public static SearchResponse generateSearchResponseFromResultSet( ResultSet resultSet) {
-        Map<String,SearchResponseResource> responses = new HashMap<String,SearchResponseResource>();
+    public static QueryResponse generateSearchResponseFromResultSet( ResultSet resultSet) {
+        Map<String,QueryResourceResult> responses = new HashMap<String,QueryResourceResult>();
         if( !resultSet.hasNext() ) {
             System.out.println( "Could not generate search response from result set, cause resultSet is empty");
         }
@@ -230,11 +230,22 @@ public class HandlerUtils {
                     List<String> properties = new ArrayList<>();
                     properties.add(propertyName);
 
-                    SearchResponseResource resource = new SearchResponseResource(resId, resName, resDescription, platformId, platformName, locationName, latVal,longVal,altVal, properties,type);
+                    QueryResourceResult resource = new QueryResourceResult();
+                    resource.setId(resId);
+                    resource.setName(resName);
+                    resource.setDescription(resDescription);
+                    resource.setPlatformId(platformId);
+                    resource.setPlatformName(platformName);
+                    resource.setLocationName(locationName);
+                    resource.setLocationLatitude(latVal);
+                    resource.setLocationLongitude(longVal);
+                    resource.setLocationAltitude(altVal);
+                    resource.setObservedProperties(properties);
+                    resource.setType(type);
                     responses.put(resId, resource);
                 } else {
                     //ensure all other params are the same, add to list of properties
-                    SearchResponseResource existingResource = responses.get(resId);
+                    QueryResourceResult existingResource = responses.get(resId);
 //                //Do equals
                     if( propertyName != null && !propertyName.isEmpty()) {
                         existingResource.getObservedProperties().add(propertyName);
@@ -260,7 +271,11 @@ public class HandlerUtils {
 //            }
         }
 
-        SearchResponse response = responses!=null?new SearchResponse( responses.values().stream().collect(Collectors.toList())):null;
+        QueryResponse response = null;
+        if( responses!=null ) {
+            response = new QueryResponse();
+            response.setResources(responses.values().stream().collect(Collectors.toList()));
+        };
         return response;
     }
 

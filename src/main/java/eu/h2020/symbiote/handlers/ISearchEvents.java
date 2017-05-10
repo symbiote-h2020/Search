@@ -1,8 +1,8 @@
 package eu.h2020.symbiote.handlers;
 
+import eu.h2020.symbiote.core.ci.QueryResponse;
 import eu.h2020.symbiote.core.internal.CoreQueryRequest;
 import eu.h2020.symbiote.core.internal.CoreSparqlQueryRequest;
-import eu.h2020.symbiote.query.SearchResponse;
 
 /**
  * Interface for handling search events.
@@ -17,7 +17,7 @@ public interface ISearchEvents {
      * @param request Request containing parameters of the search
      * @return Response containing list of found resources.
      */
-    SearchResponse search(CoreQueryRequest request );
+    QueryResponse search(CoreQueryRequest request );
 
     /**
      * Performs sparql search in the module.

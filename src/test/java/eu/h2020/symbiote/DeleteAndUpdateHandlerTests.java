@@ -1,5 +1,6 @@
 package eu.h2020.symbiote;
 
+import eu.h2020.symbiote.core.ci.QueryResponse;
 import eu.h2020.symbiote.core.internal.CoreQueryRequest;
 import eu.h2020.symbiote.core.internal.CoreResourceRegisteredOrModifiedEventPayload;
 import eu.h2020.symbiote.core.model.internal.CoreResource;
@@ -10,7 +11,6 @@ import eu.h2020.symbiote.ontology.model.MetaInformationModel;
 import eu.h2020.symbiote.ontology.model.RDFFormat;
 import eu.h2020.symbiote.ontology.model.Registry;
 import eu.h2020.symbiote.ontology.model.TripleStore;
-import eu.h2020.symbiote.query.SearchResponse;
 import eu.h2020.symbiote.search.SearchStorage;
 import org.apache.commons.io.IOUtils;
 import org.apache.jena.rdf.model.Model;
@@ -77,19 +77,19 @@ public class DeleteAndUpdateHandlerTests {
 
         CoreQueryRequest searchReq = new CoreQueryRequest();
         searchReq.setId("stationary1");
-        SearchResponse searchResponse = searchHandler.search(searchReq);
+        QueryResponse searchResponse = searchHandler.search(searchReq);
 
         CoreQueryRequest otherResReq = new CoreQueryRequest();
         otherResReq.setId("mobile1");
-        SearchResponse otherSearchResponse = searchHandler.search(otherResReq);
+        QueryResponse otherSearchResponse = searchHandler.search(otherResReq);
 
         assertNotNull(searchResponse);
-        assertNotNull(searchResponse.getResourceList());
-        assertEquals("Before delete should be 1 resource", 1, searchResponse.getResourceList().size());
+        assertNotNull(searchResponse.getResources());
+        assertEquals("Before delete should be 1 resource", 1, searchResponse.getResources().size());
 
         assertNotNull(otherSearchResponse);
-        assertNotNull(otherSearchResponse.getResourceList());
-        assertEquals("Before delete should be 1 resource", 1, otherSearchResponse.getResourceList().size());
+        assertNotNull(otherSearchResponse.getResources());
+        assertEquals("Before delete should be 1 resource", 1, otherSearchResponse.getResources().size());
 
         ResourceHandler delHandler = new ResourceHandler(storage);
         delHandler.deleteResource("stationary1");
@@ -99,12 +99,12 @@ public class DeleteAndUpdateHandlerTests {
         otherSearchResponse = searchHandler.search(otherResReq);
 
         assertNotNull(searchResponse);
-        assertNotNull(searchResponse.getResourceList());
-        assertEquals("After delete should be 0 resource", 0, searchResponse.getResourceList().size());
+        assertNotNull(searchResponse.getResources());
+        assertEquals("After delete should be 0 resource", 0, searchResponse.getResources().size());
 
         assertNotNull(otherSearchResponse);
-        assertNotNull(otherSearchResponse.getResourceList());
-        assertEquals("After delete not mentioned resource should still be 1", 1, otherSearchResponse.getResourceList().size());
+        assertNotNull(otherSearchResponse.getResources());
+        assertEquals("After delete not mentioned resource should still be 1", 1, otherSearchResponse.getResources().size());
 
         System.out.println(" ===== AFTER ==== ");
         printDataset();
@@ -146,11 +146,11 @@ public class DeleteAndUpdateHandlerTests {
         SearchHandler searchHandler = new SearchHandler(triplestore);
         CoreQueryRequest searchReq = new CoreQueryRequest();
         searchReq.setName("*stationary*");
-        SearchResponse searchResponse = searchHandler.search(searchReq);
+        QueryResponse searchResponse = searchHandler.search(searchReq);
 
         assertNotNull(searchResponse);
-        assertNotNull(searchResponse.getResourceList());
-        assertEquals("Before modify resource should be 1", 1, searchResponse.getResourceList().size());
+        assertNotNull(searchResponse.getResources());
+        assertEquals("Before modify resource should be 1", 1, searchResponse.getResources().size());
 
         CoreResource resource = generateModifiedStationarySensor();
 //        resource.setLabels(Arrays.asList(RESOURCE_101_LABEL_UPDATE));
@@ -167,15 +167,15 @@ public class DeleteAndUpdateHandlerTests {
 
         searchResponse = searchHandler.search(searchReq);
         assertNotNull(searchResponse);
-        assertNotNull(searchResponse.getResourceList());
-        assertEquals("After modify should not find resource for old name", 0, searchResponse.getResourceList().size());
+        assertNotNull(searchResponse.getResources());
+        assertEquals("After modify should not find resource for old name", 0, searchResponse.getResources().size());
 
 
         searchReq.setName("New sensor 1");
         searchResponse = searchHandler.search(searchReq);
         assertNotNull(searchResponse);
-        assertNotNull(searchResponse.getResourceList());
-        assertEquals("After modify should find 1 resource with new name", 1, searchResponse.getResourceList().size());
+        assertNotNull(searchResponse.getResources());
+        assertEquals("After modify should find 1 resource with new name", 1, searchResponse.getResources().size());
 
 
         graph = triplestore.getDefaultGraph();

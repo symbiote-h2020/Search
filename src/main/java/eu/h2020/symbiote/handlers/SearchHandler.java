@@ -1,5 +1,7 @@
 package eu.h2020.symbiote.handlers;
 
+import eu.h2020.symbiote.core.ci.QueryResourceResult;
+import eu.h2020.symbiote.core.ci.QueryResponse;
 import eu.h2020.symbiote.core.internal.CoreQueryRequest;
 import eu.h2020.symbiote.core.internal.CoreSparqlQueryRequest;
 import eu.h2020.symbiote.model.Platform;
@@ -45,8 +47,8 @@ public class SearchHandler implements ISearchEvents{
 
 
     @Override
-    public SearchResponse search(CoreQueryRequest request) {
-        SearchResponse response = new SearchResponse();
+    public QueryResponse search(CoreQueryRequest request) {
+        QueryResponse response = new QueryResponse();
         try {
 
             QueryGenerator q = HandlerUtils.generateQueryFromSearchRequest(request);
@@ -56,7 +58,7 @@ public class SearchHandler implements ISearchEvents{
             response = HandlerUtils.generateSearchResponseFromResultSet(results);
 
             if (q.isMultivaluequery()) {
-                response.getResourceList().forEach(this::searchForPropertiesOfResource);
+                response.getResources().forEach(this::searchForPropertiesOfResource);
             }
 
         } catch( Exception e ) {
@@ -91,7 +93,7 @@ public class SearchHandler implements ISearchEvents{
         return resultOfSearch;
     }
 
-    private void searchForPropertiesOfResource(SearchResponseResource resource) {
+    private void searchForPropertiesOfResource(QueryResourceResult resource) {
         ResourceAndObservedPropertyQueryGenerator q = new ResourceAndObservedPropertyQueryGenerator(resource.getId());
         ResultSet resultSet = this.triplestore.executeQuery(q.toString());
 

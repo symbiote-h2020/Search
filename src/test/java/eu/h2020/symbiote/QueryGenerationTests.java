@@ -1,14 +1,13 @@
 package eu.h2020.symbiote;
 
+import eu.h2020.symbiote.core.ci.QueryResourceResult;
+import eu.h2020.symbiote.core.ci.QueryResponse;
 import eu.h2020.symbiote.handlers.HandlerUtils;
 import eu.h2020.symbiote.ontology.model.RDFFormat;
 import eu.h2020.symbiote.ontology.model.Registry;
 import eu.h2020.symbiote.ontology.model.TripleStore;
 import eu.h2020.symbiote.query.QueryGenerator;
-import eu.h2020.symbiote.query.SearchResponse;
-import eu.h2020.symbiote.query.SearchResponseResource;
 import org.apache.commons.io.IOUtils;
-import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.query.ResultSetFormatter;
 import org.apache.jena.rdf.model.Model;
@@ -19,7 +18,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import static eu.h2020.symbiote.TestSetupConfig.*;
@@ -495,15 +493,15 @@ public class QueryGenerationTests {
 //
 //            i++;
 //        }
-        SearchResponse searchResponse = HandlerUtils.generateSearchResponseFromResultSet(resultSet);
-        int i = searchResponse.getResourceList().size();
+        QueryResponse searchResponse = HandlerUtils.generateSearchResponseFromResultSet(resultSet);
+        int i = searchResponse.getResources().size();
         return i;
     }
 
     private int countAndPrintSearchResponses( ResultSet resultSet) {
-        SearchResponse searchResponse = HandlerUtils.generateSearchResponseFromResultSet(resultSet);
+        QueryResponse searchResponse = HandlerUtils.generateSearchResponseFromResultSet(resultSet);
         int i = 0;
-        for(SearchResponseResource response: searchResponse.getResourceList()) {
+        for(QueryResourceResult response: searchResponse.getResources()) {
             i++;
             System.out.println(i + "  " + response.getName() + "  |  " + response.getObservedProperties() );
             System.out.println("     " + response.getType() );
