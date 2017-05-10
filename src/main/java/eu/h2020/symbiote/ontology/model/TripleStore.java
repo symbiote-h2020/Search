@@ -39,6 +39,8 @@ import java.util.List;
  */
 public class TripleStore {
 
+    private final static boolean SHOULD_PRINT_DATASET = false;
+
     private final String currentDirectory;
     private final Dataset dataset;
     private static final String BASE_REPO = "base";
@@ -73,29 +75,29 @@ public class TripleStore {
         Directory ramDir = new RAMDirectory();
 
         dataset = SpatialDatasetFactory.createLucene(baseDataset, ramDir, entDef);
-//        try {
-//            String cim_data = IOUtils.toString(TripleStore.class
-//                    .getResourceAsStream(CIM_FILE));
-//            insertGraph("", cim_data, RDFFormat.Turtle);
-//
-//            String bim_data = IOUtils.toString(TripleStore.class
-//                    .getResourceAsStream(BIM_FILE));
-//            insertGraph("", bim_data, RDFFormat.Turtle);
-//
-//            String mim_data = IOUtils.toString(TripleStore.class
-//                    .getResourceAsStream(MIM_FILE));
-//            insertGraph("", mim_data, RDFFormat.Turtle);
-//
-//            String qureq20_data = IOUtils.toString(TripleStore.class
-//                    .getResourceAsStream(QU_FILE));
-//            insertGraph("", qureq20_data, RDFFormat.RDFXML);
-//
-//
-////            printDataset();
-//        } catch (IOException e) {
-//            log.fatal("Could not load CIM file: " + e.getMessage());
-//            e.printStackTrace();
-//        }
+        try {
+            String cim_data = IOUtils.toString(TripleStore.class
+                    .getResourceAsStream(CIM_FILE));
+            insertGraph("", cim_data, RDFFormat.Turtle);
+
+            String bim_data = IOUtils.toString(TripleStore.class
+                    .getResourceAsStream(BIM_FILE));
+            insertGraph("", bim_data, RDFFormat.Turtle);
+
+            String mim_data = IOUtils.toString(TripleStore.class
+                    .getResourceAsStream(MIM_FILE));
+            insertGraph("", mim_data, RDFFormat.Turtle);
+
+            String qureq20_data = IOUtils.toString(TripleStore.class
+                    .getResourceAsStream(QU_FILE));
+            insertGraph("", qureq20_data, RDFFormat.RDFXML);
+
+
+//            printDataset();
+        } catch (IOException e) {
+            log.fatal("Could not load CIM file: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
 
@@ -270,10 +272,12 @@ public class TripleStore {
     }
 
     public void printDataset() {
-        dataset.begin(ReadWrite.READ);
-        Model result = dataset.getDefaultModel();
-        result.write(System.out,"TURTLE");
-        dataset.end();
+        if( SHOULD_PRINT_DATASET ) {
+            dataset.begin(ReadWrite.READ);
+            Model result = dataset.getDefaultModel();
+            result.write(System.out, "TURTLE");
+            dataset.end();
+        }
     }
 
     public String getGraphAsString(String graph) {
