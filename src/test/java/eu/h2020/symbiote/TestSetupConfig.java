@@ -89,6 +89,12 @@ public class TestSetupConfig {
     public static final String RESOURCE_STATIONARY_URI = RESOURCE_PREDICATE + "stationary1";
     public static final String RESOURCE_STATIONARY_ID = "stationary1";
 
+    public static final String RESOURCE_STATIONARYDEVICE_FILENAME = "/exampleStationaryDevice.json";
+    public static final String RESOURCE_STATIONARYDEVICE_LABEL = "Stationary device 1";
+    public static final String RESOURCE_STATIONARYDEVICE_COMMENT = "This is Stationary Device 1";
+    public static final String RESOURCE_STATIONARYDEVICE_URI = RESOURCE_PREDICATE + "stationarydevice1";
+    public static final String RESOURCE_STATIONARYDEVICE_ID = "stationardevice1";
+
     public static final String RESOURCE_MOBILE_FILENAME = "/exampleMobileSensor.json";
     public static final String RESOURCE_MOBILE_LABEL = "Mobile 1";
     public static final String RESOURCE_MOBILE_URI = RESOURCE_PREDICATE + "mobile1";

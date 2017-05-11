@@ -182,9 +182,10 @@ public class QueryGenerator {
         query.append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
         query.append("PREFIX owl: <http://www.w3.org/2002/07/owl#> \n");
         query.append("PREFIX spatial: <http://jena.apache.org/spatial#> \n");
+        query.append("PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> \n\n");
 
         //Location test //dziala ok
-        query.append("SELECT ?resId ?resName ?resDescription ?locationName ?platformId ?platformName ?property ?propName ?type WHERE {\n" );
+        query.append("SELECT ?resId ?resName ?resDescription ?locationName ?locationLat ?locationLong ?locationAlt ?platformId ?platformName ?property ?propName ?type WHERE {\n" );
         query.append("\t?sensor a cim:Resource ;\n");
         query.append("\t\ta ?type ;\n");
         query.append("\t\tcim:id ?resId ;\n");
@@ -207,19 +208,24 @@ public class QueryGenerator {
         }
 
         //OPTIONAL PART
-        if( !locationquery || !propertyquery) {
+//        if( !locationquery || !propertyquery) {
             query.append("OPTIONAL { ");
 
+            query.append("\t?sensor cim:locatedAt ?location.\n");
+            query.append("\t?location geo:lat ?locationLat .\n");
+            query.append("\t?location geo:long ?locationLong .\n");
+            query.append("\t?location geo:alt ?locationAlt .\n");
+
             if (!locationquery) {
-                query.append("\t?sensor cim:locatedAt ?location.\n");
-                query.append("	?location rdfs:label ?locationName.\n");
+
+                query.append("\t?location rdfs:label ?locationName.\n");
             }
             if (!propertyquery) {
                 query.append("\t?sensor cim:observes ?property.\n");
                 query.append("\t?property rdfs:label ?propName.\n");
             }
             query.append("} \n");
-        }
+//        }
     }
 
 //    private void Orig_generateModiafableQuery() {
@@ -437,6 +443,11 @@ public class QueryGenerator {
                 extension.append("\t?property" + i + " rdfs:label \"" + property + "\" .\n");
             }
         }
+        return this;
+    }
+
+    public QueryGenerator addResourceType( String type ) {
+        extension.append("\t?sensor a <" + type + "> .\n" );
         return this;
     }
 

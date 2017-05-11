@@ -2,6 +2,7 @@ package eu.h2020.symbiote.handlers;
 
 import eu.h2020.symbiote.core.ci.QueryResourceResult;
 import eu.h2020.symbiote.core.ci.QueryResponse;
+import eu.h2020.symbiote.core.ci.ResourceType;
 import eu.h2020.symbiote.core.internal.CoreQueryRequest;
 import eu.h2020.symbiote.model.Platform;
 import eu.h2020.symbiote.model.Resource;
@@ -180,6 +181,14 @@ public class HandlerUtils {
                 q.addResourceObservedPropertyNames(request.getObserved_property());
             }
         }
+        if( request.getResource_type() != null && !request.getResource_type().isEmpty() ) {
+            try {
+                ResourceType type = ResourceType.getTypeForName(request.getResource_type());
+                q.addResourceType(type.getUri());
+            } catch( Exception e ) {
+                log.warn("Wrong resource type specified: " + request.getResource_type());
+            }
+        }
         if( request.getLocation_lat() != null && request.getLocation_long() != null && request.getMax_distance() != null) {
             q.addResourceLocationDistance(request.getLocation_lat(),request.getLocation_long(),request.getMax_distance());
         }
@@ -230,6 +239,9 @@ public class HandlerUtils {
                     List<String> properties = new ArrayList<>();
                     properties.add(propertyName);
 
+                    List<String> types = new ArrayList<>();
+                    types.add(type);
+
                     QueryResourceResult resource = new QueryResourceResult();
                     resource.setId(resId);
                     resource.setName(resName);
@@ -241,14 +253,23 @@ public class HandlerUtils {
                     resource.setLocationLongitude(longVal);
                     resource.setLocationAltitude(altVal);
                     resource.setObservedProperties(properties);
-                    resource.setType(type);
+                    resource.setResourceType(types);
                     responses.put(resId, resource);
                 } else {
                     //ensure all other params are the same, add to list of properties
                     QueryResourceResult existingResource = responses.get(resId);
 //                //Do equals
-                    if( propertyName != null && !propertyName.isEmpty()) {
-                        existingResource.getObservedProperties().add(propertyName);
+                    if( propertyName != null && !propertyName.isEmpty() ) {
+                        if( !existingResource.getObservedProperties().contains(propertyName)) {
+                            existingResource.getObservedProperties().add(propertyName);
+//                        } else {
+//                            log.warn("Property with this name already exists" + propertyName);
+                        }
+                    }
+                    if( type != null && !type.isEmpty() ) {
+                        if( !existingResource.getResourceType().contains(type) ) {
+                            existingResource.getResourceType().add(type);
+                        }
                     }
                 }
             }

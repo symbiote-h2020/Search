@@ -1,18 +1,18 @@
 {
   "@graph" : [ {
-    "@id" : "_:b0",
+    "@id" : "http://www.symbiote-h2020.eu/ontology/resources/stationarydevice1/111",
     "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#WGS84Location", "http://www.symbiote-h2020.eu/ontology/core#Location" ],
-    "comment" : "This is paris",
-    "label" : "Paris",
-    "alt" : "15.0",
-    "lat" : "48.864716",
-    "long" : "2.349014"
+    "comment" : "This is somewhere",
+    "label" : "Someplace",
+    "alt" : "25.0",
+    "lat" : "35.864716",
+    "long" : "14.349014"
   }, {
     "@id" : "_:b1",
     "@type" : "http://www.symbiote-h2020.eu/ontology/core#FeatureOfInterest",
     "hasProperty" : "http://purl.oclc.org/NET/ssnx/qu/quantity#temperature",
-    "comment" : "This is room 1",
-    "label" : "Room1"
+    "comment" : "Some foi for device",
+    "label" : "MyFoi1"
   }, {
     "@id" : "_:b2",
     "@type" : "http://www.symbiote-h2020.eu/ontology/core#RangeRestriction",
@@ -27,8 +27,8 @@
     "@id" : "_:b4",
     "@type" : "http://www.symbiote-h2020.eu/ontology/core#FeatureOfInterest",
     "hasProperty" : "http://purl.oclc.org/NET/ssnx/qu/quantity#temperature",
-    "comment" : "This is room 1",
-    "label" : "Room1"
+    "comment" : "Some foi for device",
+    "label" : "MyFoi1"
   }, {
     "@id" : "_:b5",
     "@type" : "http://www.symbiote-h2020.eu/ontology/core#InputParameter",
@@ -49,12 +49,12 @@
     "comment" : "This is actuating service 1",
     "label" : "Actuating Service 1"
   }, {
-    "@id" : "http://www.symbiote-h2020.eu/ontology/resources/stationardevice1",
+    "@id" : "http://www.symbiote-h2020.eu/ontology/resources/stationarydevice1",
     "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#Actuator", "http://www.symbiote-h2020.eu/ontology/core#Resource", "http://www.symbiote-h2020.eu/ontology/core#StationarySensor" ],
     "hasCapability" : "http://www.symbiote-h2020.eu/ontology/resources/actuatingService1",
     "hasFeatureOfInterest" : "_:b1",
     "id" : "stationardevice1",
-    "locatedAt" : "_:b0",
+    "locatedAt" : "http://www.symbiote-h2020.eu/ontology/resources/stationarydevice1/111",
     "observes" : "http://purl.oclc.org/NET/ssnx/qu/quantity#temperature",
     "comment" : "This is stationary device 1",
     "label" : "Stationary device 1"
