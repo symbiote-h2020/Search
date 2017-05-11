@@ -67,34 +67,18 @@ public class ResourceHandler implements IResourceEvents {
             System.out.println(coreResource.getRdf());
             System.out.println(" ----- ------ -----");
 
-            String matchUrl = coreResource.getInterworkingServiceURL();
-            if( !matchUrl.endsWith("/") ) {
-                matchUrl += "/"; //match this with
-            }
+            String resourceURL = coreResource.getInterworkingServiceURL(); //match this with
 
             log.debug( "Querying for interworking service URI... ");
-            String query = "PREFIX cim: <http://www.symbiote-h2020.eu/ontology/core#>\n" +
-                    "PREFIX mim: <http://www.symbiote-h2020.eu/ontology/meta#>" +
-                    "\n" +
-                    "SELECT ?service WHERE {\n" +
-                    "\t?service a mim:InterworkingService;\n" +
-                    "\t\t\tmim:hasURL \"" + matchUrl + "\".\n" +
-                    "\t\t?platform cim:id \"" + platformId + "\";\n" +
-                    "\t\t\tmim:hasService ?service.\n" +
-                    "} ";
-
-            List<String> response = this.storage.query(Ontology.getPlatformGraphURI(platformId), query);
-            String registeredServiceURI = null;
-            if (response != null && response.size() == 1) {
-                System.out.println("response: " + response.get(0));
-                registeredServiceURI = response.get(0).substring(response.get(0).indexOf("=") + 2);
-                log.debug("Found resource URL: " + registeredServiceURI);
-            } else {
-                log.error(response == null ? "Response is null" : "Response size differs, got size: " + response.size());
+            String registeredServiceURI = findServiceURI(resourceURL,platformId);
+            if( registeredServiceURI == null &&  !resourceURL.endsWith("/")) {
+                //Try with slash in the end - most common mistake from platforms
+                log.debug("Couldnt find interworking service URI, trying with URL ending with a slash");
+                registeredServiceURI = findServiceURI(resourceURL+"/",platformId);
             }
-
-            if (registeredServiceURI == null) {
-                log.error("Could not properly find interworking service for url " + matchUrl);
+            if( registeredServiceURI == null ) {
+                //If still couldnt find
+                log.debug("Couldnt find interworking service URL, returning false");
                 return false;
             }
 
@@ -106,6 +90,39 @@ public class ResourceHandler implements IResourceEvents {
         }
         storage.getTripleStore().printDataset();
         return true;
+    }
+
+    private String getSearchInterworkingServiceSPARQL( String resourceURL, String platformId ) {
+        String query = "PREFIX cim: <http://www.symbiote-h2020.eu/ontology/core#>\n" +
+                "PREFIX mim: <http://www.symbiote-h2020.eu/ontology/meta#>" +
+                "\n" +
+                "SELECT ?service WHERE {\n" +
+                "\t?service a mim:InterworkingService;\n" +
+                "\t\t\tmim:hasURL \"" + resourceURL + "\".\n" +
+                "\t\t?platform cim:id \"" + platformId + "\";\n" +
+                "\t\t\tmim:hasService ?service.\n" +
+                "} ";
+        return query;
+    }
+
+    private String findServiceURI( String resourceURL, String platformId ) {
+        String registeredServiceURI = null;
+        String query = getSearchInterworkingServiceSPARQL(resourceURL, platformId);
+
+        List<String> response = this.storage.query(Ontology.getPlatformGraphURI(platformId), query);
+
+        if (response != null && response.size() == 1) {
+            System.out.println("response: " + response.get(0));
+            registeredServiceURI = response.get(0).substring(response.get(0).indexOf("=") + 2);
+            log.debug("Found resource URL: " + registeredServiceURI);
+        } else {
+            log.error(response == null ? "Response is null" : "Response size differs, got size: " + response.size());
+        }
+
+        if (registeredServiceURI == null) {
+            log.error("Could not properly find interworking service for url " + resourceURL);
+        }
+        return registeredServiceURI;
     }
 
     @Override
