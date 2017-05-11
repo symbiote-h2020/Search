@@ -91,7 +91,7 @@ dependencies {
 //    compile('fr.inrialpes.exmo:ontowrap:1.0')
     compile('eu.symbiote-h2020:MediationFramework:1.0')
 
-    compile('com.github.symbiote-h2020:SymbIoTeLibraries:develop-SNAPSHOT') { changing=true }
+    compile('com.github.symbiote-h2020:SymbIoTeLibraries:c25f9e5b0d') { changing=true }
 
     testCompile('org.springframework.boot:spring-boot-starter-test')
 
