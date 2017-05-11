@@ -6,8 +6,6 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
-import eu.h2020.symbiote.core.internal.CoreResourceRegisteredOrModifiedEventPayload;
-import eu.h2020.symbiote.core.model.internal.CoreResource;
 import eu.h2020.symbiote.handlers.ResourceHandler;
 import eu.h2020.symbiote.model.Resource;
 import org.apache.commons.logging.Log;
@@ -48,22 +46,15 @@ public class ResourceDeletedConsumer extends DefaultConsumer {
 
         //Try to parse the message
         ObjectMapper mapper = new ObjectMapper();
-        CoreResourceRegisteredOrModifiedEventPayload toDelete = mapper.readValue(msg, CoreResourceRegisteredOrModifiedEventPayload.class);
+        List<String> toDelete = mapper.readValue(msg, new TypeReference<List<String>>() {
+        });
 
-        if( toDelete != null ) {
-            List<CoreResource> listOfResources = toDelete.getResources();
-            if( listOfResources != null ) {
-                for (CoreResource res: listOfResources) {
-                    log.debug("Deleting resource " + res.getId());
-                    handler.deleteResource(res.getId());
-                    //Send the response back to the client
-                    //TODO
-                }
-            } else {
-                log.error("List of resources to delete is not empty");
-            }
-        } else {
-            log.error("Got null object in the message of toDelete");
+        for( String delId: toDelete ) {
+            log.debug( "Deleting resource " + delId );
+            handler.deleteResource(delId);
+            //Send the response back to the client
+            //TODO
+
         }
         getChannel().basicAck(envelope.getDeliveryTag(),false);
     }
