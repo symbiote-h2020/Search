@@ -67,7 +67,10 @@ public class ResourceHandler implements IResourceEvents {
             System.out.println(coreResource.getRdf());
             System.out.println(" ----- ------ -----");
 
-            String resourceURL = coreResource.getInterworkingServiceURL(); //match this with
+            String matchUrl = coreResource.getInterworkingServiceURL();
+            if( !matchUrl.endsWith("/") ) {
+                matchUrl += "/"; //match this with
+            }
 
             log.debug( "Querying for interworking service URI... ");
             String query = "PREFIX cim: <http://www.symbiote-h2020.eu/ontology/core#>\n" +
@@ -75,7 +78,7 @@ public class ResourceHandler implements IResourceEvents {
                     "\n" +
                     "SELECT ?service WHERE {\n" +
                     "\t?service a mim:InterworkingService;\n" +
-                    "\t\t\tmim:hasURL \"" + resourceURL + "\".\n" +
+                    "\t\t\tmim:hasURL \"" + matchUrl + "\".\n" +
                     "\t\t?platform cim:id \"" + platformId + "\";\n" +
                     "\t\t\tmim:hasService ?service.\n" +
                     "} ";
@@ -91,7 +94,7 @@ public class ResourceHandler implements IResourceEvents {
             }
 
             if (registeredServiceURI == null) {
-                log.error("Could not properly find interworking service for url " + resourceURL);
+                log.error("Could not properly find interworking service for url " + matchUrl);
                 return false;
             }
 
