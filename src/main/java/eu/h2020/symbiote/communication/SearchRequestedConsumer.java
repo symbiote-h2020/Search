@@ -44,20 +44,25 @@ public class SearchRequestedConsumer extends DefaultConsumer {
         String msg = new String(body);
         log.debug( "Consume search requested message: " + msg );
 
+
         //Try to parse the message
         try {
             ObjectMapper mapper = new ObjectMapper();
             CoreQueryRequest searchRequest = mapper.readValue(msg, CoreQueryRequest.class);
 
-            
 
-            QueryResponse response = handler.search(searchRequest);
-            //Send the response back to the client
-            String responseMessage = "msg";
-            if( response != null && response.getResources() != null ) {
-                responseMessage = "size is " + response.getResources().size();
-            } else {
-                responseMessage = "Response is null or empty";
+            String responseMessage = "Something wrong happened when executing search";
+            QueryResponse response = null;
+            try {
+                response = handler.search(searchRequest);
+                //Send the response back to the client
+                if (response != null && response.getResources() != null) {
+                    responseMessage = "size is " + response.getResources().size();
+                } else {
+                    responseMessage = "Response is null or empty";
+                }
+            } catch( Exception e ) {
+                log.error("Error occurred when performing search operation: " + e.getMessage(), e);
             }
 
 

@@ -48,7 +48,12 @@ public class SparqlSearchRequestedConsumer extends DefaultConsumer {
             ObjectMapper mapper = new ObjectMapper();
             CoreSparqlQueryRequest searchRequest = mapper.readValue(msg, CoreSparqlQueryRequest.class);
 
-            String response = handler.sparqlSearch(searchRequest);
+            String response = null;
+             try {
+                 response = handler.sparqlSearch(searchRequest);
+             } catch( Exception e ) {
+                 log.error("Error occurred when performing sparql search: " + e.getMessage(), e);
+             }
             //Send the response back to the client
 //            String responseMessage = "msg";
 //            if( response != null && response.getResourceList() != null ) {
@@ -74,6 +79,8 @@ public class SparqlSearchRequestedConsumer extends DefaultConsumer {
             log.error("Error occurred when parsing Resource object JSON: " + msg, e);
         } catch( IOException e ) {
             log.error("I/O Exception occurred when parsing Resource object" , e);
+        } catch( Exception e ) {
+
         }
     }
 }
