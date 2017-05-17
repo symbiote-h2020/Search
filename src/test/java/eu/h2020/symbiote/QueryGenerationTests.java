@@ -47,24 +47,6 @@ public class QueryGenerationTests {
                     .getResource(PLATFORM_B_FILENAME));
             registry.registerPlatform(PLATFORM_B_ID, platformB, RDFFormat.Turtle, PLATFORM_B_MODEL_ID);
 
-//            Model res101Model = loadFileAsModel( RESOURCE_101_FILENAME );
-//            Model res102Model = loadFileAsModel( RESOURCE_102_FILENAME);
-//            Model res103Model = loadFileAsModel( RESOURCE_103_FILENAME);
-//            Model res201Model = loadFileAsModel( RESOURCE_201_FILENAME );
-//            Model res202Model = loadFileAsModel( RESOURCE_202_FILENAME );
-//            Model res301Model = loadFileAsModel( RESOURCE_301_FILENAME );
-
-            //TODO delete
-//            triplestore.insertGraph(null,res101Model);
-
-//            registry.registerResource(PLATFORM_A_URI,PLATFORM_A_SERVICE_URI, RESOURCE_101_URI, res101Model);
-//            registry.registerResource(PLATFORM_A_URI,PLATFORM_A_SERVICE_URI, RESOURCE_102_URI, res102Model);
-//            registry.registerResource(PLATFORM_A_URI,PLATFORM_A_SERVICE_URI, RESOURCE_103_URI, res103Model);
-//
-//            registry.registerResource(PLATFORM_B_URI,PLATFORM_B_SERVICE_URI, RESOURCE_201_URI,res201Model);
-//            registry.registerResource(PLATFORM_B_URI,PLATFORM_B_SERVICE_URI, RESOURCE_202_URI,res202Model);
-//            registry.registerResource(PLATFORM_C_URI,PLATFORM_C_SERVICE_URI, RESOURCE_301_URI,res301Model);
-
             Model stationaryModel = loadFileAsModel(RESOURCE_STATIONARY_FILENAME, "JSONLD");
             Model mobileModel = loadFileAsModel(RESOURCE_MOBILE_FILENAME, "JSONLD");
             Model serviceModel = loadFileAsModel(RESOURCE_SERVICE_FILENAME, "JSONLD");
@@ -98,71 +80,32 @@ public class QueryGenerationTests {
     public void testSearchByPlatformId() {
         String query = new QueryGenerator().addPlatformId("1").toString();
         ResultSet resultSet = triplestore.executeQuery(query);
-//                countAndPrintSearchResponses(resultSet);
-//        printSearchResponsesFormatter(resultSet);
         int size = countResultSetSize(resultSet);
         assertEquals("Platform query should return " + 5 + " but got " + size, 5, size);
-
-        //Platform 2
-//        query = new QueryGenerator().addPlatformId("2").toString();
-//        resultSet = triplestore.executeQuery(query);
-//        size = countResultSetSize(resultSet);
-//        assertEquals("Platform query should return " + 2 + " but got " + size, 2, size);
-//
-//        //Platform 3
-//        query = new QueryGenerator().addPlatformId("3").toString();
-//        resultSet = triplestore.executeQuery(query);
-//        size = countResultSetSize(resultSet);
-//        assertEquals("Platform query should return " + 1 + " but got " + size, 1, size);
     }
 
-    //
-//    @Test
-//    public void testSearchByPlatformId_notExistingPlatform() {
-//
-//        //Not existing platform
-//        String query = new QueryGenerator().addPlatformId("123456").toString();
-//        ResultSet resultSet = triplestore.executeQuery(query);
-//        int size = countResultSetSize(resultSet);
-//        assertEquals("Platform query should return " + 0 + " but got " + size, 0, size);
-//    }
-//
+    @Test
+    public void testSearchByPlatformId_notExistingPlatform() {
+
+        //Not existing platform
+        String query = new QueryGenerator().addPlatformId("123456").toString();
+        ResultSet resultSet = triplestore.executeQuery(query);
+        int size = countResultSetSize(resultSet);
+        assertEquals("Platform query should return " + 0 + " but got " + size, 0, size);
+    }
+
     @Test
     public void testSearchByPlatformName() {
-        System.out.println("----------- TEST -------------");
         String query = new QueryGenerator()
                 .addPlatformName("Platform A")
                 .toString();
         ResultSet resultSet = triplestore.executeQuery(query);
         int size = countResultSetSize(resultSet);
-        System.out.println("SIze " + size);
-//        printSearchResponses(resultSet);
-//        printSearchResponsesFormatter(resultSet);
         assertEquals("Resource query should return " + 5 + " but got " + size, 5, size);
-
-//        String query = new QueryGenerator().addPlatformName("Platform A").toString();
-//        ResultSet resultSet = triplestore.executeQuery(query);
-//        int size = countResultSetSize(resultSet);
-//        assertEquals("Platform query should return " + 4 + " but got " + size, 4, size);
-//
-//        //Platform 2
-//        query = new QueryGenerator().addPlatformName("Platform B").toString();
-//        resultSet = triplestore.executeQuery(query);
-//        size = countResultSetSize(resultSet);
-//        assertEquals("Platform query should return " + 2 + " but got " + size, 2, size);
-//
-//        //Platform 3
-//        query = new QueryGenerator().addPlatformName("Platform C").toString();
-//        resultSet = triplestore.executeQuery(query);
-//        size = countResultSetSize(resultSet);
-//        assertEquals("Platform query should return " + 1 + " but got " + size, 1, size);
     }
 
-    //
     @Test
     public void testSearchByPlatformName_notExistingPlatform() {
-
-        //Not existing platform
         String query = new QueryGenerator().addPlatformName("Platform 12345").toString();
         ResultSet resultSet = triplestore.executeQuery(query);
         int size = countResultSetSize(resultSet);
@@ -201,8 +144,6 @@ public class QueryGenerationTests {
                 .toString();
         ResultSet resultSet = triplestore.executeQuery(query);
         int size = countResultSetSize(resultSet);
-//        printSearchResponses(resultSet);
-//        printSearchResponsesFormatter(resultSet);
         assertEquals("Resource query should return " + 1 + " but got " + size, 1, size);
 
         query = new QueryGenerator()
@@ -237,9 +178,6 @@ public class QueryGenerationTests {
                 .addResourceName(RESOURCE_STATIONARYDEVICE_LABEL)
                 .toString();
         resultSet = triplestore.executeQuery(query);
-
-//        size = countAndPrintSearchResponses(resultSet);
-//        assertEquals("Resource query should return " + 1 + " but got " + size, 1, size);
 
         QueryResponse resp = HandlerUtils.generateSearchResponseFromResultSet(resultSet);
         for (QueryResourceResult singleResp : resp.getResources()) {
@@ -351,15 +289,8 @@ public class QueryGenerationTests {
         ResultSet resultSet = triplestore.executeQuery(query);
         int size = countAndPrintSearchResponses(resultSet);
         assertEquals("Resource query should return " + 3 + " but got " + size, 3, size);
-
-        //Platform 2
-//        query = new QueryGenerator().addResourceLocationName("Somewhere").toString();
-//        resultSet = triplestore.executeQuery(query);
-//        size = countResultSetSize(resultSet);
-//        assertEquals("Resource query should return " + 2 + " but got " + size, 2, size);
     }
 
-    //
     @Test
     public void testSearchByResourceLocationName_NotExistingResource() {
         //Not existing platform
@@ -375,12 +306,6 @@ public class QueryGenerationTests {
         ResultSet resultSet = triplestore.executeQuery(query);
         int size = countResultSetSize(resultSet);
         assertEquals("Resource query should return " + 3 + " but got " + size, 3, size);
-//
-//        //Platform 2
-//        query = new QueryGenerator().addLikeResourceLocationName("Somewhere","CONTAINS").toString();
-//        resultSet = triplestore.executeQuery(query);
-//        size = countResultSetSize(resultSet);
-//        assertEquals("Resource query should return " + 3 + " but got " + size, 3, size);
     }
 
     @Test
@@ -400,7 +325,6 @@ public class QueryGenerationTests {
         ResultSet resultSet = triplestore.executeQuery(query);
         int size = countAndPrintSearchResponses(resultSet);
         assertEquals("Resource query should return " + 3 + " but got " + size, 3, size);
-//        printSearchResponsesFormatter(resultSet);
 
         //Platform 2
         query = new QueryGenerator().addResourceObservedPropertyName("humidity").toString();
@@ -467,7 +391,6 @@ public class QueryGenerationTests {
 
         String query = new QueryGenerator().addResourceLocationDistance(latitude, longitude, distance).toString();
         ResultSet resultSet = triplestore.executeQuery(query);
-//        printSearchResponsesFormatter(resultSet);
 
         int size = countAndPrintSearchResponses(resultSet);
         assertEquals("Resource query should return " + 3 + " but got " + size, 3, size);
@@ -523,12 +446,6 @@ public class QueryGenerationTests {
     }
 
     private int countResultSetSize(ResultSet resultSet) {
-//        int i = 0;
-//        while (resultSet.hasNext()) {
-//            QuerySolution next = resultSet.next();
-//
-//            i++;
-//        }
         QueryResponse searchResponse = HandlerUtils.generateSearchResponseFromResultSet(resultSet);
         int i = searchResponse.getResources().size();
         return i;
@@ -555,23 +472,6 @@ public class QueryGenerationTests {
                 .getResource(filename));
         ResultSet resultSet = store.executeQuery(query);
         printSearchResponsesFormatter(resultSet);
-
-
-//        System.out.println(">>>>>>>>>>>>> Executing query " + filename);
-//        while (resultSet.hasNext()) {
-//            QuerySolution solution = resultSet.next();
-//            Iterator<String> varNames = solution.varNames();
-//            String temp = "";
-//            while (varNames.hasNext()) {
-//                String var = varNames.next();
-//                if (!temp.isEmpty()) {
-//                    temp += ", ";
-//                }
-//                temp += var + " = " + solution.get(var).toString();
-//            }
-//            System.out.println( temp );
-//        }
-//        System.out.println("<<<<<<<<<<<<< SearchRequest finished ");
     }
 
 }

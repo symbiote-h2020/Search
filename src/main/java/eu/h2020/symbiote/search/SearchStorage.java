@@ -81,16 +81,6 @@ public class SearchStorage {
         return storage;
     }
 
-//    /**
-//     * Registers ontology model in the search engine, using specified model's id to generate model graph uri.
-//     *
-//     * @param model Model to be registered
-//     */
-//    public void registerModel(OntologyModel model) {
-//        log.info( "Registering model in search " + model.getId() + " ...");
-//        core.registerModel(model.getId(),model.getInstance(), model.getFormat());
-//        log.info( "Model registered!");
-//    }
 
     /**
      *
@@ -125,22 +115,11 @@ public class SearchStorage {
         log.info( "Resource registered!");
     }
 
-//    public void registerMapping(Mapping mapping ) {
-//        log.info( "Registering mapping in search " + mapping.getId() + " ...");
-//        try {
-//            core.registerMapping(mapping.getId(),mapping.getModelId1(),mapping.getModelId2(),mapping.getMapping());
-//        } catch (UnsupportedEncodingException e) {
-//            log.error("Error when registering mapping in the core search", e);
-//        }
-//        log.info( "Mapping registered!");
-//    }
 
     public List<String> query( String modelGraphUri, String query) {
         List<String> result = null;
         try {
             result = query(searchEngine, modelGraphUri, query);
-//            Gson gson = new GsonBuilder().disableHtmlEscaping().create();
-//            result = gson.toJson(resultList);
         } catch (IOException e) {
             log.error("Error during executing query",e);
         }

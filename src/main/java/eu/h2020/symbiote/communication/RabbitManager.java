@@ -100,7 +100,6 @@ public class RabbitManager {
 
         try {
             ConnectionFactory factory = new ConnectionFactory();
-//            factory.setHost("127.0.0.1"); //todo value from properties
             factory.setHost(this.rabbitHost);
             factory.setUsername(this.rabbitUsername);
             factory.setPassword(this.rabbitPassword);

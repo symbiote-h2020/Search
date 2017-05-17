@@ -59,19 +59,8 @@ public class TripleStore {
 
         EntityDefinition entDef = new EntityDefinition("entityField", "geoField");
 
-//        File dir = new File("/spatialLucene");
-//
-//        deleteOldFiles(dir);
-//        if( !dir.exists() ) {
-//            dir.mkdirs();
-//        }
         Dataset baseDataset = DatasetFactory.create();
-//        Directory realDir = null;
-//        try {
-//            realDir = FSDirectory.open(dir);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+
         Directory ramDir = new RAMDirectory();
 
         dataset = SpatialDatasetFactory.createLucene(baseDataset, ramDir, entDef);
@@ -92,8 +81,6 @@ public class TripleStore {
                     .getResourceAsStream(QU_FILE));
             insertGraph("", qureq20_data, RDFFormat.RDFXML);
 
-
-//            printDataset();
         } catch (IOException e) {
             log.fatal("Could not load CIM file: " + e.getMessage());
             e.printStackTrace();
@@ -131,7 +118,6 @@ public class TripleStore {
 
         dataset = SpatialDatasetFactory.createLucene(baseDataset, realDir, entDef);
         if( newRepo ) {
-            //TODO Load CIM, BIM and MIM (& PIMs?)
             try {
                 String cim_data = IOUtils.toString(TripleStore.class
                         .getResourceAsStream(CIM_FILE));
