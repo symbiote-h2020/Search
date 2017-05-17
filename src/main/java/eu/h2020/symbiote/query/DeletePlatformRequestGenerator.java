@@ -12,8 +12,6 @@ import org.apache.jena.update.UpdateRequest;
  */
 public class DeletePlatformRequestGenerator {
 
-    private static final Log log = LogFactory.getLog(DeletePlatformRequestGenerator.class);
-
     private UpdateRequest request;
 
     /**
@@ -44,20 +42,8 @@ public class DeletePlatformRequestGenerator {
         q.append("\t?platform ?p ?o ;\n");
         q.append("\t\tcim:id \""+platformId+"\" .\n");
         q.append("}");
-        System.out.println(q.toString());
         return q.toString();
     }
-
-//    private String generateInformationServiceDelete3( String platformId ) {
-//        StringBuilder q = generateBaseQuery();
-//        q.append("DELETE { ?service ?p ?o } WHERE {\n");
-//        q.append("\t?service ?p ?o .\n");
-//        q.append("\t?platform mim:hasService ?service ;\n");
-//        q.append("\t\tcimowl:hasID \""+platformId+"\" .\n");
-//        q.append("}");
-//        System.out.println(q.toString());
-//        return q.toString();
-//    }
 
     private String generateInformationServiceDelete( String platformId ) {
         StringBuilder q = generateBaseQuery();
@@ -71,7 +57,6 @@ public class DeletePlatformRequestGenerator {
         q.append("\t?platform mim:hasService ?service ;\n");
         q.append("\t\tcim:id \""+platformId+"\" .\n");
         q.append("}");
-        System.out.println( q.toString());
         return q.toString();
 
     }

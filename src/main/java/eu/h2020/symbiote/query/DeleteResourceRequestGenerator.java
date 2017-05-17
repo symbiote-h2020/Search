@@ -12,8 +12,6 @@ import org.apache.jena.update.UpdateRequest;
  */
 public class DeleteResourceRequestGenerator {
 
-    private static final Log log = LogFactory.getLog(DeleteResourceRequestGenerator.class);
-
     private UpdateRequest request;
 
     /**
@@ -24,8 +22,6 @@ public class DeleteResourceRequestGenerator {
      */
     public DeleteResourceRequestGenerator(String resourceId ) {
         request = UpdateFactory.create();
-//        request.add(generateServiceToResourceLinkRemoval(resourceId));
-//        request.add(generateLocationRemoval(resourceId));
         request.add(generateResourceRemoval(resourceId));
     }
 
@@ -41,7 +37,6 @@ public class DeleteResourceRequestGenerator {
     private String generateServiceToResourceLinkRemoval( String resourceId ) {
         StringBuilder q = generateBaseQuery();
         q.append("DELETE { ?service mim:hasResource ?sensor } WHERE {\n");
-//        q.append("\t?service rdfs:type mim:InterworkingService ; \n");
         q.append("\t?service mim:hasResource ?sensor .\n");
         q.append("\t?sensor cim:id \""+resourceId+"\" .\n");
         q.append("}");
@@ -51,7 +46,6 @@ public class DeleteResourceRequestGenerator {
     private String generateLocationRemoval( String resourceId ) {
         StringBuilder q = generateBaseQuery();
         q.append("DELETE { ?location ?p ?o } WHERE {\n");
-//        q.append("\t?location rdfs:type cim:Location .\n");
         q.append("\t?location ?p ?o .\n");
         q.append("\t?sensor cim:locatedAt ?location ;\n");
         q.append("\t\tcim:id \""+resourceId+"\" .\n");
@@ -63,17 +57,10 @@ public class DeleteResourceRequestGenerator {
         StringBuilder q = generateBaseQuery();
         q.append("DELETE { ?sensor ?p ?o . \n" );
         q.append( " \t?service mim:hasResource ?sensor . \n");
-//        q.append( " \tcim:observes ?property . \n");
-//        q.append( " ?property rdfs:label ?label ; \n");
-//        q.append( " \trdfs:comment ?comment . \n");
         q.append( "} WHERE {\n");
         q.append("\t?sensor ?p ?o ;\n");
-//        q.append("\t\tcim:observes ?property ;\n");
-//        q.append("\t\trdfs:type cim:Resource ;\n");
         q.append("\t\tcim:id \""+resourceId+"\" .\n");
         q.append("\t?service mim:hasResource ?sensor .\n" );
-//        q.append("\t?property rdfs:label ?label ; \n");
-//        q.append("\t\trdfs:comment ?comment . \n");
         q.append("}");
         return q.toString();
     }

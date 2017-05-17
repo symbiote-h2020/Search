@@ -36,6 +36,9 @@ public class HandlerUtils {
 
     private static final Log log = LogFactory.getLog(HandlerUtils.class);
 
+    private HandlerUtils() {
+        
+    }
 
     /**
      * Generates a model containing RDF statements equivalent to specified platform.
@@ -231,11 +234,6 @@ public class HandlerUtils {
             if( !type.equals(CoreInformationModel.CIM_RESOURCE.toString()) ) {
 
                 if (!responses.containsKey(resId)) {
-
-//                    Double latVal = Double.valueOf(43.687241d);
-//                    Double longVal = Double.valueOf(10.486193d);
-//                    Double altVal = Double.valueOf(10);
-
                     List<String> properties = new ArrayList<>();
                     properties.add(propertyName);
 
@@ -256,14 +254,11 @@ public class HandlerUtils {
                     resource.setResourceType(types);
                     responses.put(resId, resource);
                 } else {
-                    //ensure all other params are the same, add to list of properties
                     QueryResourceResult existingResource = responses.get(resId);
 //                //Do equals
                     if( propertyName != null && !propertyName.isEmpty() ) {
                         if( !existingResource.getObservedProperties().contains(propertyName)) {
                             existingResource.getObservedProperties().add(propertyName);
-//                        } else {
-//                            log.warn("Property with this name already exists" + propertyName);
                         }
                     }
                     if( type != null && !type.isEmpty() ) {
@@ -274,22 +269,6 @@ public class HandlerUtils {
                 }
             }
 
-            //Original below
-//            if( !responses.containsKey(resId) ) {
-//                Double latitude = Double.valueOf(locationLat);
-//                Double longitude = Double.valueOf(locationLong);
-//                Double altitude = Double.valueOf(locationAlt);
-//
-//                List<String> properties = new ArrayList<>();
-//                properties.add(propertyName);
-//                SearchResponseResource resource = new SearchResponseResource(resId, resName, resDescription, platformId, platformName, locationName, latitude, longitude, altitude, properties);
-//                responses.put(resId,resource);
-//            } else {
-//                //ensure all other params are the same, add to list of properties
-//                SearchResponseResource existingResource = responses.get(resId);
-//                //Do equals
-//                existingResource.getObservedProperties().add(propertyName);
-//            }
         }
 
         QueryResponse response = null;
