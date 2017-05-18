@@ -82,8 +82,7 @@ public class TripleStore {
             insertGraph("", qureq20_data, RDFFormat.RDFXML);
 
         } catch (IOException e) {
-            log.fatal("Could not load CIM file: " + e.getMessage());
-            e.printStackTrace();
+            log.fatal("Could not load CIM file: " + e.getMessage(), e);
         }
     }
 
@@ -113,7 +112,7 @@ public class TripleStore {
         try {
             realDir = FSDirectory.open(dir);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e);
         }
 
         dataset = SpatialDatasetFactory.createLucene(baseDataset, realDir, entDef);
@@ -137,8 +136,7 @@ public class TripleStore {
 
 //                printDataset();
             } catch (IOException e) {
-                log.fatal("Could not load CIM file: " + e.getMessage());
-                e.printStackTrace();
+                log.fatal("Could not load CIM file: " + e.getMessage(),e);
             }
         }
     }
@@ -164,9 +162,9 @@ public class TripleStore {
 
     public void executeQueryPP( String query ) {
 
-        System.out.println("QUERY: ---------------");
-        System.out.println(query);
-        System.out.println("----------------------");
+        log.debug("QUERY: ---------------");
+        log.debug(query);
+        log.debug("----------------------");
 
         Query q = QueryFactory.create(query);
         QueryExecution qexec = QueryExecutionFactory.create(q, dataset);
@@ -218,9 +216,12 @@ public class TripleStore {
 //                ? dataset.getNamedModel(graphUri)
 //                : dataset.getDefaultModel();
 //        Model model = dataset.getDefaultModel();
-        QueryExecution qe = QueryExecutionFactory.create(query, dataset);
-        ResultSet result = qe.execSelect();
-        dataset.end();
+        ResultSet result = null;
+        try( QueryExecution qe = QueryExecutionFactory.create(query, dataset) ) {
+            result = qe.execSelect();
+            dataset.end();
+        }
+
         return result;
     }
 
@@ -250,7 +251,7 @@ public class TripleStore {
         Iterator<String> stringIterator = dataset.listNames();
         while (stringIterator.hasNext() ) {
             String s = stringIterator.next();
-            System.out.println( "Loaded dataset: " + s);
+            log.debug( "Loaded dataset: " + s);
             data.add(s);
         }
         dataset.end();

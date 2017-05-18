@@ -13,8 +13,6 @@ import org.apache.jena.update.UpdateRequest;
  */
 public class UpdatePlatformRequestGenerator {
 
-    private static final Log log = LogFactory.getLog(UpdatePlatformRequestGenerator.class);
-
     private UpdateRequest request;
 
     /**
@@ -50,7 +48,6 @@ public class UpdatePlatformRequestGenerator {
         q.append("\t\tmim:hasName ?platformName ;\n");
         q.append("\t\tmim:hasDescription ?platformDesc .\n");
         q.append("}");
-        System.out.println(q.toString());
         return q.toString();
     }
 
@@ -69,7 +66,6 @@ public class UpdatePlatformRequestGenerator {
         q.append("\t\tmim:hasInformationModel ?imodel . \n " );
         q.append("\t?imodel cim:id ?imodelid . \n");
         q.append("}");
-        System.out.println(q.toString());
         return q.toString();
     }
 

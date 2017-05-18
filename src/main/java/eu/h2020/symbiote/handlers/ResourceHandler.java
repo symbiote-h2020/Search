@@ -35,37 +35,12 @@ public class ResourceHandler implements IResourceEvents {
 
         //Read to get platform and its information service
         String platformId = resources.getPlatformId();
-//        String resourceURL = resource.getResourceURL(); //match this with
-//
-//        String query = "PREFIX core: <https://www.symbiote-h2020.eu/ontology/core#>\n" +
-//                "PREFIX mim: <http://www.symbiote-h2020.eu/ontology/meta.owl#>" +
-//                "\n" +
-//                "SELECT ?service WHERE {\n" +
-//                "\t?service a mim:InterworkingService;\n" +
-//                "\t\t\tmim:hasURL \"" + resourceURL + "\".\n" +
-//                "} ";
-//
-//        List<String> response = this.storage.query(Ontology.getPlatformGraphURI(platformId), query);
-//        String registeredServiceURI = null;
-//        if (response != null && response.size() == 1) {
-//            registeredServiceURI = response.get(0).substring(response.get(0).indexOf("=") + 2);
-//        } else {
-//            log.error(response == null ? "Response is null" : "Response size differs, got size: " + response.size());
-//        }
-//
-//        if (registeredServiceURI == null) {
-//            log.error("Could not properly find interworking service for url " + resourceURL);
-//            return false;
-//        }
-//        log.debug("Gonna create resource for service URI: " + registeredServiceURI);
-////        Model resourceModel = HandlerUtils.generateModelFromResource(resource);
-//        this.storage.registerResource(Ontology.getPlatformGraphURI(platformId), registeredServiceURI, Ontology.getResourceGraphURI(resource.getId()), resourceModel);
 
         for (CoreResource coreResource : resources.getResources()) {
             Model model = ModelFactory.createDefaultModel();
-            System.out.println(" ----- ------ -----");
-            System.out.println(coreResource.getRdf());
-            System.out.println(" ----- ------ -----");
+            log.debug(" ----- ------ -----");
+            log.debug(coreResource.getRdf());
+            log.debug(" ----- ------ -----");
 
             String resourceURL = coreResource.getInterworkingServiceURL(); //match this with
 
@@ -93,7 +68,7 @@ public class ResourceHandler implements IResourceEvents {
     }
 
     private String getSearchInterworkingServiceSPARQL( String resourceURL, String platformId ) {
-        String query = "PREFIX cim: <http://www.symbiote-h2020.eu/ontology/core#>\n" +
+        return "PREFIX cim: <http://www.symbiote-h2020.eu/ontology/core#>\n" +
                 "PREFIX mim: <http://www.symbiote-h2020.eu/ontology/meta#>" +
                 "\n" +
                 "SELECT ?service WHERE {\n" +
@@ -102,7 +77,6 @@ public class ResourceHandler implements IResourceEvents {
                 "\t\t?platform cim:id \"" + platformId + "\";\n" +
                 "\t\t\tmim:hasService ?service.\n" +
                 "} ";
-        return query;
     }
 
     private String findServiceURI( String resourceURL, String platformId ) {
@@ -112,7 +86,7 @@ public class ResourceHandler implements IResourceEvents {
         List<String> response = this.storage.query(Ontology.getPlatformGraphURI(platformId), query);
 
         if (response != null && response.size() == 1) {
-            System.out.println("response: " + response.get(0));
+            log.debug("response: " + response.get(0));
             registeredServiceURI = response.get(0).substring(response.get(0).indexOf("=") + 2);
             log.debug("Found resource URL: " + registeredServiceURI);
         } else {

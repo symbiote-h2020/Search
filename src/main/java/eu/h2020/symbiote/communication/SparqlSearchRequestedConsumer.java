@@ -71,7 +71,7 @@ public class SparqlSearchRequestedConsumer extends DefaultConsumer {
                     .correlationId(properties.getCorrelationId())
                     .build();
             this.getChannel().basicPublish("", properties.getReplyTo(), replyProps, responseBytes);
-            System.out.println("-> Message sent back");
+            log.debug("-> Message sent back");
 
             this.getChannel().basicAck(envelope.getDeliveryTag(), false);
 
@@ -80,7 +80,7 @@ public class SparqlSearchRequestedConsumer extends DefaultConsumer {
         } catch( IOException e ) {
             log.error("I/O Exception occurred when parsing Resource object" , e);
         } catch( Exception e ) {
-
+            log.error("Generic exception occurred when executing sparql search", e);
         }
     }
 }
