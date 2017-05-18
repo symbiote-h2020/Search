@@ -217,8 +217,8 @@ public class TripleStore {
 //                : dataset.getDefaultModel();
 //        Model model = dataset.getDefaultModel();
         ResultSet result = null;
-        try( QueryExecution qe = QueryExecutionFactory.create(query, dataset) ) {
-            result = qe.execSelect();
+        try (QueryExecution qe = QueryExecutionFactory.create(query, dataset) ) {
+            result = ResultSetFactory.copyResults(qe.execSelect());
             dataset.end();
         }
 
