@@ -65,6 +65,22 @@ configurations.all {
 }
 
 dependencies {
+
+    /* SymbIoTeLibraries manual:
+        One can use the library from jitpack by default with the notation:
+            compile('com.github.symbiote-h2020:SymbIoTeLibraries:develop-SNAPSHOT') {changing = true }
+        or having cloned locally the SymbIoTeLibraries repo use it directly with project dependency by:
+            compile project(':SymbIoTeLibraries')
+        Important --- In order to use the latter you need to:
+            1) switch comments on the artifact and project dependencies
+            2) always have only one uncommented
+            3) project dependency requires changes in settings.gradle file in this project
+            4) never commit build.gradle which has project dependencies active as it will break CI builds
+    */
+    // compile('com.github.symbiote-h2020:SymbIoTeLibraries:develop-SNAPSHOT')
+    compile('com.github.symbiote-h2020:SymbIoTeLibraries:0.2.0')
+
+
     compile('org.springframework.cloud:spring-cloud-starter')
     compile('org.springframework.cloud:spring-cloud-starter-config')
     compile('org.springframework.cloud:spring-cloud-starter-eureka')
@@ -90,8 +106,6 @@ dependencies {
 //    compile('org.semanticweb.owl:proc-align:1.0')
 //    compile('fr.inrialpes.exmo:ontowrap:1.0')
     compile('eu.symbiote-h2020:MediationFramework:1.0')
-
-    compile('com.github.symbiote-h2020:SymbIoTeLibraries:develop-SNAPSHOT') { changing=true }
 
     testCompile('org.springframework.boot:spring-boot-starter-test')
 
