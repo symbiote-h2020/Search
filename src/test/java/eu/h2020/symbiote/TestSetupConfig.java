@@ -2,6 +2,7 @@ package eu.h2020.symbiote;
 
 import eu.h2020.symbiote.core.model.RDFFormat;
 import eu.h2020.symbiote.core.model.internal.CoreResource;
+import eu.h2020.symbiote.core.model.internal.CoreResourceType;
 import eu.h2020.symbiote.model.Platform;
 import org.apache.commons.io.IOUtils;
 import org.apache.jena.rdf.model.Model;
@@ -195,6 +196,7 @@ public class TestSetupConfig {
         res.setLabels(Arrays.asList(label));
         res.setId(id);
         res.setInterworkingServiceURL(serviceUrl);
+        res.setType(CoreResourceType.STATIONARY_SENSOR);
         try {
             res.setRdf(IOUtils.toString(TestSetupConfig.class
                     .getResourceAsStream(rdfFilename)));
