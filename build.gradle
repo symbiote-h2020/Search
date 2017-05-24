@@ -76,9 +76,8 @@ dependencies {
             2) always have only one uncommented
             3) project dependency requires changes in settings.gradle file in this project
             4) never commit build.gradle which has project dependencies active as it will break CI builds
-//    */
-
-    compile('com.github.symbiote-h2020:SymbIoTeLibraries:develop-SNAPSHOT') { changing=true }
+    */
+     compile('com.github.symbiote-h2020:SymbIoTeLibraries:develop-SNAPSHOT')
 //    compile('com.github.symbiote-h2020:SymbIoTeLibraries:0.2.0')
 
 
@@ -142,7 +141,7 @@ dependencyCheck {
 }
 
 // including code quality extensions into the build
-check.dependsOn(jacocoTestReport, 'dependencyCheck')
+check.dependsOn(jacocoTestReport)//, 'dependencyCheck')
 
 // Eureka needs to be disabled for testing
 tasks.withType(Test) {
