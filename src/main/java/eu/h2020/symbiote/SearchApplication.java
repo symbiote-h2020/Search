@@ -36,6 +36,7 @@ import java.util.List;
 public class SearchApplication {
 
     public static final String DIRECTORY = System.getProperty("user.home") +File.separator+ "coreSearchTriplestore";
+//    public static final String DIRECTORY = "F:\\stressTest\\2";
 
 	private static Log log = LogFactory.getLog(SearchApplication.class);
 

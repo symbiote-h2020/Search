@@ -1,0 +1,62 @@
+{
+  "@graph" : [ {
+    "@id" : "_:b0",
+    "@type" : "http://www.symbiote-h2020.eu/ontology/core#FeatureOfInterest",
+    "hasProperty" : [ ${foi.properties} ],
+    "comment" : "${foi.desc}",
+    "label" : "${foi.name}"
+  }, {
+    "@id" : "http://www.symbiote-h2020.eu/ontology/resources/${resource.id}/${location.name}",
+    "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#WGS84Location", "http://www.symbiote-h2020.eu/ontology/core#Location" ],
+    "comment" : "${location.desc}",
+    "label" : "${location.name}",
+    "alt" : "${location.alt}",
+    "lat" : "${location.lat}",
+    "long" : "${location.long}"
+  }, {
+    "@id" : "http://www.symbiote-h2020.eu/ontology/resources/${resource.id}",
+    "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#StationarySensor", "http://www.symbiote-h2020.eu/ontology/core#Resource" ],
+    "hasFeatureOfInterest" : "_:b0",
+    "id" : "${resource.id}",
+    "locatedAt" : "http://www.symbiote-h2020.eu/ontology/resources/${resource.id}/${location.name}",
+    "observes" : [ ${resource.properties} ],
+    "comment" : "${resource.desc}",
+    "label" : "${resource.name}"
+  } ],
+  "@context" : {
+    "hasProperty" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasProperty",
+      "@type" : "@id"
+    },
+    "comment" : {
+      "@id" : "http://www.w3.org/2000/01/rdf-schema#comment"
+    },
+    "label" : {
+      "@id" : "http://www.w3.org/2000/01/rdf-schema#label"
+    },
+    "hasFeatureOfInterest" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasFeatureOfInterest",
+      "@type" : "@id"
+    },
+    "locatedAt" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#locatedAt",
+      "@type" : "@id"
+    },
+    "observes" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#observes",
+      "@type" : "@id"
+    },
+    "id" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#id"
+    },
+    "alt" : {
+      "@id" : "http://www.w3.org/2003/01/geo/wgs84_pos#alt"
+    },
+    "long" : {
+      "@id" : "http://www.w3.org/2003/01/geo/wgs84_pos#long"
+    },
+    "lat" : {
+      "@id" : "http://www.w3.org/2003/01/geo/wgs84_pos#lat"
+    }
+  }
+}

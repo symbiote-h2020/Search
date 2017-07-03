@@ -116,7 +116,8 @@ public class SearchStorage {
     }
 
 
-    public List<String> query( String modelGraphUri, String query) {
+    public List<String> query
+            ( String modelGraphUri, String query) {
         List<String> result = null;
         try {
             result = query(searchEngine, modelGraphUri, query);
