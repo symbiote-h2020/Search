@@ -28,7 +28,6 @@ import static org.junit.Assert.*;
 /**
  * Created by Szymon Mueller on 01/07/2017.
  */
-@RunWith(MockitoJUnitRunner.class)
 public class StressTestLoadGenerator {
 
     public static final String TEMPLATE_STATIONARY = "/templates/templateStationarySensor.json";
@@ -37,6 +36,7 @@ public class StressTestLoadGenerator {
     static final List<WGS84Location> locations;
 
     static final List<String> properties;
+
 
     static {
         locations = Arrays.asList(
