@@ -12,18 +12,18 @@ import org.springframework.stereotype.Component;
 @Component
 public class AvailabilityManager {
 
-    private AvailabilityRepository repository;
+    private AvailabilityRepository availabilityRepository;
 
     private Log log = LogFactory.getLog(AvailabilityManager.class);
 
     @Autowired
-    public AvailabilityManager(AvailabilityRepository repository) {
-        this.repository = repository;
+    public AvailabilityManager(AvailabilityRepository availabilityRepository) {
+        this.availabilityRepository = availabilityRepository;
     }
 
     public float getAvailabilityForResource(String resourceId ) {
         float result = 0.0f;
-        CloudMonitoringDevice monitoringInfo = repository.findOne(resourceId);
+        CloudMonitoringDevice monitoringInfo = availabilityRepository.findOne(resourceId);
         if( monitoringInfo == null ) {
             log.debug("Could not find availability for resource " + resourceId + ", setting " + result);
         } else {

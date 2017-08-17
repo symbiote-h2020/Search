@@ -9,11 +9,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class PopularityManager {
 
-    private PopularityRepository repository;
+    private PopularityRepository popularityRepository;
 
     @Autowired
     public PopularityManager(PopularityRepository repository) {
-        this.repository = repository;
+        this.popularityRepository = repository;
     }
 
     public float getPopularityForResource(String resourceId ) {
