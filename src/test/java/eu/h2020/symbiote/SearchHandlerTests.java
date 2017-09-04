@@ -18,6 +18,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.Arrays;
 
 import static eu.h2020.symbiote.TestSetupConfig.*;
 import static org.junit.Assert.*;
@@ -44,7 +45,7 @@ public class SearchHandlerTests {
         try {
             String platformA = IOUtils.toString(this.getClass()
                     .getResource(PLATFORM_A_FILENAME));
-            registry.registerPlatform(PLATFORM_A_ID, platformA, RDFFormat.Turtle, PLATFORM_A_MODEL_ID);
+            registry.registerPlatform(PLATFORM_A_ID, platformA, RDFFormat.Turtle);
 
 //            String platformB = IOUtils.toString(this.getClass()
 //                    .getResource(PLATFORM_B_FILENAME));
@@ -90,8 +91,8 @@ public class SearchHandlerTests {
         query.append("SELECT ?location WHERE {\n" );
         query.append("\t?location a cim:Location ;\n");
         query.append("\t\ta cim:WGS84Location ;\n");
-        query.append("\t\trdfs:label \""+ location.getLabel() + "\" ;\n");
-        query.append("\t\trdfs:comment \"" + location.getComment() + "\" .\n");
+        query.append("\t\trdfs:label \""+ location.getLabels().get(0) + "\" ;\n");
+        query.append("\t\trdfs:comment \"" + location.getComments().get(0) + "\" .\n");
 
         //Ensure that location is defined for this platform...
         query.append("\t?platform a owl:Ontology ;\n");
@@ -141,7 +142,7 @@ public class SearchHandlerTests {
 //            String query = IOUtils.toString(this.getClass()
 //                    .getResource("/q1.sparql"));
 
-            WGS84Location location = new WGS84Location(2.349014d,48.864716d,15.0d,"Paris","This is paris");
+            WGS84Location location = new WGS84Location(2.349014d,48.864716d,15.0d, Arrays.asList("Paris"),Arrays.asList("This is paris"));
             String query = getWGS84SparqlQuery(location,"1");
 
             request.setQuery(query);

@@ -7,8 +7,8 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
+import eu.h2020.symbiote.core.model.Platform;
 import eu.h2020.symbiote.handlers.PlatformHandler;
-import eu.h2020.symbiote.model.Platform;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -50,8 +50,8 @@ public class PlatformModifiedConsumer extends DefaultConsumer {
 
             boolean success = handler.updatePlatform(platform);
             log.debug(success?
-                    "Platform " + platform.getPlatformId() + " updated successfully"
-                    :"Platform " + platform.getPlatformId() + " is reported to not be updated");
+                    "Platform " + platform.getId() + " updated successfully"
+                    :"Platform " + platform.getId() + " is reported to not be updated");
 
         } catch( JsonParseException | JsonMappingException e ) {
             log.error("Error occurred when parsing Platform object JSON: " + msg, e);

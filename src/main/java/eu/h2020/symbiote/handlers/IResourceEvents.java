@@ -1,8 +1,6 @@
 package eu.h2020.symbiote.handlers;
 
 import eu.h2020.symbiote.core.internal.CoreResourceRegisteredOrModifiedEventPayload;
-import eu.h2020.symbiote.model.Platform;
-import eu.h2020.symbiote.model.Resource;
 
 /**
  * Interface containing all relevant interfaces for Resource related events.

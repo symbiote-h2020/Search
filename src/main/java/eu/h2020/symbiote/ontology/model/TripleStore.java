@@ -25,6 +25,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -110,7 +111,7 @@ public class TripleStore {
         Dataset baseDataset= TDBFactory.createDataset(baseRepoLocation);
         Directory realDir = null;
         try {
-            realDir = FSDirectory.open(dir);
+            realDir = FSDirectory.open(dir.toPath());
         } catch (IOException e) {
             log.error(e);
         }

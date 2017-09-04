@@ -1,13 +1,14 @@
 package eu.h2020.symbiote.handlers;
 
+import com.netflix.loadbalancer.Server;
+import eu.h2020.symbIoTe.ontology.CoreInformationModel;
+import eu.h2020.symbIoTe.ontology.MetaInformationModel;
 import eu.h2020.symbiote.core.ci.QueryResourceResult;
 import eu.h2020.symbiote.core.ci.QueryResponse;
 import eu.h2020.symbiote.core.ci.ResourceType;
 import eu.h2020.symbiote.core.internal.CoreQueryRequest;
-import eu.h2020.symbiote.model.Platform;
-import eu.h2020.symbiote.model.Resource;
-import eu.h2020.symbiote.ontology.model.CoreInformationModel;
-import eu.h2020.symbiote.ontology.model.MetaInformationModel;
+import eu.h2020.symbiote.core.model.InterworkingService;
+import eu.h2020.symbiote.core.model.Platform;
 import eu.h2020.symbiote.ontology.model.Ontology;
 import eu.h2020.symbiote.query.QueryGenerator;
 import org.apache.commons.logging.Log;
@@ -17,6 +18,10 @@ import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.OWL;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,88 +55,107 @@ public class HandlerUtils {
         log.debug("Generating model from platform");
         // create an empty Model
         Model model = ModelFactory.createDefaultModel();
+        model.setNsPrefix("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+        model.setNsPrefix("rdfs", "http://www.w3.org/2000/01/rdf-schema#");
+        model.setNsPrefix("owl", "http://www.w3.org/2002/07/owl#");
+        model.setNsPrefix("xsd", "http://www.w3.org/2001/XMLSchema#");
+        model.setNsPrefix("core", "http://www.symbiote-h2020.eu/ontology/core#");
+        model.setNsPrefix("meta", "http://www.symbiote-h2020.eu/ontology/meta#");
+        model.setNsPrefix("geo", "http://www.w3.org/2003/01/geo/wgs84_pos#");
+        model.setNsPrefix("qu", "http://purl.oclc.org/NET/ssnx/qu/quantity#");
 
         // construct proper Platform entry
-                model.createResource(Ontology.getPlatformGraphURI(platform.getPlatformId()))
-                .addProperty(MetaInformationModel.RDF_TYPE,MetaInformationModel.OWL_ONTOLOGY)
-                .addProperty(MetaInformationModel.CIM_HASID,platform.getPlatformId())
-                .addProperty(MetaInformationModel.RDFS_COMMENT, platform.getDescription())
-                .addProperty(MetaInformationModel.RDFS_LABEL, platform.getName())
-                .addProperty(MetaInformationModel.MIM_HASSERVICE, model.createResource(generateInterworkingServiceUri(Ontology.getPlatformGraphURI(platform.getPlatformId()),platform.getUrl())));
-
-
-        Model serviceModel = generateInterworkingService(platform);
-        model.add(serviceModel);
-
-        model.write(System.out,"TURTLE");
-        return model;
-    }
-
-    /**
-     * Generates a model containing RDF statements equivalent to specified resource.
-     *
-     * @param resource Resource to be translated into RDF.
-     * @return Model containing RDF statements.
-     */
-    public static Model generateModelFromResource( Resource resource ) {
-        log.debug("Generating model from resource");
-        Model model = ModelFactory.createDefaultModel();
-
-        List<String> properties = resource.getObservedProperties();
-        org.apache.jena.rdf.model.Resource res = model.createResource();
-        for( String prop: properties ) {
-            res.addProperty(CoreInformationModel.RDFS_LABEL,prop);
-            res.addProperty(CoreInformationModel.RDFS_COMMENT,"");
+        Resource platformResource = model.createResource(Ontology.getPlatformGraphURI(platform.getId()))
+                .addProperty(RDF.type, MetaInformationModel.Platform)
+                .addProperty(RDF.type, OWL.Ontology)
+                .addProperty(CoreInformationModel.id,platform.getId());
+        for( String comment: platform.getComments() ) {
+            platformResource.addProperty(RDFS.comment, comment);
+        }
+        for( String label: platform.getLabels() ) {
+            platformResource.addProperty(RDFS.label, label);
         }
 
-        model.createResource(Ontology.getResourceGraphURI(resource.getId()))
-                .addProperty(MetaInformationModel.RDF_TYPE,CoreInformationModel.CIM_RESOURCE)
-                .addProperty(CoreInformationModel.CIM_ID,resource.getId())
-                .addProperty(CoreInformationModel.RDFS_LABEL,resource.getName())
-                .addProperty(CoreInformationModel.RDFS_COMMENT,resource.getDescription()!=null?resource.getDescription():"")
-                .addProperty(CoreInformationModel.CIM_LOCATED_AT,model.createResource(Ontology.getResourceGraphURI(resource.getId())+"/location"))
-                .addProperty(CoreInformationModel.CIM_OBSERVES,res);
+        for( InterworkingService service: platform.getInterworkingServices() ) {
+            Resource interworkingServiceResource = model.createResource(generateInterworkingServiceUri(Ontology.getPlatformGraphURI(platform.getId()), service.getUrl()))
+                    .addProperty(RDF.type, MetaInformationModel.InterworkingService)
+                    .addProperty(MetaInformationModel.usesInformationModel,model.createResource(Ontology.getInformationModelUri(service.getInformationModelId())))
+                    .addProperty(MetaInformationModel.url,service.getUrl());
+            platformResource.addProperty(MetaInformationModel.hasService, interworkingServiceResource);
+        }
 
-        Model locationModel = generateLocation(resource);
-        model.add(locationModel);
+//        Model serviceModel = generateInterworkingService(platform);
+//        model.add(serviceModel);
 
         model.write(System.out,"TURTLE");
         return model;
     }
 
-    /**
-     * Generates a model containing RDF statements describing resource's location.
-     *
-     * @param resource Resource, for which location model will be created.
-     * @return Model containing location RDF statements.
-     */
-    public static Model generateLocation( Resource resource ) {
-        Model model = ModelFactory.createDefaultModel();
-        model.createResource(Ontology.getResourceGraphURI(resource.getId())+"/location")
-                .addProperty(CoreInformationModel.RDFS_LABEL,resource.getLocation().getName())
-                .addProperty(CoreInformationModel.RDFS_COMMENT, resource.getLocation().getDescription()!=null?resource.getLocation().getDescription():"")
-                .addProperty(CoreInformationModel.GEO_LAT, resource.getLocation().getLatitude().toString())
-                .addProperty(CoreInformationModel.GEO_LONG, resource.getLocation().getLongitude().toString())
-                .addProperty(CoreInformationModel.GEO_ALT, resource.getLocation().getAltitude().toString());
-
-        return model;
-    }
-
-    /**
-     * Generates a model containing RDF statements describing interworking service of the specified platform.
-     *
-     * @param platform Platform, whose interworking Ssrvice will be translated into RDF.
-     * @return Model containing RDF statements.
-     */
-    public static Model generateInterworkingService( Platform platform ) {
-        Model model = ModelFactory.createDefaultModel();
-        model.createResource(generateInterworkingServiceUri(Ontology.getPlatformGraphURI(platform.getPlatformId()),platform.getUrl()))
-                .addProperty(MetaInformationModel.RDF_TYPE,MetaInformationModel.MIM_INTERWORKINGSERVICE)
-                .addProperty(MetaInformationModel.MIM_HASURL, platform.getUrl() )
-                .addProperty(MetaInformationModel.MIM_HASINFORMATIONMODEL, model.createResource()
-                        .addProperty(MetaInformationModel.CIM_HASID,platform.getInformationModelId()));
-        return model;
-    }
+//    /**
+//     * Generates a model containing RDF statements equivalent to specified resource.
+//     *
+//     * @param resource Resource to be translated into RDF.
+//     * @return Model containing RDF statements.
+//     */
+//    public static Model generateModelFromResource( Resource resource ) {
+//        log.debug("Generating model from resource");
+//        Model model = ModelFactory.createDefaultModel();
+//
+//        List<String> properties = resource.getObservedProperties();
+//        org.apache.jena.rdf.model.Resource res = model.createResource();
+//        for( String prop: properties ) {
+//            res.addProperty(CoreInformationModel.RDFS_LABEL,prop);
+//            res.addProperty(CoreInformationModel.RDFS_COMMENT,"");
+//        }
+//
+//        model.createResource(Ontology.getResourceGraphURI(resource.getId()))
+//                .addProperty(MetaInformationModel.RDF_TYPE,CoreInformationModel.CIM_RESOURCE)
+//                .addProperty(CoreInformationModel.CIM_ID,resource.getId())
+//                .addProperty(CoreInformationModel.RDFS_LABEL,resource.getName())
+//                .addProperty(CoreInformationModel.RDFS_COMMENT,resource.getDescription()!=null?resource.getDescription():"")
+//                .addProperty(CoreInformationModel.CIM_LOCATED_AT,model.createResource(Ontology.getResourceGraphURI(resource.getId())+"/location"))
+//                .addProperty(CoreInformationModel.CIM_OBSERVES,res);
+//
+//        Model locationModel = generateLocation(resource);
+//        model.add(locationModel);
+//
+//        model.write(System.out,"TURTLE");
+//        return model;
+//    }
+//
+//    /**
+//     * Generates a model containing RDF statements describing resource's location.
+//     *
+//     * @param resource Resource, for which location model will be created.
+//     * @return Model containing location RDF statements.
+//     */
+//    public static Model generateLocation( Resource resource ) {
+//        Model model = ModelFactory.createDefaultModel();
+//        model.createResource(Ontology.getResourceGraphURI(resource.getId())+"/location")
+//                .addProperty(CoreInformationModel.RDFS_LABEL,resource.getLocation().getName())
+//                .addProperty(CoreInformationModel.RDFS_COMMENT, resource.getLocation().getDescription()!=null?resource.getLocation().getDescription():"")
+//                .addProperty(CoreInformationModel.GEO_LAT, resource.getLocation().getLatitude().toString())
+//                .addProperty(CoreInformationModel.GEO_LONG, resource.getLocation().getLongitude().toString())
+//                .addProperty(CoreInformationModel.GEO_ALT, resource.getLocation().getAltitude().toString());
+//
+//        return model;
+//    }
+//
+//    /**
+//     * Generates a model containing RDF statements describing interworking service of the specified platform.
+//     *
+//     * @param platform Platform, whose interworking Ssrvice will be translated into RDF.
+//     * @return Model containing RDF statements.
+//     */
+//    public static Model generateInterworkingService( Platform platform ) {
+//        Model model = ModelFactory.createDefaultModel();
+//        model.createResource(generateInterworkingServiceUri(Ontology.getPlatformGraphURI(platform.getId()),platform.getUrl()))
+//                .addProperty(MetaInformationModel.RDF_TYPE,MetaInformationModel.MIM_INTERWORKINGSERVICE)
+//                .addProperty(MetaInformationModel.MIM_HASURL, platform.getUrl() )
+//                .addProperty(MetaInformationModel.MIM_HASINFORMATIONMODEL, model.createResource()
+//                        .addProperty(MetaInformationModel.CIM_HASID,platform.getInformationModelId()));
+//        return model;
+//    }
 
     /**
      * Generates interworking service uri combining unique platform (graph) URI with service URL of the interwroking service.
@@ -230,8 +254,8 @@ public class HandlerUtils {
             RDFNode propertyNode = solution.get(PROPERTY_NAME);
             String propertyName = propertyNode!=null?propertyNode.toString():"";
             String type = solution.get(TYPE).toString();
-
-            if( !type.equals(CoreInformationModel.CIM_RESOURCE.toString()) ) {
+            //TODO potential change with inference
+            if( !type.equals(CoreInformationModel.Resource.toString()) ) {
 
                 if (!responses.containsKey(resId)) {
                     List<String> properties = new ArrayList<>();

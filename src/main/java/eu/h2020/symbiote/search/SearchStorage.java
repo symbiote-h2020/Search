@@ -95,11 +95,10 @@ public class SearchStorage {
      *
      * @param platformId
      * @param rdfModel
-     * @param modelId
      */
-    public void registerPlatform(String platformId, Model rdfModel, String modelId ) {
+    public void registerPlatform(String platformId, Model rdfModel ) {
         log.info( "Registering platform in search " + platformId + " ...");
-        core.registerPlatform(platformId, rdfModel, modelId );
+        core.registerPlatform(platformId, rdfModel );
         log.info( "Platform registered!");
     }
 

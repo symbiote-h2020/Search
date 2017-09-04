@@ -27,6 +27,7 @@ public class Ontology {
     public static final String MAPPING_GRAPH = ROOT_URI + "mappings";
     public static final String PLATFORMS_GRAPH = ROOT_URI + "platforms";
     public static final String RESOURCES_GRAPH = ROOT_URI + "resources";
+    public static final String INFORMATIOM_MODEL_GRAPH = ROOT_URI + "model";
 //    public static final String MODELS_GRAPH = ROOT_URI + "models";
 
     /**
@@ -77,6 +78,10 @@ public class Ontology {
 
     public static String getResourceMetadata( String serviceURI, String resourceUri ) {
         return "<" + serviceURI + "> <" + HAS_RESOURCE + "> <" +resourceUri + "> .";
+    }
+
+    public static String getInformationModelUri( String informationModelId ) {
+        return INFORMATIOM_MODEL_GRAPH + "/" + informationModelId;
     }
 
 //    public static String getMappingMetadata(BigInteger modelId1, BigInteger modelId2, BigInteger mappingId) {

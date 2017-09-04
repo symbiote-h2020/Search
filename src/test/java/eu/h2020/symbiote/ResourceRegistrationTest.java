@@ -1,10 +1,10 @@
 package eu.h2020.symbiote;
 
 import eu.h2020.symbiote.core.internal.CoreResourceRegisteredOrModifiedEventPayload;
+import eu.h2020.symbiote.core.model.Platform;
 import eu.h2020.symbiote.core.model.internal.CoreResource;
 import eu.h2020.symbiote.handlers.PlatformHandler;
 import eu.h2020.symbiote.handlers.ResourceHandler;
-import eu.h2020.symbiote.model.Platform;
 import eu.h2020.symbiote.search.SearchStorage;
 import org.apache.commons.io.IOUtils;
 import org.apache.jena.arq.querybuilder.SelectBuilder;

@@ -41,11 +41,11 @@ public class QueryGenerationTests {
         try {
             String platformA = IOUtils.toString(this.getClass()
                     .getResource(PLATFORM_A_FILENAME));
-            registry.registerPlatform(PLATFORM_A_ID, platformA, RDFFormat.Turtle, PLATFORM_A_MODEL_ID);
+            registry.registerPlatform(PLATFORM_A_ID, platformA, RDFFormat.Turtle);
 
             String platformB = IOUtils.toString(this.getClass()
                     .getResource(PLATFORM_B_FILENAME));
-            registry.registerPlatform(PLATFORM_B_ID, platformB, RDFFormat.Turtle, PLATFORM_B_MODEL_ID);
+            registry.registerPlatform(PLATFORM_B_ID, platformB, RDFFormat.Turtle);
 
             Model stationaryModel = loadFileAsModel(RESOURCE_STATIONARY_FILENAME, "JSONLD");
             Model mobileModel = loadFileAsModel(RESOURCE_MOBILE_FILENAME, "JSONLD");

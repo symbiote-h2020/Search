@@ -1,10 +1,10 @@
 package eu.h2020.symbiote;
 
 import eu.h2020.symbiote.core.ci.QueryResponse;
-import eu.h2020.symbiote.core.model.Location;
+import eu.h2020.symbiote.core.model.Platform;
+import eu.h2020.symbiote.core.model.RDFFormat;
 import eu.h2020.symbiote.core.model.WGS84Location;
 import eu.h2020.symbiote.handlers.HandlerUtils;
-import eu.h2020.symbiote.model.Platform;
 import eu.h2020.symbiote.ontology.model.Ontology;
 import eu.h2020.symbiote.query.QueryGenerator;
 import eu.h2020.symbiote.search.SearchStorage;
@@ -13,16 +13,12 @@ import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
 import static eu.h2020.symbiote.TestSetupConfig.*;
-import static eu.h2020.symbiote.TestSetupConfig.RESOURCE_101_URI;
 import static org.junit.Assert.*;
 
 /**
@@ -40,13 +36,13 @@ public class StressTestLoadGenerator {
 
     static {
         locations = Arrays.asList(
-                new WGS84Location(2.183370319d, 41.38329958d, 10.0d, "Barcelona", "Barcelona"),
-                new WGS84Location(2.333335326d, 48.86669293d, 25.0d, "Paris", "Paris"),
-                new WGS84Location(20.99999955d, 52.25000063d, 10.0d, "Warsaw", "Warsaw"),
-                new WGS84Location(23.73332108d, 37.98332623d, 10.0d, "Athens", "Athens"),
-                new WGS84Location(139.7514074d, 35.68501691d, 10.0d, "Tokyo", "Tokyo"),
-                new WGS84Location(151.1851798d, -33.92001097d, 10.0d, "Sydney", "Sydney"),
-                new WGS84Location(12.48325842d, 41.89595563d, 10.0d, "Rome", "Rome"));
+                new WGS84Location(2.183370319d, 41.38329958d, 10.0d, Arrays.asList("Barcelona"), Arrays.asList("Barcelona")),
+                new WGS84Location(2.333335326d, 48.86669293d, 25.0d, Arrays.asList("Paris"), Arrays.asList("Paris")),
+                new WGS84Location(20.99999955d, 52.25000063d, 10.0d, Arrays.asList("Warsaw"), Arrays.asList("Warsaw")),
+                new WGS84Location(23.73332108d, 37.98332623d, 10.0d, Arrays.asList("Athens"), Arrays.asList("Athens")),
+                new WGS84Location(139.7514074d, 35.68501691d, 10.0d, Arrays.asList("Tokyo"), Arrays.asList("Tokyo")),
+                new WGS84Location(151.1851798d, -33.92001097d, 10.0d, Arrays.asList("Sydney"), Arrays.asList("Sydney")),
+                new WGS84Location(12.48325842d, 41.89595563d, 10.0d, Arrays.asList("Rome"), Arrays.asList("Rome")));
 
         properties = Arrays.asList(
                 "http://purl.oclc.org/NET/ssnx/qu/quantity#temperature",
@@ -93,14 +89,10 @@ public class StressTestLoadGenerator {
             String platformUrl = "http://example.com/platform/" + platformId;
 
 
-            Platform platform = new Platform();
-            platform.setPlatformId(platformId);
-            platform.setUrl(platformUrl);
-            platform.setDescription(platformDesc);
-            platform.setInformationModelId("BIM1");
-            platform.setName(platformName);
+            Platform platform = generatePlatform(platformId,PLATFORM_A_FILENAME, RDFFormat.Turtle,platformUrl,"BIM1",platformDesc,platformName);
+
             Model platformModel = HandlerUtils.generateModelFromPlatform(platform);
-            searchStorage.registerPlatform(platform.getPlatformId(), platformModel, platform.getInformationModelId() );
+            searchStorage.registerPlatform(platform.getId(), platformModel);
 
             Map<String, String> parameters = new HashMap<String, String>();
             for(int resourceNumber = 0; resourceNumber< numberOfResourcesPerPlatform; resourceNumber++ ) {
@@ -138,7 +130,8 @@ public class StressTestLoadGenerator {
                 Model mFromFile = ModelFactory.createDefaultModel();
                 mFromFile.read(resourceInputStream,null,"JSONLD");
 
-                searchStorage.registerResource(Ontology.getPlatformGraphURI(platform.getPlatformId()),HandlerUtils.generateInterworkingServiceUri(Ontology.getPlatformGraphURI(platform.getPlatformId()),platform.getUrl()),RESOURCE_PREDICATE+resourceId, mFromFile);
+                searchStorage.registerResource(Ontology.getPlatformGraphURI(platform.getId()),
+                        HandlerUtils.generateInterworkingServiceUri(Ontology.getPlatformGraphURI(platform.getId()),platform.getInterworkingServices().get(0).getUrl()),RESOURCE_PREDICATE+resourceId, mFromFile);
 
 //                System.out.println(resolvedString);
 //                System.out.println("========================================================");
@@ -148,8 +141,8 @@ public class StressTestLoadGenerator {
 
     private void addRandomLocationProperties(Map<String, String> map) {
         WGS84Location location = locations.get(new Random().nextInt(locations.size()));
-        map.put("location.name", location.getLabel());
-        map.put("location.desc", location.getComment());
+        map.put("location.name", location.getLabels().get(0));
+        map.put("location.desc", location.getComments().get(0));
         map.put("location.alt", String.valueOf(location.getAltitude()));
         map.put("location.lat", String.valueOf(location.getLatitude()));
         map.put("location.long", String.valueOf(location.getLongitude()));

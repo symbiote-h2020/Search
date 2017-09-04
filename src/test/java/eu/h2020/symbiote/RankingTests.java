@@ -4,6 +4,8 @@ import eu.h2020.symbiote.cloud.monitoring.model.CloudMonitoringDevice;
 import eu.h2020.symbiote.communication.RabbitManager;
 import eu.h2020.symbiote.core.ci.QueryResourceResult;
 import eu.h2020.symbiote.core.ci.QueryResponse;
+import eu.h2020.symbiote.core.internal.popularity.PopularityUpdate;
+import eu.h2020.symbiote.core.internal.popularity.PopularityUpdatesMessage;
 import eu.h2020.symbiote.ranking.*;
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -79,7 +81,7 @@ public class RankingTests {
     public void testRanking() {
 //        rankingHandler = new RankingHandler(availabilityManager, popularityManager);
 
-        when(popularityManager.getPopularityForResource(anyString())).thenReturn(Float.valueOf(1.0f));
+        when(popularityManager.getPopularityForResource(anyString())).thenReturn(Integer.valueOf(15));
         when(availabilityManager.getAvailabilityForResource(anyString())).thenReturn(Float.valueOf(1.0f));
 
         QueryResponse queryResponse = new QueryResponse();
@@ -117,13 +119,13 @@ public class RankingTests {
 
     @Test
     public void testRankingValue() {
-        when(popularityManager.getPopularityForResource(RES1_ID)).thenReturn(Float.valueOf(0.3f));
+        when(popularityManager.getPopularityForResource(RES1_ID)).thenReturn(Integer.valueOf(3));
         when(availabilityManager.getAvailabilityForResource(RES1_ID)).thenReturn(Float.valueOf(0.0f));
 
-        when(popularityManager.getPopularityForResource(RES2_ID)).thenReturn(Float.valueOf(0.8f));
+        when(popularityManager.getPopularityForResource(RES2_ID)).thenReturn(Integer.valueOf(8));
         when(availabilityManager.getAvailabilityForResource(RES2_ID)).thenReturn(Float.valueOf(1.0f));
 
-        when(popularityManager.getPopularityForResource(RES3_ID)).thenReturn(Float.valueOf(0.5f));
+        when(popularityManager.getPopularityForResource(RES3_ID)).thenReturn(Integer.valueOf(5));
         when(availabilityManager.getAvailabilityForResource(RES3_ID)).thenReturn(Float.valueOf(1.0f));
 
         QueryResponse queryResponse = new QueryResponse();
@@ -199,8 +201,16 @@ public class RankingTests {
     }
 
     @Test
-    public void testPopularityManagerFind() {
-
+    public void testPopularityManagerSave() {
+        PopularityManager realPopularityManager = new PopularityManager(popularityRepository);
+        PopularityUpdatesMessage updatesMessage = new PopularityUpdatesMessage();
+        PopularityUpdate singleUpdate = new PopularityUpdate();
+        singleUpdate.setId("res1");
+        singleUpdate.setViewsInDefinedInterval(Integer.valueOf(10));
+        List<PopularityUpdate> updateList = Arrays.asList(singleUpdate);
+        updatesMessage.setPopularityUpdateList(updateList);
+        realPopularityManager.savePopularityMessage(updatesMessage);
+        verify(popularityRepository).save(singleUpdate);
     }
 
     private static QueryResourceResult generateResult1() {

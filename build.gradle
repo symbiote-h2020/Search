@@ -80,6 +80,7 @@ dependencies {
      compile('com.github.symbiote-h2020:SymbIoTeLibraries:develop-SNAPSHOT')
 //    compile('com.github.symbiote-h2020:SymbIoTeLibraries:0.2.0')
 
+
     compile('org.springframework.cloud:spring-cloud-starter')
     compile('org.springframework.cloud:spring-cloud-starter-config')
     compile('org.springframework.cloud:spring-cloud-starter-eureka')
@@ -96,9 +97,9 @@ dependencies {
 
     //Jena dependencies
 //    compile('org.apache.jena:apache-jena-libs:3.1.0')
-    compile('org.apache.jena:jena-core:3.1.0')
-    compile('org.apache.jena:jena-querybuilder:3.1.0')
-    compile('org.apache.jena:jena-spatial:3.1.0') {
+    compile('org.apache.jena:jena-core:3.4.0')
+    compile('org.apache.jena:jena-querybuilder:3.4.0')
+    compile('org.apache.jena:jena-spatial:3.4.0') {
         exclude group: 'org.slf4j' , module: 'slf4j-log4j12'
     }
 
@@ -147,3 +148,43 @@ check.dependsOn(jacocoTestReport)//, 'dependencyCheck')
 tasks.withType(Test) {
     systemProperty 'eureka.client.enabled', 'false'
 }
+
+// automatically create ontology classes
+def generatedSourcesFolder = "generated-src";
+def ontologyDir = "src/main/resources/ontologies"
+def ontologyPackage = "eu.h2020.symbIoTe.ontology"
+def ontologyFileExtensions= ["**/*.rdf", "**/*.owl", "**/*.ttl", "**/*.n3"]
+
+import static org.apache.tools.ant.taskdefs.condition.Os.*
+
+task generateOntologies {
+    description = 'Generate Ontology Classes'
+    fileTree(dir: ontologyDir, include: ontologyFileExtensions).each { file ->
+        doLast {
+            javaexec {
+                classpath sourceSets.main.runtimeClasspath
+                main = 'jena.schemagen'
+                if( isFamily(FAMILY_WINDOWS) ) {
+                    args = ["-i", "$ontologyDir/$file.name", "-o", generatedSourcesFolder, "--package", ontologyPackage, "--nocomments", "--ontology", "--nostrict", "--declarations", "\tpublic static final String SOURCE_PATH = \"\"$ontologyDir/$file.name\"\";"]
+                } else if( isFamily(FAMILY_UNIX) || isFamily(FAMILY_MAC) ) {
+                    args = ["-i", "$ontologyDir/$file.name", "-o", generatedSourcesFolder, "--package", ontologyPackage, "--nocomments", "--ontology", "--nostrict", "--declarations", "\tpublic static final String SOURCE_PATH = \"$ontologyDir/$file.name\";"]
+                }
+            }
+        }
+    }
+    sourceSets {
+        main {
+            java.srcDirs generatedSourcesFolder
+        }
+        test {
+            java.srcDirs generatedSourcesFolder
+        }
+    }
+}
+
+clean {
+    delete generatedSourcesFolder
+}
+
+compileTestJava.dependsOn generateOntologies
+compileJava.dependsOn generateOntologies

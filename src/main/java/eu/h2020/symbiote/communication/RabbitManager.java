@@ -87,6 +87,25 @@ public class RabbitManager {
     private String resourceSparqlSearchPerformedRoutingKey;
 
 
+    //Popularity keys
+    @Value("${rabbit.exchange.search.name}")
+    private String exchangeSearchName;
+
+    @Value("${rabbit.exchange.search.type}")
+    private String exchangeSearchType;
+
+    @Value("${rabbit.exchange.search.durable}")
+    private boolean exchangeSearchDurable;
+
+    @Value("${rabbit.exchange.search.autodelete}")
+    private boolean exchangeSearchAutodelete;
+
+    @Value("${rabbit.exchange.search.internal}")
+    private boolean exchangeSearchInternal;
+
+    @Value("${rabbit.routingKey.search.popularityUpdates}")
+    private boolean popularityUpdatesRoutingKey;
+
     private Connection connection;
 
     /**

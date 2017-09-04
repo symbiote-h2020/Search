@@ -58,36 +58,29 @@ public class RankingHandler {
      * @param query Query with all the parameters for which to add
      */
     public QueryResponse generateRanking(RankingQuery query) {
-        Map<String, Float> distanceNormalisedParam = new HashMap<>();
+        Map<String, Float> normalisedDistanceMap = new HashMap<>();
 
         if (query.isIncludeDistance()) {
+            Map<String, Float> distanceMap = new HashMap<>();
 //            Map<String, Double> resourceDistanceMap = new HashMap<>();
             for(QueryResourceResult resource: query.getResourcesMap().values() ) {
                 if( resource.getLocationLatitude() != null && resource.getLocationLongitude() != null ) {
-                    distanceNormalisedParam.put(resource.getId(), Float.valueOf((float)distance(query.getLatitude(), resource.getLocationLatitude(),
+                    distanceMap.put(resource.getId(), Float.valueOf((float)distance(query.getLatitude(), resource.getLocationLatitude(),
                             query.getLongitude(), resource.getLocationLongitude(), 0.0d, 0.0d)));
                 } else {
-                    distanceNormalisedParam.put(resource.getId(),Float.valueOf(-1.0f));
+                    distanceMap.put(resource.getId(),Float.valueOf(-1.0f));
                 }
             }
-
-            Optional<Float> max = distanceNormalisedParam.values().stream().max(Comparator.naturalOrder());
-            if( max.isPresent() ) {
-                Float maxValue = max.get();
-                if( maxValue.equals(Float.valueOf(-1.0f))) {
-                    Float perfectMark = Float.valueOf(1.0f);
-                    for( String key: distanceNormalisedParam.keySet()) {
-                        distanceNormalisedParam.put(key, perfectMark);
-                    }
-                } else {
-                    for( String key: distanceNormalisedParam.keySet()) {
-                        distanceNormalisedParam.put(key, normaliseDistance(distanceNormalisedParam.get(key),maxValue));
-                    }
-                }
-            } else {
-                //TODO ?
-            }
+            normalisedDistanceMap = normaliseFloatMap(distanceMap);
+        } else {
+            //TODO setup normalised distance map properly
         }
+
+        Map<String,Integer> popularityMap = new HashMap<>();
+        query.getResourcesMap().values().stream().forEach(queryResourceResult -> popularityMap.put(queryResourceResult.getId(),popularityManager.getPopularityForResource(queryResourceResult.getId())));
+        Map<String,Float> normalisedPopularity = normaliseIntegerMap(popularityMap);
+
+
 
         float[] perfect = generatePerfectPoint(3);
         float[] worst = generateWorstPoint(3);
@@ -97,9 +90,9 @@ public class RankingHandler {
         for( QueryResourceResult resource: query.getResourcesMap().values() ) {
 
 
-            float[] resValues = generateValueArrayForSensor(popularityManager.getPopularityForResource(resource.getId()),
+            float[] resValues = generateValueArrayForSensor(normalisedPopularity.get(resource.getId()),
                     availabilityManager.getAvailabilityForResource(resource.getId()),
-                    distanceNormalisedParam.get(resource.getId()));
+                    normalisedDistanceMap.get(resource.getId()));
 
             float weightednDistance = nWeightedDistance(perfect, resValues, weights);
 //            log.debug("Res " + resource.getQueryResult().getId() + " calculated weighted distance: " + weightednDistance);
@@ -135,9 +128,56 @@ public class RankingHandler {
         }
     }
 
+    private Map<String, Float> normaliseFloatMap( Map<String, Float> floatMap ) {
+        Map<String, Float> results = new HashMap<String, Float>();
+        Optional<Float> max = floatMap.values().stream().max(Comparator.naturalOrder());
+        if( max.isPresent() ) {
+            Float maxValue = max.get();
+            if( maxValue.equals(Float.valueOf(-1.0f))) {
+                Float perfectMark = Float.valueOf(1.0f);
+                for( String key: floatMap.keySet()) {
+                    results.put(key, perfectMark);
+                }
+            } else {
+                for( String key: floatMap.keySet()) {
+                    results.put(key, normaliseFloat(floatMap.get(key),maxValue));
+                }
+            }
+        } else {
+            //TODO cant happen?
+        }
+        return results;
+    }
 
-    private Float normaliseDistance( Float myDistance, Float maxDistance ) {
-        return Float.valueOf(1.0f - myDistance/maxDistance);
+    private Map<String, Float>  normaliseIntegerMap( Map<String, Integer> integerMap ) {
+        Map<String, Float> results = new HashMap<String, Float>();
+        Optional<Integer> max = integerMap.values().stream().max(Comparator.naturalOrder());
+        if( max.isPresent() ) {
+            Integer maxValue = max.get();
+            if( maxValue.equals(Integer.valueOf(-1))) {
+                Float perfectMark = Float.valueOf(1.0f);
+                for( String key: integerMap.keySet()) {
+                    results.put(key, perfectMark);
+                }
+            } else {
+                for( String key: integerMap.keySet()) {
+                    results.put(key, normaliseInteger(integerMap.get(key),maxValue));
+                }
+            }
+        } else {
+            //TODO cant happen?
+        }
+        return results;
+    }
+
+
+    private Float normaliseFloat(Float value, Float max ) {
+        return Float.valueOf(1.0f - value/max);
+    }
+
+    private Float normaliseInteger(Integer value, Integer max ) {
+        Float f = (float)value/(float)max;
+        return Float.valueOf(1.0f - f);
     }
 
     private float[] generatePerfectPoint(int size) {

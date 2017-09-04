@@ -46,14 +46,22 @@ public class DeletePlatformRequestGenerator {
     }
 
     private String generateInformationServiceDelete( String platformId ) {
+        //TODO r2
+//        StringBuilder q = generateBaseQuery();
+//        q.append("DELETE { ?service ?p ?o ; \n" );
+//        q.append("\t\tmim:hasInformationModel ?imodel .\n");
+//        q.append("\t?imodel cim:id ?id . \n");
+//        q.append("} WHERE {\n");
+//        q.append("\t?service ?p ?o ;\n");
+//        q.append("\t\tmim:hasInformationModel ?imodel .\n");
+//        q.append("\t?imodel cim:id ?id . \n");
+//        q.append("\t?platform mim:hasService ?service ;\n");
+//        q.append("\t\tcim:id \""+platformId+"\" .\n");
+//        q.append("}");
         StringBuilder q = generateBaseQuery();
-        q.append("DELETE { ?service ?p ?o ; \n" );
-        q.append("\t\tmim:hasInformationModel ?imodel .\n");
-        q.append("\t?imodel cim:id ?id . \n");
+        q.append("DELETE { ?service ?p ?o \n" );
         q.append("} WHERE {\n");
-        q.append("\t?service ?p ?o ;\n");
-        q.append("\t\tmim:hasInformationModel ?imodel .\n");
-        q.append("\t?imodel cim:id ?id . \n");
+        q.append("\t?service ?p ?o .\n");
         q.append("\t?platform mim:hasService ?service ;\n");
         q.append("\t\tcim:id \""+platformId+"\" .\n");
         q.append("}");

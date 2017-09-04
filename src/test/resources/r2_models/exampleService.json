@@ -1,42 +1,51 @@
 {
   "@graph" : [ {
     "@id" : "_:b0",
-    "@type" : "core:RangeRestriction",
+    "@type" : "http://www.symbiote-h2020.eu/ontology/core#Parameter",
+    "datatype" : "xsd:string",
+    "isArray" : "false"
+  }, {
+    "@id" : "_:b1",
+    "@type" : "http://www.symbiote-h2020.eu/ontology/core#RangeRestriction",
     "max" : "10.0",
     "min" : "2.0"
   }, {
-    "@id" : "_:b1",
-    "@type" : "core:Parameter",
-    "hasDatatype" : "xsd:string",
-    "hasRestriction" : "_:b0",
+    "@id" : "_:b2",
+    "@type" : "http://www.symbiote-h2020.eu/ontology/core#InputParameter",
+    "datatype" : "xsd:string",
+    "hasRestriction" : "_:b1",
+    "isArray" : "false",
     "mandatory" : "true",
     "name" : "inputParam1"
   }, {
     "@id" : "http://www.symbiote-h2020.eu/ontology/resources/service1",
-    "@type" : "core:Service",
-    "hasParameter" : "_:b1",
-    "hasResultType" : "xsd:string",
+    "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#Service", "http://www.symbiote-h2020.eu/ontology/core#Resource" ],
+    "hasInputParameter" : "_:b2",
+    "hasOutputParameter" : "_:b0",
     "id" : "service1",
     "name" : "service1Name",
     "comment" : "This is service 1",
     "label" : "Service 1"
-  }, {
-    "@id" : "xsd:string",
-    "@type" : "rdfs:Datatype"
   } ],
   "@context" : {
+    "datatype" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#datatype"
+    },
+    "isArray" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#isArray"
+    },
     "max" : {
       "@id" : "http://www.symbiote-h2020.eu/ontology/core#max"
     },
     "min" : {
       "@id" : "http://www.symbiote-h2020.eu/ontology/core#min"
     },
-    "hasResultType" : {
-      "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasResultType",
+    "hasInputParameter" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasInputParameter",
       "@type" : "@id"
     },
-    "hasParameter" : {
-      "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasParameter",
+    "hasOutputParameter" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasOutputParameter",
       "@type" : "@id"
     },
     "name" : {
@@ -57,18 +66,6 @@
     },
     "mandatory" : {
       "@id" : "http://www.symbiote-h2020.eu/ontology/core#mandatory"
-    },
-    "hasDatatype" : {
-      "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasDatatype",
-      "@type" : "@id"
-    },
-    "geo" : "http://www.w3.org/2003/01/geo/wgs84_pos#",
-    "core" : "http://www.symbiote-h2020.eu/ontology/core#",
-    "qu" : "http://purl.oclc.org/NET/ssnx/qu/quantity#",
-    "rdf" : "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-    "owl" : "http://www.w3.org/2002/07/owl#",
-    "meta" : "http://www.symbiote-h2020.eu/ontology/meta#",
-    "xsd" : "http://www.w3.org/2001/XMLSchema#",
-    "rdfs" : "http://www.w3.org/2000/01/rdf-schema#"
+    }
   }
 }

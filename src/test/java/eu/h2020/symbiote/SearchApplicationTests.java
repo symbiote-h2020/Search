@@ -31,7 +31,7 @@ public class SearchApplicationTests {
         try {
             String platformToSave = IOUtils.toString(this.getClass()
                     .getResource(PLATFORM_A_FILENAME));
-            registry.registerPlatform(PLATFORM_A_ID, platformToSave, RDFFormat.Turtle, PLATFORM_A_MODEL_ID);
+            registry.registerPlatform(PLATFORM_A_ID, platformToSave, RDFFormat.Turtle);
 
 
             executeQuery(triplestore,"/q6.sparql");
@@ -50,7 +50,7 @@ public class SearchApplicationTests {
         try {
             String platformToSave = IOUtils.toString(this.getClass()
                     .getResource(PLATFORM_A_FILENAME));
-            registry.registerPlatform(PLATFORM_A_ID, platformToSave, RDFFormat.Turtle, PLATFORM_A_MODEL_ID);
+            registry.registerPlatform(PLATFORM_A_ID, platformToSave, RDFFormat.Turtle);
 
 
             Model res1Model = loadFileAsModel( RESOURCE_101_FILENAME );
@@ -76,15 +76,15 @@ public class SearchApplicationTests {
         try {
             String platformA = IOUtils.toString(this.getClass()
                     .getResource(PLATFORM_A_FILENAME));
-            registry.registerPlatform(PLATFORM_A_ID, platformA, RDFFormat.Turtle, PLATFORM_A_MODEL_ID);
+            registry.registerPlatform(PLATFORM_A_ID, platformA, RDFFormat.Turtle);
 
             String platformB = IOUtils.toString(this.getClass()
                     .getResource(PLATFORM_B_FILENAME));
-            registry.registerPlatform(PLATFORM_B_ID, platformB, RDFFormat.Turtle, PLATFORM_B_MODEL_ID);
+            registry.registerPlatform(PLATFORM_B_ID, platformB, RDFFormat.Turtle);
 
             String platformC = IOUtils.toString(this.getClass()
                     .getResource(PLATFORM_C_FILENAME));
-            registry.registerPlatform(PLATFORM_C_ID, platformC, RDFFormat.Turtle, PLATFORM_C_MODEL_ID);
+            registry.registerPlatform(PLATFORM_C_ID, platformC, RDFFormat.Turtle);
 
             Model res101Model = loadFileAsModel( RESOURCE_101_FILENAME );
             Model res102Model = loadFileAsModel( RESOURCE_102_FILENAME);
