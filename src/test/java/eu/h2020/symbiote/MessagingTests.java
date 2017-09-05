@@ -76,6 +76,13 @@ public class MessagingTests {
         ReflectionTestUtils.setField(rabbitManager, "resourceModifiedRoutingKey", RESOURCE_MODIFIED);
         ReflectionTestUtils.setField(rabbitManager, "resourceDeletedRoutingKey", RESOURCE_DELETED);
 
+        ReflectionTestUtils.setField(rabbitManager, "exchangeSearchName", "symbiote.search");
+        ReflectionTestUtils.setField(rabbitManager, "exchangeSearchType", "topic");
+        ReflectionTestUtils.setField(rabbitManager, "exchangeSearchDurable", true );
+        ReflectionTestUtils.setField(rabbitManager, "exchangeSearchAutodelete", false );
+        ReflectionTestUtils.setField(rabbitManager, "exchangeSearchInternal", false );
+        ReflectionTestUtils.setField(rabbitManager, "popularityUpdatesRoutingKey", "symbiote.popularity.rk");
+
         ReflectionTestUtils.setField(rabbitManager, "resourceSearchRequestedRoutingKey", SEARCH_REQUESTED);
         ReflectionTestUtils.setField(rabbitManager, "resourceSearchPerformedRoutingKey", SEARCH_PERFORMED);
 
