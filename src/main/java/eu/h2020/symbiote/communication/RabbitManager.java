@@ -6,6 +6,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import eu.h2020.symbiote.handlers.PlatformHandler;
 import eu.h2020.symbiote.handlers.ResourceHandler;
 import eu.h2020.symbiote.handlers.SearchHandler;
+import eu.h2020.symbiote.ranking.PopularityManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -104,7 +105,7 @@ public class RabbitManager {
     private boolean exchangeSearchInternal;
 
     @Value("${rabbit.routingKey.search.popularityUpdates}")
-    private boolean popularityUpdatesRoutingKey;
+    private String popularityUpdatesRoutingKey;
 
     private Connection connection;
 
@@ -140,6 +141,12 @@ public class RabbitManager {
                     this.resourceExchangeInternal,
                     null);
 
+            channel.exchangeDeclare(this.exchangeSearchName,
+                    this.exchangeSearchType,
+                    this.exchangeSearchDurable,
+                    this.exchangeSearchAutodelete,
+                    this.exchangeSearchInternal,
+                    null);
 
             //message retrieval
             //receiveMessages();
@@ -342,4 +349,15 @@ public class RabbitManager {
         log.debug( "Consumer search created!!!" );
     }
 
+    public void registerPopularityUpdateConsumer(PopularityManager popularityManager) throws IOException {
+        Channel channel = connection.createChannel();
+        String queueName = channel.queueDeclare().getQueue();
+        channel.queueBind(queueName, exchangeSearchName, popularityUpdatesRoutingKey );
+
+        PopularityUpdatesConsumer consumer = new PopularityUpdatesConsumer(channel,popularityManager);
+
+        log.debug("Creating popularity consumer");
+        channel.basicConsume(queueName, false, consumer);
+        log.debug( "Consumer popularity created!!!" );
+    }
 }

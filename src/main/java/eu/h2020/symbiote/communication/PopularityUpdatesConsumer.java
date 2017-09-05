@@ -28,7 +28,7 @@ public class PopularityUpdatesConsumer extends DefaultConsumer {
      * Constructs a new instance and records its association to the passed-in channel.
      *
      * @param channel the channel to which this consumer is attached.
-//     */
+     */
     public PopularityUpdatesConsumer(Channel channel, PopularityManager manager) {
         super(channel);
         this.manager =manager;
