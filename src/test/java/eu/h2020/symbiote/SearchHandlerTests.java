@@ -145,7 +145,7 @@ public class SearchHandlerTests {
             WGS84Location location = new WGS84Location(2.349014d,48.864716d,15.0d, Arrays.asList("Paris"),Arrays.asList("This is paris"));
             String query = getWGS84SparqlQuery(location,"1");
 
-            request.setQuery(query);
+            request.setBody(query);
             request.setOutputFormat(SparqlQueryOutputFormat.CSV);
 
             request.setSecurityRequest(null);
@@ -178,7 +178,7 @@ public class SearchHandlerTests {
             String query = IOUtils.toString(this.getClass()
                     .getResource("/qListLocationTypes.sparql"));
 
-            request.setQuery(query);
+            request.setBody(query);
             request.setOutputFormat(SparqlQueryOutputFormat.CSV);
 
             request.setSecurityRequest(null);

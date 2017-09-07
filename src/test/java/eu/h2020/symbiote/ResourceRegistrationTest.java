@@ -50,7 +50,7 @@ public class ResourceRegistrationTest {
             InputStream modelToSave = IOUtils.toInputStream( IOUtils.toString(this.getClass()
                     .getResource(RESOURCE_101_FILENAME)));
             Model mFromFile = ModelFactory.createDefaultModel();
-            mFromFile.read(modelToSave,null,"TURTLE");
+            mFromFile.read(modelToSave,null,"JSONLD");
             assertNotNull(mFromFile);
         } catch (IOException e) {
             e.printStackTrace();
@@ -63,7 +63,7 @@ public class ResourceRegistrationTest {
             InputStream modelToSave = IOUtils.toInputStream( IOUtils.toString(this.getClass()
                     .getResource(RESOURCE_101_FILENAME)));
             Model mFromFile = ModelFactory.createDefaultModel();
-            mFromFile.read(modelToSave,null,"TURTLE");
+            mFromFile.read(modelToSave,null,"JSONLD");
 
             SearchStorage searchStorage = SearchStorage.getInstance( SearchStorage.TESTCASE_STORAGE_NAME );
             searchStorage.registerResource(PLATFORM_A_URI,PLATFORM_A_SERVICE_URI,RESOURCE_101_URI, mFromFile);

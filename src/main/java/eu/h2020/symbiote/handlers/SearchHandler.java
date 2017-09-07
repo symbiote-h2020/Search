@@ -67,7 +67,7 @@ public class SearchHandler implements ISearchEvents {
     @Override
     public String sparqlSearch(CoreSparqlQueryRequest request) {
         String resultOfSearch = "";
-        ResultSet resultSet = this.triplestore.executeQuery(request.getQuery());
+        ResultSet resultSet = this.triplestore.executeQuery(request.getBody());
 
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();

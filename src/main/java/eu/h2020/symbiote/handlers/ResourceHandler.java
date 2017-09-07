@@ -73,7 +73,7 @@ public class ResourceHandler implements IResourceEvents {
                 "\n" +
                 "SELECT ?service WHERE {\n" +
                 "\t?service a mim:InterworkingService;\n" +
-                "\t\t\tmim:hasURL \"" + resourceURL + "\".\n" +
+                "\t\t\tmim:url \"" + resourceURL + "\".\n" +
                 "\t\t?platform cim:id \"" + platformId + "\";\n" +
                 "\t\t\tmim:hasService ?service.\n" +
                 "} ";

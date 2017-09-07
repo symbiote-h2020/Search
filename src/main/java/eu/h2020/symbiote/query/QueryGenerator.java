@@ -42,8 +42,8 @@ public class QueryGenerator {
 
         //Location test //dziala ok
         query.append("SELECT ?resId ?resName ?resDescription ?locationName ?locationLat ?locationLong ?locationAlt ?platformId ?platformName ?property ?propName ?type WHERE {\n" );
-        query.append("\t?sensor a cim:Resource ;\n");
-        query.append("\t\ta ?type ;\n");
+//        query.append("\t?sensor a cim:Resource ;\n"); \\TODO r3 dereference
+        query.append("\t?sensor a ?type ;\n");
         query.append("\t\tcim:id ?resId ;\n");
         query.append("\t\trdfs:label ?resName ;\n");
         query.append("\t\trdfs:comment ?resDescription.\n");
@@ -59,7 +59,7 @@ public class QueryGenerator {
             query.append("	?location rdfs:label ?locationName.\n");
         }
         if( propertyquery ) {
-            query.append("\t?sensor cim:observes ?property.\n");
+            query.append("\t?sensor cim:observesProperty ?property.\n");
             query.append("\t?property rdfs:label ?propName.\n");
         }
 
@@ -75,7 +75,7 @@ public class QueryGenerator {
                 query.append("\t?location rdfs:label ?locationName.\n");
             }
             if (!propertyquery) {
-                query.append("\t?sensor cim:observes ?property.\n");
+                query.append("\t?sensor cim:observesProperty ?property.\n");
                 query.append("\t?property rdfs:label ?propName.\n");
             }
             query.append("} \n");
@@ -179,7 +179,7 @@ public class QueryGenerator {
     public QueryGenerator addLikeResourceObservedPropertyName( String propertyName, String command ) {
         multivaluequery = true;
         propertyquery = true;
-        extension.append("\t?sensor cim:observes ?property .\n");
+        extension.append("\t?sensor cim:observesProperty ?property .\n");
         extension.append("\t?property rdfs:label ?propertyNamePattern .\n");
         extension.append("\tFILTER ("+command+"(LCASE(?propertyNamePattern), LCASE(\"" + propertyName + "\"))) .");
         return this;
@@ -194,7 +194,7 @@ public class QueryGenerator {
             if( i == 1 ) {
                 extension.append("\t?property rdfs:label \"" + property + "\" .\n");
             } else {
-                extension.append("\t?sensor cim:observes ?property" + i + " .\n");
+                extension.append("\t?sensor cim:observesProperty ?property" + i + " .\n");
                 extension.append("\t?property" + i + " rdfs:label \"" + property + "\" .\n");
             }
         }
