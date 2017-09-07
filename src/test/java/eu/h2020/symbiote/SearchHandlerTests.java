@@ -148,7 +148,7 @@ public class SearchHandlerTests {
             request.setQuery(query);
             request.setOutputFormat(SparqlQueryOutputFormat.CSV);
 
-            request.setToken("This is token");
+            request.setSecurityRequest(null);
 
             String result = searchHandler.sparqlSearch(request);
             assertNotNull(result);
@@ -181,7 +181,7 @@ public class SearchHandlerTests {
             request.setQuery(query);
             request.setOutputFormat(SparqlQueryOutputFormat.CSV);
 
-            request.setToken("This is token");
+            request.setSecurityRequest(null);
 
             String result = searchHandler.sparqlSearch(request);
             assertNotNull(result);
