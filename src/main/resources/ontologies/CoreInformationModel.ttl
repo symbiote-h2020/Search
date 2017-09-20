@@ -6,9 +6,8 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix time: <http://www.w3.org/2006/time#> .
-@base <http://www.symbiote-h2020.eu/ontology/core#> .
 
-<http://www.symbiote-h2020.eu/ontology/core#> rdf:type owl:Ontology ;
+<http://www.symbiote-h2020.eu/ontology/core> rdf:type owl:Ontology ;
                                              
                                              rdfs:label "symbIoTe Core Information Model"@en ;
                                              
@@ -16,13 +15,14 @@
                                              
                                              rdfs:comment "Core Information Model of the symbIoTe project."@en ;
                                              
-                                             owl:versionIRI <http://www.symbiote-h2020.eu/ontology/core/1.0.1#> ;
+                                             owl:versionIRI <http://www.symbiote-h2020.eu/ontology/core/1.0.1> ;
                                              
                                              owl:imports rdf: ,
                                                          rdfs: ,
 														 geo: .
 
-
+xsd:string rdfs:subClassOf :ID .
+xsd:string rdfs:subClassOf rdf:langString .
 #################################################################
 #
 #    Annotation properties
@@ -867,7 +867,7 @@ geo:SpatialThing rdf:type owl:Class .
           
           rdfs:subClassOf [ rdf:type owl:Restriction ;
                             owl:onProperty rdfs:label ;
-                            owl:onClass rdf:langString ;
+                            owl:onDataRange rdf:langString ;
                             owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger
                           ] ,
                           [ rdf:type owl:Restriction ;
