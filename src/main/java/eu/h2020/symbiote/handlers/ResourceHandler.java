@@ -46,10 +46,15 @@ public class ResourceHandler implements IResourceEvents {
 
             log.debug( "Querying for interworking service URI... ");
             String registeredServiceURI = findServiceURI(resourceURL,platformId);
-            if( registeredServiceURI == null &&  !resourceURL.endsWith("/")) {
+            if( registeredServiceURI == null ) {
                 //Try with slash in the end - most common mistake from platforms
-                log.debug("Couldnt find interworking service URI, trying with URL ending with a slash");
-                registeredServiceURI = findServiceURI(resourceURL+"/",platformId);
+                if( !resourceURL.endsWith("/") ) {
+                    log.debug("Couldnt find interworking service URI, trying with URL ending with a slash");
+                    registeredServiceURI = findServiceURI(resourceURL + "/", platformId);
+                } else if (resourceURL.endsWith("/") ) {
+                    log.debug("Couldnt find interworking service URI, trying with URL without trailing slash");
+                    registeredServiceURI = findServiceURI(resourceURL.substring(0,resourceURL.length()-1), platformId);
+                }
             }
             if( registeredServiceURI == null ) {
                 //If still couldnt find
