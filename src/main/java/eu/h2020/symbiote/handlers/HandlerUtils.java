@@ -287,7 +287,9 @@ public class HandlerUtils {
                     }
                     if( type != null && !type.isEmpty() ) {
                         if( !existingResource.getResourceType().contains(type) ) {
-                            existingResource.getResourceType().add(type);
+                            if( isPossibleType(type) ) {
+                                existingResource.getResourceType().add(type);
+                            }
                         }
                     }
                 }
@@ -301,6 +303,16 @@ public class HandlerUtils {
             response.setResources(responses.values().stream().collect(Collectors.toList()));
         };
         return response;
+    }
+
+    private static boolean isPossibleType(String type) {
+        if( type.equals(CoreInformationModel.MobileSensor) ||
+                type.equals(CoreInformationModel.StationarySensor) ||
+                type.equals(CoreInformationModel.Actuator) ||
+                type.equals(CoreInformationModel.Service) ) {
+            return true;
+        }
+        return false;
     }
 
 

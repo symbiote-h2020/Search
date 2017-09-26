@@ -15,6 +15,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jena.query.*;
 import org.apache.jena.query.spatial.EntityDefinition;
 import org.apache.jena.query.spatial.SpatialDatasetFactory;
+import org.apache.jena.rdf.model.InfModel;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.sparql.util.QueryExecUtils;
@@ -235,7 +236,7 @@ public class TripleStore {
 //                : dataset.getDefaultModel();
 //        Model model = dataset.getDefaultModel();
         ResultSet result = null;
-        try (QueryExecution qe = QueryExecutionFactory.create(query, dataset) ) {
+        try (QueryExecution qe = QueryExecutionFactory.create(query, ModelFactory.createRDFSModel(dataset.getDefaultModel())) ) {
             result = ResultSetFactory.copyResults(qe.execSelect());
             dataset.end();
         }
