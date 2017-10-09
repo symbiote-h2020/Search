@@ -7,8 +7,8 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
+import eu.h2020.symbiote.core.model.Platform;
 import eu.h2020.symbiote.handlers.PlatformHandler;
-import eu.h2020.symbiote.model.Platform;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -47,10 +47,10 @@ public class PlatformDeletedConsumer extends DefaultConsumer {
             ObjectMapper mapper = new ObjectMapper();
             Platform platform = mapper.readValue(msg, Platform.class);
 
-            boolean success = handler.deletePlatform(platform.getPlatformId());
+            boolean success = handler.deletePlatform(platform.getId());
             log.debug(success?
-                    "Platform " + platform.getPlatformId() + " deleted successfully"
-                    :"Platform " + platform.getPlatformId() + " is reported to not be deleted");
+                    "Platform " + platform.getId() + " deleted successfully"
+                    :"Platform " + platform.getId() + " is reported to not be deleted");
 
         } catch( JsonParseException | JsonMappingException e ) {
             log.error("Error occurred when parsing Platform object JSON: " + msg, e);

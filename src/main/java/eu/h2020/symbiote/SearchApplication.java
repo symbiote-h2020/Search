@@ -7,6 +7,7 @@ import eu.h2020.symbiote.handlers.PlatformHandler;
 import eu.h2020.symbiote.handlers.ResourceHandler;
 import eu.h2020.symbiote.handlers.SearchHandler;
 import eu.h2020.symbiote.model.QueryRequest;
+import eu.h2020.symbiote.ranking.PopularityManager;
 import eu.h2020.symbiote.search.SearchStorage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,6 +37,7 @@ import java.util.List;
 public class SearchApplication {
 
     public static final String DIRECTORY = System.getProperty("user.home") +File.separator+ "coreSearchTriplestore";
+//    public static final String DIRECTORY = "F:\\stressTest\\2";
 
 	private static Log log = LogFactory.getLog(SearchApplication.class);
 
@@ -48,9 +50,12 @@ public class SearchApplication {
 
         private final RabbitManager manager;
 
+        private final PopularityManager popularityManager;
+
         @Autowired
-        public CLR( RabbitManager manager ) {
+        public CLR( RabbitManager manager, PopularityManager popularityManager ) {
             this.manager = manager;
+            this.popularityManager = popularityManager;
         }
 
         @Override
@@ -74,6 +79,8 @@ public class SearchApplication {
             SearchHandler searchHandler = new SearchHandler(searchStorage.getTripleStore() );
             manager.registerResourceSearchConsumer(searchHandler);
             manager.registerResourceSparqlSearchConsumer(searchHandler);
+
+            manager.registerPopularityUpdateConsumer(popularityManager);
 
         }
     }

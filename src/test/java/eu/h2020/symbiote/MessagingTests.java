@@ -8,11 +8,11 @@ import eu.h2020.symbiote.core.ci.QueryResourceResult;
 import eu.h2020.symbiote.core.ci.QueryResponse;
 import eu.h2020.symbiote.core.internal.CoreQueryRequest;
 import eu.h2020.symbiote.core.internal.CoreResourceRegisteredOrModifiedEventPayload;
+import eu.h2020.symbiote.core.model.Platform;
 import eu.h2020.symbiote.core.model.internal.CoreResource;
 import eu.h2020.symbiote.handlers.PlatformHandler;
 import eu.h2020.symbiote.handlers.ResourceHandler;
 import eu.h2020.symbiote.handlers.SearchHandler;
-import eu.h2020.symbiote.model.Platform;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -75,6 +75,13 @@ public class MessagingTests {
         ReflectionTestUtils.setField(rabbitManager, "resourceCreatedRoutingKey", RESOURCE_CREATED);
         ReflectionTestUtils.setField(rabbitManager, "resourceModifiedRoutingKey", RESOURCE_MODIFIED);
         ReflectionTestUtils.setField(rabbitManager, "resourceDeletedRoutingKey", RESOURCE_DELETED);
+
+        ReflectionTestUtils.setField(rabbitManager, "exchangeSearchName", "symbiote.search");
+        ReflectionTestUtils.setField(rabbitManager, "exchangeSearchType", "topic");
+        ReflectionTestUtils.setField(rabbitManager, "exchangeSearchDurable", true );
+        ReflectionTestUtils.setField(rabbitManager, "exchangeSearchAutodelete", false );
+        ReflectionTestUtils.setField(rabbitManager, "exchangeSearchInternal", false );
+        ReflectionTestUtils.setField(rabbitManager, "popularityUpdatesRoutingKey", "symbiote.popularity.rk");
 
         ReflectionTestUtils.setField(rabbitManager, "resourceSearchRequestedRoutingKey", SEARCH_REQUESTED);
         ReflectionTestUtils.setField(rabbitManager, "resourceSearchPerformedRoutingKey", SEARCH_PERFORMED);

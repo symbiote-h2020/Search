@@ -1,21 +1,20 @@
-@prefix : <https://www.symbiote-h2020.eu/ontology/platforms/1#> .
-@prefix owl: <http://www.w3.org/2002/07/owl#> .
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix xml: <http://www.w3.org/XML/1998/namespace> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix mim: <http://www.symbiote-h2020.eu/ontology/meta#> .
-@prefix cim: <http://www.symbiote-h2020.eu/ontology/core#> .
+@prefix geo:   <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix core:  <http://www.symbiote-h2020.eu/ontology/core#> .
+@prefix qu:    <http://purl.oclc.org/NET/ssnx/qu/quantity#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix meta:  <http://www.symbiote-h2020.eu/ontology/meta#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
 
-<http://www.symbiote-h2020.eu/ontology/platforms/1/service/somehost1.com/resourceAccessProxy> rdf:type mim:InterworkingService ;
-    mim:hasInformationModel [
-                cim:id "11" ;
-        ] ;
-    mim:hasURL "http://somehost1.com/resourceAccessProxy" .
+<http://www.symbiote-h2020.eu/ontology/platforms/1>
+        a                owl:Ontology , meta:Platform ;
+        rdfs:comment     "Test platform A" ;
+        rdfs:label       "Platform A" ;
+        core:id          "1" ;
+        meta:hasService  <http://www.symbiote-h2020.eu/ontology/platforms/1/service/somehost1.com/resourceAccessProxy> .
 
-
-<http://www.symbiote-h2020.eu/ontology/platforms/1> rdf:type owl:Ontology ;
-     mim:hasDescription "Test platform A" ;
-     rdfs:label "Platform A" ;
-     cim:id "1" ;
-     mim:hasService <http://www.symbiote-h2020.eu/ontology/platforms/1/service/somehost1.com/resourceAccessProxy> .
+<http://www.symbiote-h2020.eu/ontology/platforms/1/service/somehost1.com/resourceAccessProxy>
+        a                          meta:InterworkingService ;
+        meta:url                   "http://somehost1.com/resourceAccessProxy" ;
+        meta:usesInformationModel  <http://www.symbiote-h2020.eu/ontology/model/11> .

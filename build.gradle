@@ -2,7 +2,7 @@
 // initial extensions to gradle
 buildscript {
     ext {
-        springBootVersion = '1.5.3.RELEASE'
+        springBootVersion = '1.5.7.RELEASE'
     }
     repositories {
         mavenCentral()
@@ -30,7 +30,7 @@ apply plugin: 'idea'
 apply plugin: 'com.cinnober.gradle.semver-git'
 
 // XXX please change with your commits according to http://semver.org/
-project.version = '0.2.0'
+project.version = '1.0.0'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -49,7 +49,7 @@ repositories {
 // Spring related configs
 dependencyManagement {
     imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:Dalston.RELEASE"
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:Dalston.SR4"
     }
 }
 
@@ -77,39 +77,32 @@ dependencies {
             3) project dependency requires changes in settings.gradle file in this project
             4) never commit build.gradle which has project dependencies active as it will break CI builds
     */
-    // compile('com.github.symbiote-h2020:SymbIoTeLibraries:develop-SNAPSHOT')
-    compile('com.github.symbiote-h2020:SymbIoTeLibraries:0.2.1')
+    compile('com.github.symbiote-h2020:SymbIoTeLibraries:1.+') { changing = true }
+    compile('com.github.symbiote-h2020:SymbIoTeSecurity:21.+') { changing = true }
 
-
-    compile('org.springframework.cloud:spring-cloud-starter')
+    // Spring dependencies
     compile('org.springframework.cloud:spring-cloud-starter-config')
     compile('org.springframework.cloud:spring-cloud-starter-eureka')
     compile('org.springframework.cloud:spring-cloud-starter-zipkin') // Causes the java.net.ConnectException
     compile('org.springframework.cloud:spring-cloud-starter-stream-rabbit')
     compile('org.springframework.boot:spring-boot-starter-data-rest')
     compile('org.springframework.boot:spring-boot-starter-web')
+    compile('org.springframework.boot:spring-boot-starter-data-mongodb')
 
-//    compile('com.fasterxml.jackson.core:jackson-core:2.8.5')
-//    compile('com.fasterxml.jackson.core:jackson-databind:2.8.5')
-//    compile('com.fasterxml.jackson.core:jackson-annotations:2.8.5')
-//    compile group: 'org.springframework.data', name: 'spring-cql', version: '1.5.0.M1'
 
     //Jena dependencies
-//    compile('org.apache.jena:apache-jena-libs:3.1.0')
-    compile('org.apache.jena:jena-core:3.1.0')
-    compile('org.apache.jena:jena-querybuilder:3.1.0')
-    compile('org.apache.jena:jena-spatial:3.1.0') {
+    compile('org.apache.jena:jena-core:3.4.0')
+    compile('org.apache.jena:jena-querybuilder:3.4.0')
+    compile('org.apache.jena:jena-spatial:3.4.0') {
         exclude group: 'org.slf4j' , module: 'slf4j-log4j12'
     }
 
-//    compile('org.semanticweb.owl:align:1.0')
-//    compile('org.semanticweb.owl:proc-align:1.0')
-//    compile('fr.inrialpes.exmo:ontowrap:1.0')
     compile('eu.symbiote-h2020:MediationFramework:1.0')
 
-    testCompile('org.springframework.boot:spring-boot-starter-test')
 
     // Use JUnit4
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+
     testCompile 'junit:junit:4.12'
 }
 
@@ -141,9 +134,50 @@ dependencyCheck {
 }
 
 // including code quality extensions into the build
-check.dependsOn(jacocoTestReport, 'dependencyCheck')
+check.dependsOn(jacocoTestReport)//, 'dependencyCheck')
 
 // Eureka needs to be disabled for testing
 tasks.withType(Test) {
     systemProperty 'eureka.client.enabled', 'false'
 }
+
+// automatically create ontology classes
+def generatedSourcesFolder = "generated-src";
+def ontologyDir = "src/main/resources/ontologies"
+def ontologyDirShort = "/ontologies"
+def ontologyPackage = "eu.h2020.symbIoTe.ontology"
+def ontologyFileExtensions= ["**/*.rdf", "**/*.owl", "**/*.ttl", "**/*.n3"]
+
+import static org.apache.tools.ant.taskdefs.condition.Os.*
+
+task generateOntologies {
+    description = 'Generate Ontology Classes'
+    fileTree(dir: ontologyDir, include: ontologyFileExtensions).each { file ->
+        doLast {
+            javaexec {
+                classpath sourceSets.main.runtimeClasspath
+                main = 'jena.schemagen'
+                if( isFamily(FAMILY_WINDOWS) ) {
+                    args = ["-i", "$ontologyDir/$file.name", "-o", generatedSourcesFolder, "--package", ontologyPackage, "--nocomments", "--ontology", "--nostrict", "--declarations", "    public static final URL SOURCE_PATH = MethodHandles.lookup().lookupClass().getResource(\"\"$ontologyDirShort/$file.name\"\");", "--header", "%package%\n%imports%\nimport java.net.URL;\nimport java.lang.invoke.MethodHandles;\n"]
+                } else if( isFamily(FAMILY_UNIX) || isFamily(FAMILY_MAC) ) {
+                    args = ["-i", "$ontologyDir/$file.name", "-o", generatedSourcesFolder, "--package", ontologyPackage, "--nocomments", "--ontology", "--nostrict", "--declarations", "    public static final URL SOURCE_PATH = MethodHandles.lookup().lookupClass().getResource(\"$ontologyDirShort/$file.name\");", "--header", "%package%\n%imports%\nimport java.net.URL;\nimport java.lang.invoke.MethodHandles;\n"]
+                }
+            }
+        }
+    }
+    sourceSets {
+        main {
+            java.srcDirs generatedSourcesFolder
+        }
+        test {
+            java.srcDirs generatedSourcesFolder
+        }
+    }
+}
+
+clean {
+    delete generatedSourcesFolder
+}
+
+compileTestJava.dependsOn generateOntologies
+compileJava.dependsOn generateOntologies

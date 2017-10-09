@@ -7,12 +7,10 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 import eu.h2020.symbiote.handlers.ResourceHandler;
-import eu.h2020.symbiote.model.Resource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 /**

@@ -1,0 +1,47 @@
+{
+  "@graph" : [ {
+    "@id" : "http://www.symbiote-h2020.eu/ontology/resources/${resource.id}/${location.name}",
+    "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#WGS84Location", "http://www.symbiote-h2020.eu/ontology/core#Location" ],
+    "comment" : "${location.desc}",
+    "label" : "${location.name}",
+    "alt" : "${location.alt}",
+    "lat" : "${location.lat}",
+    "long" : "${location.long}"
+  }, {
+    "@id" : "http://www.symbiote-h2020.eu/ontology/resources/${resource.id}",
+    "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#MobileSensor", "http://www.symbiote-h2020.eu/ontology/core#Resource" ],
+    "id" : "${resource.id}",
+    "locatedAt" : "http://www.symbiote-h2020.eu/ontology/resources/${resource.id}/${location.name}",
+    "observes" : [ ${resource.properties} ],
+    "comment" : "${resource.desc}",
+    "label" : "${resource.name}"
+  } ],
+  "@context" : {
+    "locatedAt" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#locatedAt",
+      "@type" : "@id"
+    },
+    "observes" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#observes",
+      "@type" : "@id"
+    },
+    "comment" : {
+      "@id" : "http://www.w3.org/2000/01/rdf-schema#comment"
+    },
+    "label" : {
+      "@id" : "http://www.w3.org/2000/01/rdf-schema#label"
+    },
+    "id" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#id"
+    },
+    "alt" : {
+      "@id" : "http://www.w3.org/2003/01/geo/wgs84_pos#alt"
+    },
+    "long" : {
+      "@id" : "http://www.w3.org/2003/01/geo/wgs84_pos#long"
+    },
+    "lat" : {
+      "@id" : "http://www.w3.org/2003/01/geo/wgs84_pos#lat"
+    }
+  }
+}

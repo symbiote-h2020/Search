@@ -28,16 +28,16 @@ public class Registry {
         log.info("Data loaded!" );
     }
 
-    public void registerPlatform(String platformId, String rdf, RDFFormat format, String modelId) {
+    public void registerPlatform(String platformId, String rdf, RDFFormat format) {
         tripleStore.insertGraph(Ontology.getPlatformGraphURI(platformId), rdf, format);
-        tripleStore.insertGraph(Ontology.PLATFORMS_GRAPH, Ontology.getPlatformMetadata(platformId, modelId), format);
-        log.debug(String.format("platform registered: platformId={}, modelId={}, format={}, rdf={}", platformId, modelId, format, rdf));
+//        tripleStore.insertGraph(Ontology.PLATFORMS_GRAPH, Ontology.getPlatformMetadata(platformId, modelId), format);
+        log.debug(String.format("platform registered: platformId={}, format={}, rdf={}", platformId, format, rdf));
     }
 
-    public void registerPlatform(String platformId, Model rdf, String modelId) {
+    public void registerPlatform(String platformId, Model rdf) {
         tripleStore.insertGraph(Ontology.getPlatformGraphURI(platformId), rdf);
-        tripleStore.insertGraph(Ontology.PLATFORMS_GRAPH, Ontology.getPlatformMetadata(platformId, modelId), RDFFormat.Turtle);
-        log.debug(String.format("platform registered: platformId={}, modelId={}, rdf={}", platformId, modelId, rdf));
+//        tripleStore.insertGraph(Ontology.PLATFORMS_GRAPH, Ontology.getPlatformMetadata(platformId, modelId), RDFFormat.Turtle);
+        log.debug(String.format("platform registered: platformId={}, rdf={}", platformId,rdf));
     }
 
     /**

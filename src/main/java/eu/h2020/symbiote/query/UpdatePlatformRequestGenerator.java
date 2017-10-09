@@ -1,8 +1,6 @@
 package eu.h2020.symbiote.query;
 
-import eu.h2020.symbiote.model.Platform;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import eu.h2020.symbiote.core.model.Platform;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
 
@@ -10,7 +8,9 @@ import org.apache.jena.update.UpdateRequest;
  * Generator of the update (delete+insert) operation for platforms.
  *
  * Created by Mael on 26/01/2017.
+ * @deprecated update of platform is handled by delete+insert (same as resources)
  */
+@Deprecated
 public class UpdatePlatformRequestGenerator {
 
     private UpdateRequest request;
@@ -38,34 +38,36 @@ public class UpdatePlatformRequestGenerator {
     }
 
     private String generatePlatformUpdate( Platform platform ) {
+        //TODO
         StringBuilder q = generateBaseQuery();
-        q.append("DELETE { ?platform mim:hasName ?platformName ; \n" );
-        q.append("\t\tmim:hasDescription ?platformDesc . }\n");
-        q.append("INSERT { ?platform mim:hasName \"" + platform.getName() +"\" ; \n" );
-        q.append("\t\tmim:hasDescription \"" + platform.getDescription() +"\" . }\n");
-        q.append("WHERE {\n");
-        q.append("\t?platform cim:id \""+platform.getPlatformId()+"\" ;\n");
-        q.append("\t\tmim:hasName ?platformName ;\n");
-        q.append("\t\tmim:hasDescription ?platformDesc .\n");
-        q.append("}");
+//        q.append("DELETE { ?platform mim:hasName ?platformName ; \n" );
+//        q.append("\t\tmim:hasDescription ?platformDesc . }\n");
+//        q.append("INSERT { ?platform mim:hasName \"" + platform.getName() +"\" ; \n" );
+//        q.append("\t\tmim:hasDescription \"" + platform.getDescription() +"\" . }\n");
+//        q.append("WHERE {\n");
+//        q.append("\t?platform cim:id \""+platform.getId()+"\" ;\n");
+//        q.append("\t\tmim:hasName ?platformName ;\n");
+//        q.append("\t\tmim:hasDescription ?platformDesc .\n");
+//        q.append("}");
         return q.toString();
     }
 
     private String generateInformationServiceUpdate( Platform platform ) {
+        //TODO
         StringBuilder q = generateBaseQuery();
-        q.append("DELETE { ?service mim:hasURL ?serviceURL ; \n" );
-        q.append("\t\tmim:hasInformationModel ?imodel . \n " );
-        q.append("\t?imodel cim:id ?imodelid .  }\n");
-        q.append("INSERT { ?service mim:hasURL \"" + platform.getUrl() +"\" ; \n" );
-        q.append("\t\tmim:hasInformationModel ?imodel . \n " );
-        q.append("\t?imodel cim:id \"" + platform.getInformationModelId() +"\" .  }\n");
-        q.append("WHERE {\n");
-        q.append("\t?platform mim:hasService ?service ;\n");
-        q.append("\t\tcim:id \""+platform.getPlatformId()+"\" .\n");
-        q.append("\t?service mim:hasURL ?serviceURL ; \n");
-        q.append("\t\tmim:hasInformationModel ?imodel . \n " );
-        q.append("\t?imodel cim:id ?imodelid . \n");
-        q.append("}");
+//        q.append("DELETE { ?service mim:hasURL ?serviceURL ; \n" );
+//        q.append("\t\tmim:hasInformationModel ?imodel . \n " );
+//        q.append("\t?imodel cim:id ?imodelid .  }\n");
+//        q.append("INSERT { ?service mim:hasURL \"" + platform.getUrl() +"\" ; \n" );
+//        q.append("\t\tmim:hasInformationModel ?imodel . \n " );
+//        q.append("\t?imodel cim:id \"" + platform.getInformationModelId() +"\" .  }\n");
+//        q.append("WHERE {\n");
+//        q.append("\t?platform mim:hasService ?service ;\n");
+//        q.append("\t\tcim:id \""+platform.getPlatformId()+"\" .\n");
+//        q.append("\t?service mim:hasURL ?serviceURL ; \n");
+//        q.append("\t\tmim:hasInformationModel ?imodel . \n " );
+//        q.append("\t?imodel cim:id ?imodelid . \n");
+//        q.append("}");
         return q.toString();
     }
 
