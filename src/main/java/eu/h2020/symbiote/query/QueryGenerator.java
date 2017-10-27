@@ -45,22 +45,22 @@ public class QueryGenerator {
 //        query.append("\t?sensor a cim:Resource ;\n"); \\TODO r3 dereference
         query.append("\t?sensor a ?type ;\n");
         query.append("\t\tcim:id ?resId ;\n");
-        query.append("\t\trdfs:label ?resName ;\n");
-        query.append("\t\trdfs:comment ?resDescription.\n");
+        query.append("\t\tcim:name ?resName ;\n");
+        query.append("\t\tcim:description ?resDescription.\n");
         query.append("\t?platform cim:id ?platformId ;\n");
-        query.append("\t\trdfs:label ?platformName .\n");
+        query.append("\t\tcim:name ?platformName .\n");
 
-        query.append("\t?platform a owl:Ontology ;\n");
+        query.append("\t?platform a mim:Platform;\n");
         query.append("\t\tmim:hasService ?service .\n");
         query.append("\t?service mim:hasResource ?sensor .\n");
 
         if( locationquery ) {
             query.append("\t?sensor cim:locatedAt ?location.\n");
-            query.append("	?location rdfs:label ?locationName.\n");
+            query.append("	?location cim:name ?locationName.\n");
         }
         if( propertyquery ) {
             query.append("\t?sensor cim:observesProperty ?property.\n");
-            query.append("\t?property rdfs:label ?propName.\n");
+            query.append("\t?property cim:name ?propName.\n");
         }
 
             query.append("OPTIONAL { ");
@@ -72,11 +72,11 @@ public class QueryGenerator {
 
             if (!locationquery) {
 
-                query.append("\t?location rdfs:label ?locationName.\n");
+                query.append("\t?location cim:name ?locationName.\n");
             }
             if (!propertyquery) {
                 query.append("\t?sensor cim:observesProperty ?property.\n");
-                query.append("\t?property rdfs:label ?propName.\n");
+                query.append("\t?property cim:name ?propName.\n");
             }
             query.append("} \n");
 
@@ -92,13 +92,13 @@ public class QueryGenerator {
             Command command = modifyInputAndGetCommand(platformName);
             addLikePlatformName(command.getRegex(), command.getRegexCommand());
         } else {
-            extension.append("\t?platform rdfs:label \"" + platformName + "\" .\n");
+            extension.append("\t?platform cim:name \"" + platformName + "\" .\n");
         }
         return this;
     }
 
     public QueryGenerator addLikePlatformName( String platformName, String command ) {
-        extension.append("\t?platform rdfs:label ?platNamePattern . \n");
+        extension.append("\t?platform cim:name ?platNamePattern . \n");
         extension.append("\tFILTER ("+command+"(LCASE(?platNamePattern), LCASE(\"" + platformName + "\"))) .");
         return this;
     }
@@ -108,13 +108,13 @@ public class QueryGenerator {
             Command command = modifyInputAndGetCommand(resourceName);
             addLikeResourceName(command.getRegex(), command.getRegexCommand());
         } else {
-            extension.append("\t?sensor rdfs:label \"" + resourceName + "\" .\n");
+            extension.append("\t?sensor cim:name \"" + resourceName + "\" .\n");
         }
         return this;
     }
 
     public QueryGenerator addLikeResourceName( String resourceName, String command ) {
-        extension.append("\t?sensor rdfs:label ?resNamePattern .\n");
+        extension.append("\t?sensor cim:name ?resNamePattern .\n");
         extension.append("\tFILTER ("+command+"(LCASE(?resNamePattern), LCASE(\"" + resourceName + "\"))) .");
         return this;
     }
@@ -129,13 +129,13 @@ public class QueryGenerator {
             Command command = modifyInputAndGetCommand(resourceDescription);
             addLikeResourceDescription(command.getRegex(), command.getRegexCommand());
         } else {
-            extension.append("\t?sensor rdfs:comment \"" + resourceDescription + "\" .\n");
+            extension.append("\t?sensor cim:description \"" + resourceDescription + "\" .\n");
         }
         return this;
     }
 
     public QueryGenerator addLikeResourceDescription( String resourceDescription, String command ) {
-        extension.append("\t?sensor rdfs:comment ?resDescriptionPattern .\n");
+        extension.append("\t?sensor cim:description ?resDescriptionPattern .\n");
         extension.append("\tFILTER ("+command+"(LCASE(?resDescriptionPattern), LCASE(\"" + resourceDescription + "\"))) .");
         return this;
     }
@@ -145,14 +145,14 @@ public class QueryGenerator {
             Command command = modifyInputAndGetCommand(locationName);
             addLikeResourceLocationName(command.getRegex(), command.getRegexCommand());
         } else {
-            extension.append("\t?location rdfs:label \"" + locationName + "\" .\n");
+            extension.append("\t?location cim:name \"" + locationName + "\" .\n");
         }
         locationquery = true;
         return this;
     }
 
     public QueryGenerator addLikeResourceLocationName( String locationName, String command ) {
-        extension.append("\t?location rdfs:label ?resLocationNamePattern .\n");
+        extension.append("\t?location cim:name ?resLocationNamePattern .\n");
         extension.append("\tFILTER ("+command+"(LCASE(?resLocationNamePattern), LCASE(\"" + locationName + "\"))) .");
         locationquery = true;
         return this;
@@ -171,7 +171,7 @@ public class QueryGenerator {
             Command command = modifyInputAndGetCommand(propertyName);
             addLikeResourceObservedPropertyName(command.getRegex(), command.getRegexCommand());
         } else {
-            extension.append("\t?property rdfs:label \"" + propertyName + "\" .\n");
+            extension.append("\t?property cim:name \"" + propertyName + "\" .\n");
         }
         return this;
     }
@@ -180,7 +180,7 @@ public class QueryGenerator {
         multivaluequery = true;
         propertyquery = true;
         extension.append("\t?sensor cim:observesProperty ?property .\n");
-        extension.append("\t?property rdfs:label ?propertyNamePattern .\n");
+        extension.append("\t?property cim:name ?propertyNamePattern .\n");
         extension.append("\tFILTER ("+command+"(LCASE(?propertyNamePattern), LCASE(\"" + propertyName + "\"))) .");
         return this;
     }
@@ -192,10 +192,10 @@ public class QueryGenerator {
         for( String property: propertyNames ) {
             i++;
             if( i == 1 ) {
-                extension.append("\t?property rdfs:label \"" + property + "\" .\n");
+                extension.append("\t?property cim:name \"" + property + "\" .\n");
             } else {
                 extension.append("\t?sensor cim:observesProperty ?property" + i + " .\n");
-                extension.append("\t?property" + i + " rdfs:label \"" + property + "\" .\n");
+                extension.append("\t?property" + i + " cim:name \"" + property + "\" .\n");
             }
         }
         return this;

@@ -1,7 +1,7 @@
 package eu.h2020.symbiote.handlers;
 
 
-import eu.h2020.symbiote.core.model.Platform;
+import eu.h2020.symbiote.model.mim.Platform;
 
 /**
  * Interface containing all relevant interfaces for Platform related events.

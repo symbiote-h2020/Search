@@ -1,18 +1,19 @@
 package eu.h2020.symbiote;
 
-import eu.h2020.symbIoTe.ontology.CoreInformationModel;
-import eu.h2020.symbIoTe.ontology.MetaInformationModel;
 import eu.h2020.symbiote.core.ci.QueryResponse;
 import eu.h2020.symbiote.core.internal.CoreQueryRequest;
+import eu.h2020.symbiote.core.internal.CoreResource;
 import eu.h2020.symbiote.core.internal.CoreResourceRegisteredOrModifiedEventPayload;
-import eu.h2020.symbiote.core.model.internal.CoreResource;
+import eu.h2020.symbiote.core.internal.RDFFormat;
+import eu.h2020.symbiote.filtering.AccessPolicyRepo;
+import eu.h2020.symbiote.filtering.SecurityManager;
 import eu.h2020.symbiote.handlers.PlatformHandler;
 import eu.h2020.symbiote.handlers.ResourceHandler;
 import eu.h2020.symbiote.handlers.SearchHandler;
-import eu.h2020.symbiote.ontology.model.RDFFormat;
 import eu.h2020.symbiote.ontology.model.Registry;
 import eu.h2020.symbiote.ontology.model.TripleStore;
 import eu.h2020.symbiote.search.SearchStorage;
+import eu.h2020.symbiote.semantics.ontology.CIM;
 import org.apache.commons.io.IOUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.update.UpdateFactory;
@@ -20,6 +21,7 @@ import org.apache.jena.update.UpdateRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.IOException;
@@ -27,6 +29,9 @@ import java.util.Arrays;
 
 import static eu.h2020.symbiote.TestSetupConfig.*;
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by Mael on 26/01/2017.
@@ -37,11 +42,18 @@ public class DeleteAndUpdateHandlerTests {
     private SearchStorage storage;
     private Registry registry;
     private TripleStore triplestore;
+    @Mock
+    private AccessPolicyRepo accessPolicyRepo;
+    @Mock
+    private SecurityManager securityManager;
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
 
-        storage = SearchStorage.getInstance(SearchStorage.TESTCASE_STORAGE_NAME);
+        when(securityManager.checkPolicyByResourceId(anyString(),any())).thenReturn(Boolean.TRUE);
+        when(securityManager.checkPolicyByResourceIri(anyString(),any())).thenReturn(Boolean.TRUE);
+        SearchStorage.clearStorage();
+        storage = SearchStorage.getInstance(SearchStorage.TESTCASE_STORAGE_NAME, securityManager, false);
         triplestore = storage.getTripleStore();
 //        triplestore.getDefaultGraph().removeAll();
         registry = new Registry(triplestore);
@@ -73,7 +85,7 @@ public class DeleteAndUpdateHandlerTests {
         System.out.println(" ===== PRE ==== ");
         printDataset();
         System.out.println(" ===== PRE ==== ");
-        SearchHandler searchHandler = new SearchHandler(triplestore);
+        SearchHandler searchHandler = new SearchHandler(triplestore,securityManager);
 
         CoreQueryRequest searchReq = new CoreQueryRequest();
         searchReq.setId("stationary1");
@@ -91,7 +103,7 @@ public class DeleteAndUpdateHandlerTests {
         assertNotNull(otherSearchResponse.getResources());
         assertEquals("Before delete should be 1 resource", 1, otherSearchResponse.getResources().size());
 
-        ResourceHandler delHandler = new ResourceHandler(storage);
+        ResourceHandler delHandler = new ResourceHandler(storage,accessPolicyRepo);
         delHandler.deleteResource("stationary1");
 
         searchResponse = searchHandler.search(searchReq);
@@ -119,7 +131,7 @@ public class DeleteAndUpdateHandlerTests {
 
         Model graph = triplestore.getDefaultGraph();
         org.apache.jena.rdf.model.Resource resource = graph.createResource(PLATFORM_A_URI);
-        boolean contains = graph.contains(resource, CoreInformationModel.id, PLATFORM_A_ID);
+        boolean contains = graph.contains(resource, CIM.id, PLATFORM_A_ID);
         assertTrue("Before platform A should exist", contains);
 
         PlatformHandler delHandler = new PlatformHandler(storage);
@@ -129,7 +141,7 @@ public class DeleteAndUpdateHandlerTests {
         printDataset();
         System.out.println(" ====== AFTER ===== ");
 
-        contains = graph.contains(resource, CoreInformationModel.id, PLATFORM_A_ID);
+        contains = graph.contains(resource, CIM.id, PLATFORM_A_ID);
         assertFalse("After delete platform A should not exist", contains);
     }
 
@@ -144,7 +156,7 @@ public class DeleteAndUpdateHandlerTests {
         boolean hasAtLeastOne = graph.listStatements().hasNext();
         assertTrue("Initial graph should have at least some statements", hasAtLeastOne);
 
-        SearchHandler searchHandler = new SearchHandler(triplestore);
+        SearchHandler searchHandler = new SearchHandler(triplestore,securityManager);
         CoreQueryRequest searchReq = new CoreQueryRequest();
         searchReq.setName("*stationary*");
         QueryResponse searchResponse = searchHandler.search(searchReq);
@@ -154,8 +166,8 @@ public class DeleteAndUpdateHandlerTests {
         assertEquals("Before modify resource should be 1", 1, searchResponse.getResources().size());
 
         CoreResource resource = generateModifiedStationarySensor();
-        resource.setLabels(Arrays.asList(RESOURCE_STATIONARY_LABEL_MODIFIED));
-        ResourceHandler modifyHandler = new ResourceHandler(storage);
+        resource.setName(RESOURCE_STATIONARY_LABEL_MODIFIED);
+        ResourceHandler modifyHandler = new ResourceHandler(storage,accessPolicyRepo);
         CoreResourceRegisteredOrModifiedEventPayload updateReq = new CoreResourceRegisteredOrModifiedEventPayload();
         updateReq.setPlatformId(PLATFORM_A_ID);
 

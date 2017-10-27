@@ -23,9 +23,8 @@
     "hasInputParameter" : "_:b2",
     "hasOutputParameter" : "_:b0",
     "id" : "service1",
-    "name" : "service1Name",
     "comment" : "This is service 1",
-    "label" : "Service 1"
+    "name" : "Service 1"
   } ],
   "@context" : {
     "datatype" : {
@@ -53,9 +52,6 @@
     },
     "comment" : {
       "@id" : "http://www.w3.org/2000/01/rdf-schema#comment"
-    },
-    "label" : {
-      "@id" : "http://www.w3.org/2000/01/rdf-schema#label"
     },
     "id" : {
       "@id" : "http://www.symbiote-h2020.eu/ontology/core#id"

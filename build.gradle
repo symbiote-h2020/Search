@@ -77,10 +77,12 @@ dependencies {
             3) project dependency requires changes in settings.gradle file in this project
             4) never commit build.gradle which has project dependencies active as it will break CI builds
     */
-    compile('com.github.symbiote-h2020:SymbIoTeLibraries:1.+') { changing = true }
-    compile('com.github.symbiote-h2020:SymbIoTeSecurity:21.+') { changing = true }
+    compile('com.github.symbiote-h2020:SymbIoTeLibraries:3.+')
+    compile('com.github.symbiote-h2020:SymbIoTeSemantics:develop-SNAPSHOT') {changing = true
+        exclude group: 'org.slf4j'
+    }
 
-    // Spring dependencies
+    compile('org.springframework.cloud:spring-cloud-starter')
     compile('org.springframework.cloud:spring-cloud-starter-config')
     compile('org.springframework.cloud:spring-cloud-starter-eureka')
     compile('org.springframework.cloud:spring-cloud-starter-zipkin') // Causes the java.net.ConnectException
@@ -93,6 +95,7 @@ dependencies {
     //Jena dependencies
     compile('org.apache.jena:jena-core:3.4.0')
     compile('org.apache.jena:jena-querybuilder:3.4.0')
+    compile('org.apache.jena:jena-permissions:3.4.0')
     compile('org.apache.jena:jena-spatial:3.4.0') {
         exclude group: 'org.slf4j' , module: 'slf4j-log4j12'
     }
@@ -140,44 +143,3 @@ check.dependsOn(jacocoTestReport)//, 'dependencyCheck')
 tasks.withType(Test) {
     systemProperty 'eureka.client.enabled', 'false'
 }
-
-// automatically create ontology classes
-def generatedSourcesFolder = "generated-src";
-def ontologyDir = "src/main/resources/ontologies"
-def ontologyDirShort = "/ontologies"
-def ontologyPackage = "eu.h2020.symbIoTe.ontology"
-def ontologyFileExtensions= ["**/*.rdf", "**/*.owl", "**/*.ttl", "**/*.n3"]
-
-import static org.apache.tools.ant.taskdefs.condition.Os.*
-
-task generateOntologies {
-    description = 'Generate Ontology Classes'
-    fileTree(dir: ontologyDir, include: ontologyFileExtensions).each { file ->
-        doLast {
-            javaexec {
-                classpath sourceSets.main.runtimeClasspath
-                main = 'jena.schemagen'
-                if( isFamily(FAMILY_WINDOWS) ) {
-                    args = ["-i", "$ontologyDir/$file.name", "-o", generatedSourcesFolder, "--package", ontologyPackage, "--nocomments", "--ontology", "--nostrict", "--declarations", "    public static final URL SOURCE_PATH = MethodHandles.lookup().lookupClass().getResource(\"\"$ontologyDirShort/$file.name\"\");", "--header", "%package%\n%imports%\nimport java.net.URL;\nimport java.lang.invoke.MethodHandles;\n"]
-                } else if( isFamily(FAMILY_UNIX) || isFamily(FAMILY_MAC) ) {
-                    args = ["-i", "$ontologyDir/$file.name", "-o", generatedSourcesFolder, "--package", ontologyPackage, "--nocomments", "--ontology", "--nostrict", "--declarations", "    public static final URL SOURCE_PATH = MethodHandles.lookup().lookupClass().getResource(\"$ontologyDirShort/$file.name\");", "--header", "%package%\n%imports%\nimport java.net.URL;\nimport java.lang.invoke.MethodHandles;\n"]
-                }
-            }
-        }
-    }
-    sourceSets {
-        main {
-            java.srcDirs generatedSourcesFolder
-        }
-        test {
-            java.srcDirs generatedSourcesFolder
-        }
-    }
-}
-
-clean {
-    delete generatedSourcesFolder
-}
-
-compileTestJava.dependsOn generateOntologies
-compileJava.dependsOn generateOntologies

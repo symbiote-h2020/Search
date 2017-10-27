@@ -1,8 +1,7 @@
 package eu.h2020.symbiote.handlers;
 
-import eu.h2020.symbiote.core.model.Platform;
+import eu.h2020.symbiote.model.mim.Platform;
 import eu.h2020.symbiote.query.DeletePlatformRequestGenerator;
-import eu.h2020.symbiote.query.UpdatePlatformRequestGenerator;
 import eu.h2020.symbiote.search.SearchStorage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

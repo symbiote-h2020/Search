@@ -5,6 +5,7 @@
  */
 package eu.h2020.symbiote.ontology.model;
 
+import eu.h2020.symbiote.core.internal.RDFFormat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jena.rdf.model.Model;
@@ -49,7 +50,7 @@ public class Registry {
     public void registerResource(String platformUri, String serviceURI, String resourceUri, Model resourceModel) {
         tripleStore.insertGraph(platformUri, resourceModel);
         tripleStore.insertGraph(platformUri, Ontology.getResourceMetadata(serviceURI,resourceUri), RDFFormat.Turtle);
-        log.debug(String.format("Resource registered for platform: platformUri={}", platformUri));
+        log.debug(String.format("Resource={%s} registered for platform: platformUri={%s}", resourceUri, platformUri));
     }
 
 //    public void registerMapping(BigInteger mappingId, BigInteger modelId1, BigInteger modelId2, String mapping) throws UnsupportedEncodingException {

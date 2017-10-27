@@ -20,8 +20,8 @@
     "@id" : "_:b3",
     "@type" : "core:FeatureOfInterest",
     "hasProperty" : "qu:temperature",
-    "comment" : "This is room 1",
-    "label" : "Room1"
+    "description" : "This is room 1",
+    "name" : "Room1"
   }, {
     "@id" : "_:b4",
     "@type" : "core:RangeRestriction",
@@ -30,8 +30,8 @@
   }, {
     "@id" : "http://www.symbiote-h2020.eu/ontology/platforms/Platform1/location/59ad0b5f8d116620906557f2",
     "@type" : "core:WGS84Location",
-    "comment" : "This is paris",
-    "label" : "Paris",
+    "description" : "This is paris",
+    "name" : "Paris",
     "alt" : "15.0",
     "lat" : "48.864716",
     "long" : "2.349014"
@@ -41,8 +41,8 @@
     "hasCapability" : "_:b0",
     "id" : "actuator1",
     "locatedAt" : "http://www.symbiote-h2020.eu/ontology/platforms/Platform1/location/59ad0b5f8d116620906557f2",
-    "comment" : "This is actuator 1",
-    "label" : "Actuator 1"
+    "description" : "This is actuator 1",
+    "name" : "Actuator 1"
   }, {
     "@id" : "xsd:string",
     "@type" : "rdfs:Datatype"
@@ -56,11 +56,11 @@
       "@id" : "http://www.symbiote-h2020.eu/ontology/core#locatedAt",
       "@type" : "@id"
     },
-    "comment" : {
-      "@id" : "http://www.w3.org/2000/01/rdf-schema#comment"
+    "description" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#description"
     },
-    "label" : {
-      "@id" : "http://www.w3.org/2000/01/rdf-schema#label"
+    "name" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#name"
     },
     "id" : {
       "@id" : "http://www.symbiote-h2020.eu/ontology/core#id"

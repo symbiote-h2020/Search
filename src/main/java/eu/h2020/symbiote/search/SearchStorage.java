@@ -2,6 +2,7 @@ package eu.h2020.symbiote.search;
 
 
 import eu.h2020.symbiote.SearchApplication;
+import eu.h2020.symbiote.filtering.SecurityManager;
 import eu.h2020.symbiote.ontology.model.Registry;
 import eu.h2020.symbiote.ontology.model.SearchEngine;
 import eu.h2020.symbiote.ontology.model.TripleStore;
@@ -33,12 +34,12 @@ public class SearchStorage {
     private TripleStore tripleStore;
 
 
-    private SearchStorage(String storageLocation ) {
+    private SearchStorage(String storageLocation, SecurityManager securityManager, boolean securityEnabled ) {
         log.info( "Starting platform storage based on Apache Jena");
         if( storageLocation == null ) {
-            tripleStore = new TripleStore(  );
+            tripleStore = new TripleStore( securityManager,securityEnabled );
         } else {
-            tripleStore = new TripleStore( storageLocation );
+            tripleStore = new TripleStore( storageLocation, securityManager,securityEnabled );
         }
 
         this.storageLocation = storageLocation;
@@ -52,8 +53,8 @@ public class SearchStorage {
      *
      * @return Singleton of the storage for default location.
      */
-    public static SearchStorage getInstance() {
-        return getInstance(SearchApplication.DIRECTORY);
+    public static SearchStorage getInstance(SecurityManager securityManager, boolean securityEnabled) {
+        return getInstance(SearchApplication.DIRECTORY, securityManager, securityEnabled);
     }
 
     /**
@@ -64,21 +65,30 @@ public class SearchStorage {
      * @param storageName Name of the storage, which corresponds to it's location.
      * @return Singleton of the storage for location with specified name
      */
-    public static SearchStorage getInstance(String storageName ) {
+    public static SearchStorage getInstance(String storageName, SecurityManager securityManager, boolean securityEnabled ) {
         SearchStorage storage;
         synchronized ( storages ) {
             storage = storages.get(storageName);
             if( storage == null ) {
                 log.debug("Creating Search Storage instance for " + storageName);
                 if( storageName.equals(TESTCASE_STORAGE_NAME) ) {
-                    storage = new SearchStorage( null );
+                    storage = new SearchStorage( null, securityManager,securityEnabled );
                 } else {
-                    storage = new SearchStorage(storageName);
+                    storage = new SearchStorage(storageName, securityManager,securityEnabled );
                 }
                 storages.put(storageName, storage);
             }
          }
         return storage;
+    }
+
+    /**
+     * Used to clear all cached storages
+     */
+    public static void clearStorage() {
+        synchronized (storages){
+            storages.clear();
+        }
     }
 
 

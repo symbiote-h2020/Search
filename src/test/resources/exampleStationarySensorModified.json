@@ -3,13 +3,13 @@
     "@id" : "_:b0",
     "@type" : "core:FeatureOfInterest",
     "hasProperty" : "qu:temperature",
-    "comment" : "This is room 1",
-    "label" : "Room1"
+    "description" : "This is room 1",
+    "name" : "Room1"
   }, {
     "@id" : "http://www.symbiote-h2020.eu/ontology/platforms/Platform1/location/59ad0b5f8d116620906557ee",
     "@type" : "core:WGS84Location",
-    "comment" : "This is paris",
-    "label" : "Paris",
+    "description" : "This is paris",
+    "name" : "Paris",
     "alt" : "15.0",
     "lat" : "48.864716",
     "long" : "2.349014"
@@ -20,19 +20,19 @@
     "id" : "stationary1",
     "locatedAt" : "http://www.symbiote-h2020.eu/ontology/platforms/Platform1/location/59ad0b5f8d116620906557ee",
     "observesProperty" : [ "qu:humidity", "qu:temperature" ],
-    "comment" : "New sensor 1",
-    "label" : "Stationary 1"
+    "description" : "New sensor 1",
+    "name" : "Stationary 1"
   } ],
   "@context" : {
     "hasProperty" : {
       "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasProperty",
       "@type" : "@id"
     },
-    "comment" : {
-      "@id" : "http://www.w3.org/2000/01/rdf-schema#comment"
+    "description" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#description"
     },
-    "label" : {
-      "@id" : "http://www.w3.org/2000/01/rdf-schema#label"
+    "name" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#name"
     },
     "hasFeatureOfInterest" : {
       "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasFeatureOfInterest",

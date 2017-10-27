@@ -2,8 +2,8 @@
   "@graph" : [ {
     "@id" : "http://www.symbiote-h2020.eu/ontology/platforms/Platform1/location/59ad0b5f8d116620906557f1",
     "@type" : "core:WGS84Location",
-    "comment" : "This is paris",
-    "label" : "Paris",
+    "description" : "This is paris",
+    "name" : "Paris",
     "alt" : "15.0",
     "lat" : "48.864716",
     "long" : "2.349014"
@@ -13,8 +13,8 @@
     "id" : "mobile1",
     "locatedAt" : "http://www.symbiote-h2020.eu/ontology/platforms/Platform1/location/59ad0b5f8d116620906557f1",
     "observesProperty" : "qu:temperature",
-    "comment" : "This is mobile 1",
-    "label" : "Mobile 1"
+    "description" : "This is mobile 1",
+    "name" : "Mobile 1"
   } ],
   "@context" : {
     "alt" : {
@@ -26,11 +26,11 @@
     "lat" : {
       "@id" : "http://www.w3.org/2003/01/geo/wgs84_pos#lat"
     },
-    "comment" : {
-      "@id" : "http://www.w3.org/2000/01/rdf-schema#comment"
+    "description" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#description"
     },
-    "label" : {
-      "@id" : "http://www.w3.org/2000/01/rdf-schema#label"
+    "name" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#name"
     },
     "locatedAt" : {
       "@id" : "http://www.symbiote-h2020.eu/ontology/core#locatedAt",

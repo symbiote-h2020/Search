@@ -1,6 +1,7 @@
 package eu.h2020.symbiote;
 
-import eu.h2020.symbiote.ontology.model.RDFFormat;
+import eu.h2020.symbiote.core.internal.RDFFormat;
+import eu.h2020.symbiote.filtering.SecurityManager;
 import eu.h2020.symbiote.ontology.model.Registry;
 import eu.h2020.symbiote.ontology.model.TripleStore;
 import org.apache.commons.io.IOUtils;
@@ -9,8 +10,11 @@ import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.IOException;
@@ -18,26 +22,45 @@ import java.io.InputStream;
 import java.util.Iterator;
 
 import static eu.h2020.symbiote.TestSetupConfig.*;
+import static eu.h2020.symbiote.TestSetupConfig.loadFileAsModel;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
 
 //@RunWith(SpringRunner.class)
 //@SpringBootTest({"eureka.client.enabled=false"})
 @RunWith(MockitoJUnitRunner.class)
 public class SearchApplicationTests {
 
+    @Mock
+    SecurityManager securityManager;
+
     @Test
-    public void simplePlatformTest() {
-        TripleStore triplestore = new TripleStore();
+    public void simplePlatformTest() throws Exception {
+        when(securityManager.checkPolicyByResourceId(anyString(),any())).thenReturn(Boolean.TRUE);
+        when(securityManager.checkPolicyByResourceIri(anyString(),any())).thenReturn(Boolean.TRUE);
+        TripleStore triplestore = new TripleStore(securityManager,false);
         Registry registry = new Registry(triplestore);
         try {
             String platformToSave = IOUtils.toString(this.getClass()
                     .getResource(PLATFORM_A_FILENAME));
             registry.registerPlatform(PLATFORM_A_ID, platformToSave, RDFFormat.Turtle);
 
+//            StmtIterator stmtIterator = triplestore.getDefaultGraph().listStatements();
+//            while( stmtIterator.hasNext() ) {
+//                Statement next = stmtIterator.next();
+//                System.out.println( next.getSubject().toString() + " - " + next.getPredicate().toString() + " - " + next.getObject().toString() );
+//            }
+
+            Model stationaryModel = loadFileAsModel(RESOURCE_STATIONARY_FILENAME, "JSONLD");
+
+            registry.registerResource(PLATFORM_A_URI, PLATFORM_A_SERVICE_URI, RESOURCE_STATIONARY_URI, stationaryModel);
 
             executeQuery(triplestore,"/q6.sparql");
 
         } catch( Exception e ) {
-
+            fail();
         }
 
     }
@@ -45,7 +68,7 @@ public class SearchApplicationTests {
 
     @Test
     public void testSearchByObservedProperty() {
-        TripleStore triplestore = new TripleStore();
+        TripleStore triplestore = new TripleStore(securityManager,false);
         Registry registry = new Registry(triplestore);
         try {
             String platformToSave = IOUtils.toString(this.getClass()
@@ -71,7 +94,7 @@ public class SearchApplicationTests {
 
     @Test
     public void testSearchPlatformByObservedProperty() {
-        TripleStore triplestore = new TripleStore();
+        TripleStore triplestore = new TripleStore(securityManager,false);
         Registry registry = new Registry(triplestore);
         try {
             String platformA = IOUtils.toString(this.getClass()
@@ -133,12 +156,12 @@ public class SearchApplicationTests {
     private void executeQuery( TripleStore store, String filename ) throws IOException {
         String query = IOUtils.toString(this.getClass()
                 .getResource(filename));
-        ResultSet resultSet = store.executeQuery(query);
+        ResultSet resultSet = store.executeQuery(query,null,false);
         printResultSet(resultSet);
     }
 
     private void executeQuery( TripleStore store, Query query ) throws IOException {
-        ResultSet resultSet = store.executeQuery(query);
+        ResultSet resultSet = store.executeQuery(query,null,false);
         printResultSet(resultSet);
     }
 

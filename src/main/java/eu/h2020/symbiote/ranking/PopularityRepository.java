@@ -1,8 +1,6 @@
 package eu.h2020.symbiote.ranking;
 
 import eu.h2020.symbiote.core.internal.popularity.PopularityUpdate;
-import eu.h2020.symbiote.core.internal.popularity.PopularityUpdatesMessage;
-import eu.h2020.symbiote.core.model.internal.CoreResource;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 

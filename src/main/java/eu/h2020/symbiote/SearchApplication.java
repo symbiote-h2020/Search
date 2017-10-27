@@ -1,32 +1,26 @@
 package eu.h2020.symbiote;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.h2020.symbiote.communication.RabbitManager;
+import eu.h2020.symbiote.filtering.AccessPolicyRepo;
+import eu.h2020.symbiote.filtering.SecurityManager;
 import eu.h2020.symbiote.handlers.PlatformHandler;
 import eu.h2020.symbiote.handlers.ResourceHandler;
 import eu.h2020.symbiote.handlers.SearchHandler;
-import eu.h2020.symbiote.model.QueryRequest;
 import eu.h2020.symbiote.ranking.PopularityManager;
 import eu.h2020.symbiote.search.SearchStorage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.sleuth.sampler.AlwaysSampler;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
-import java.util.List;
 
 
 /**
@@ -51,16 +45,23 @@ public class SearchApplication {
         private final RabbitManager manager;
 
         private final PopularityManager popularityManager;
+        private final AccessPolicyRepo accessPolicyRepo;
+        private final SecurityManager securityManager;
+        private final boolean securityEnabled;
 
         @Autowired
-        public CLR( RabbitManager manager, PopularityManager popularityManager ) {
+        public CLR(RabbitManager manager, PopularityManager popularityManager, AccessPolicyRepo accessPolicyRepo, SecurityManager securityManager,
+                   @Value("${search.security.enabled}") boolean securityEnabled) {
             this.manager = manager;
             this.popularityManager = popularityManager;
+            this.accessPolicyRepo = accessPolicyRepo;
+            this.securityManager = securityManager;
+            this.securityEnabled = securityEnabled;
         }
 
         @Override
         public void run(String... args) throws Exception {
-            SearchStorage searchStorage = getDefaultStorage();
+            SearchStorage searchStorage = getDefaultStorage(securityManager,securityEnabled);
 
             PlatformHandler platformHandler = new PlatformHandler( searchStorage );
             manager.registerPlatformCreatedConsumer(platformHandler);
@@ -69,14 +70,14 @@ public class SearchApplication {
 
             manager.registerPlatformUpdatedConsumer(platformHandler);
 
-            ResourceHandler resourceHandler = new ResourceHandler(searchStorage);
+            ResourceHandler resourceHandler = new ResourceHandler(searchStorage, this.accessPolicyRepo);
             manager.registerResourceCreatedConsumer(resourceHandler);
 
             manager.registerResourceDeletedConsumer(resourceHandler);
 
             manager.registerResourceUpdatedConsumer(resourceHandler);
 
-            SearchHandler searchHandler = new SearchHandler(searchStorage.getTripleStore() );
+            SearchHandler searchHandler = new SearchHandler(searchStorage.getTripleStore(), securityManager );
             manager.registerResourceSearchConsumer(searchHandler);
             manager.registerResourceSparqlSearchConsumer(searchHandler);
 
@@ -85,8 +86,8 @@ public class SearchApplication {
         }
     }
 
-    public static SearchStorage getDefaultStorage() {
-        return SearchStorage.getInstance(DIRECTORY);
+    public static SearchStorage getDefaultStorage(SecurityManager securityManager, boolean securityEnabled) {
+        return SearchStorage.getInstance(DIRECTORY,securityManager,securityEnabled);
     }
 
     @Bean
@@ -94,35 +95,33 @@ public class SearchApplication {
         return new AlwaysSampler();
     }
 
-    @CrossOrigin
-    @RestController
-    class RegistrationController {
-
-        public RegistrationController() {
-        }
-
-        @RequestMapping(value = "/search/sparql", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-        public
-        @ResponseBody
-        HttpEntity<String> searchResourcesByParams(@RequestBody QueryRequest query){
-
-            //Do sparql query
-            SearchStorage storage = getDefaultStorage();
-            List<String> listResponse = storage.query(query.getGraphUri(),query.getSparql());
-            System.out.println( "Got response: " + listResponse);
-            ObjectMapper mapper = new ObjectMapper();
-            String response = listResponse.toString();
-            try {
-                response = mapper.writeValueAsString(listResponse);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
-
-            return new ResponseEntity<String>(response, HttpStatus.OK);
-        }
-
-    }
-
-
+//    @CrossOrigin
+//    @RestController
+//    class RegistrationController {
+//
+//        public RegistrationController() {
+//        }
+//
+//        @RequestMapping(value = "/search/sparql", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+//        public
+//        @ResponseBody
+//        HttpEntity<String> searchResourcesByParams(@RequestBody QueryRequest query){
+//
+//            //Do sparql query
+//            SearchStorage storage = getDefaultStorage(securityManager, securityEnabled);
+//            List<String> listResponse = storage.query(query.getGraphUri(),query.getSparql());
+//            System.out.println( "Got response: " + listResponse);
+//            ObjectMapper mapper = new ObjectMapper();
+//            String response = listResponse.toString();
+//            try {
+//                response = mapper.writeValueAsString(listResponse);
+//            } catch (JsonProcessingException e) {
+//                e.printStackTrace();
+//            }
+//
+//            return new ResponseEntity<String>(response, HttpStatus.OK);
+//        }
+//
+//    }
 
 }

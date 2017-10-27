@@ -1,10 +1,10 @@
 package eu.h2020.symbiote;
 
-import eu.h2020.symbiote.core.model.InterworkingService;
-import eu.h2020.symbiote.core.model.Platform;
-import eu.h2020.symbiote.core.model.RDFFormat;
-import eu.h2020.symbiote.core.model.internal.CoreResource;
-import eu.h2020.symbiote.core.model.internal.CoreResourceType;
+import eu.h2020.symbiote.core.internal.CoreResource;
+import eu.h2020.symbiote.core.internal.CoreResourceType;
+import eu.h2020.symbiote.core.internal.RDFFormat;
+import eu.h2020.symbiote.model.mim.InterworkingService;
+import eu.h2020.symbiote.model.mim.Platform;
 import org.apache.commons.io.IOUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -24,7 +24,7 @@ public class OldTestSetupConfig {
     public static final String PLATFORM_A_NAME = "Platform1";
     public static final String PLATFORM_A_MODEL_ID = "11";
     public static final String PLATFORM_A_DESCRIPTION = "11desc";
-    public static final String PLATFORM_A_FILENAME = "/r2_models/platformA.ttl";
+    public static final String PLATFORM_A_FILENAME = "/old_r2_models/platformA.ttl";
     //RDF URIs
     public static final String PLATFORM_A_URI = "http://www.symbiote-h2020.eu/ontology/platforms/1";
     public static final String PLATFORM_A_SERVICE_URI = "http://www.symbiote-h2020.eu/ontology/platforms/1/service/somehost1.com/resourceAccessProxy";
@@ -41,7 +41,7 @@ public class OldTestSetupConfig {
     public static final String PLATFORM_B_NAME = "Platform2";
     public static final String PLATFORM_B_MODEL_ID = "21";
     public static final String PLATFORM_B_DESCRIPTION = "21desc";
-    public static final String PLATFORM_B_FILENAME = "/r2_models/platformB.ttl";
+    public static final String PLATFORM_B_FILENAME = "/old_r2_models/platformB.ttl";
     public static final String PLATFORM_B_URI = "http://www.symbiote-h2020.eu/ontology/platforms/2";
     public static final String PLATFORM_B_SERVICE_URI = "http://www.symbiote-h2020.eu/ontology/platforms/2/service/somehost2.com/resourceAccessProxy";
 
@@ -49,13 +49,13 @@ public class OldTestSetupConfig {
     public static final String PLATFORM_C_NAME = "Platform3";
     public static final String PLATFORM_C_MODEL_ID = "31";
     public static final String PLATFORM_C_DESCRIPTION = "31desc";
-    public static final String PLATFORM_C_FILENAME = "/r2_models/platformC.ttl";
+    public static final String PLATFORM_C_FILENAME = "/old_r2_models/platformC.ttl";
     public static final String PLATFORM_C_URI = "http://www.symbiote-h2020.eu/ontology/platforms/3";
     public static final String PLATFORM_C_SERVICE_URI = "http://www.symbiote-h2020.eu/ontology/platforms/3/service/somehost3.com/resourceAccessProxy";
 
     public static final String RESOURCE_PREDICATE = "http://www.symbiote-h2020.eu/ontology/resources/";
 
-    public static final String RESOURCE_101_FILENAME = "/r2_models/resource101.ttl";
+    public static final String RESOURCE_101_FILENAME = "/old_r2_models/resource101.ttl";
     public static final String RESOURCE_101_URI = RESOURCE_PREDICATE + "101";
     public static final String RESOURCE_101_LABEL = "Resource 101";
     public static final String RESOURCE_101_COMMENT = "Resource 101 comment";
@@ -69,47 +69,47 @@ public class OldTestSetupConfig {
     public static final String RESOURCE_101_OBS2_LABEL = "Humidity";
     public static final String RESOURCE_101_LABEL_UPDATE = "Resource Hundred One";
 
-    public static final String RESOURCE_102_FILENAME = "/r2_models/resource102.ttl";
+    public static final String RESOURCE_102_FILENAME = "/old_r2_models/resource102.ttl";
     public static final String RESOURCE_102_URI = RESOURCE_PREDICATE + "102";
-    public static final String RESOURCE_103_FILENAME = "/r2_models/resource103.ttl";
+    public static final String RESOURCE_103_FILENAME = "/old_r2_models/resource103.ttl";
     public static final String RESOURCE_103_URI = RESOURCE_PREDICATE + "103";
-    public static final String RESOURCE_201_FILENAME = "/r2_models/resource201.ttl";
+    public static final String RESOURCE_201_FILENAME = "/old_r2_models/resource201.ttl";
     public static final String RESOURCE_201_URI = RESOURCE_PREDICATE + "201";
-    public static final String RESOURCE_202_FILENAME = "/r2_models/resource202.ttl";
+    public static final String RESOURCE_202_FILENAME = "/old_r2_models/resource202.ttl";
     public static final String RESOURCE_202_URI = RESOURCE_PREDICATE + "202";
-    public static final String RESOURCE_301_FILENAME = "/r2_models/resource301.ttl";
+    public static final String RESOURCE_301_FILENAME = "/old_r2_models/resource301.ttl";
     public static final String RESOURCE_301_URI = RESOURCE_PREDICATE + "301";
 
-    public static final String RESOURCE_501_FILENAME = "/r2_models/resource501.ttl";
+    public static final String RESOURCE_501_FILENAME = "/old_r2_models/resource501.ttl";
     public static final String RESOURCE_501_URI = RESOURCE_PREDICATE + "501";
 
-    public static final String RESOURCE_STATIONARY_FILENAME = "/r2_models/exampleStationarySensor.json";
-    public static final String RESOURCE_STATIONARY_FILENAME_MODIFIED = "/r2_models/exampleStationarySensorModified.json";
+    public static final String RESOURCE_STATIONARY_FILENAME = "/old_r2_models/exampleStationarySensor.json";
+    public static final String RESOURCE_STATIONARY_FILENAME_MODIFIED = "/old_r2_models/exampleStationarySensorModified.json";
     public static final String RESOURCE_STATIONARY_LABEL = "Stationary 1";
     public static final String RESOURCE_STATIONARY_LABEL_MODIFIED = "New sensor 1";
     public static final String RESOURCE_STATIONARY_COMMENT = "This is stationary 1";
     public static final String RESOURCE_STATIONARY_URI = RESOURCE_PREDICATE + "stationary1";
     public static final String RESOURCE_STATIONARY_ID = "stationary1";
 
-    public static final String RESOURCE_STATIONARYDEVICE_FILENAME = "/r2_models/exampleStationaryDevice.json";
+    public static final String RESOURCE_STATIONARYDEVICE_FILENAME = "/old_r2_models/exampleStationaryDevice.json";
     public static final String RESOURCE_STATIONARYDEVICE_LABEL = "Stationary device 1";
     public static final String RESOURCE_STATIONARYDEVICE_COMMENT = "This is Stationary Device 1";
     public static final String RESOURCE_STATIONARYDEVICE_URI = RESOURCE_PREDICATE + "stationarydevice1";
     public static final String RESOURCE_STATIONARYDEVICE_ID = "stationardevice1";
 
-    public static final String RESOURCE_MOBILE_FILENAME = "/r2_models/exampleMobileSensor.json";
+    public static final String RESOURCE_MOBILE_FILENAME = "/old_r2_models/exampleMobileSensor.json";
     public static final String RESOURCE_MOBILE_LABEL = "Mobile 1";
     public static final String RESOURCE_MOBILE_URI = RESOURCE_PREDICATE + "mobile1";
 
-    public static final String RESOURCE_SERVICE_FILENAME = "/r2_models/exampleService.json";
+    public static final String RESOURCE_SERVICE_FILENAME = "/old_r2_models/exampleService.json";
     public static final String RESOURCE_SERVICE_LABEL = "Service 1";
     public static final String RESOURCE_SERVICE_URI = RESOURCE_PREDICATE + "service1";
 
-    public static final String RESOURCE_ACTUATING_SERVICE_FILENAME = "/r2_models/exampleActuatingService.json";
+    public static final String RESOURCE_ACTUATING_SERVICE_FILENAME = "/old_r2_models/exampleActuatingService.json";
     public static final String RESOURCE_ACTUATING_SERVICE_LABEL = "Actuating Service 1";
     public static final String RESOURCE_ACTUATING_SERVICE_URI = RESOURCE_PREDICATE + "actuatingService1";
 
-    public static final String RESOURCE_ACTUATOR_FILENAME = "/r2_models/exampleActuator.json";
+    public static final String RESOURCE_ACTUATOR_FILENAME = "/old_r2_models/exampleActuator.json";
     public static final String RESOURCE_ACTUATOR_LABEL = "Actuator 1";
     public static final String RESOURCE_ACTUATOR_URI = RESOURCE_PREDICATE + "590b617566e02516806462e4";
 
@@ -136,7 +136,7 @@ public class OldTestSetupConfig {
     }
 
     public static Platform generatePlatformA() {
-        return generatePlatform(PLATFORM_A_ID,PLATFORM_A_FILENAME,RDFFormat.Turtle,PLATFORM_A_URL, PLATFORM_A_MODEL_ID,  PLATFORM_A_DESCRIPTION, PLATFORM_A_NAME);
+        return generatePlatform(PLATFORM_A_ID,PLATFORM_A_FILENAME, RDFFormat.Turtle,PLATFORM_A_URL, PLATFORM_A_MODEL_ID,  PLATFORM_A_DESCRIPTION, PLATFORM_A_NAME);
     }
 
     public static Platform generatePlatformAUpdate() {
@@ -158,8 +158,8 @@ public class OldTestSetupConfig {
         interworkingService.setUrl(interworkingServiceUrl);
         interworkingService.setInformationModelId(modelId);
         platform.setInterworkingServices( Arrays.asList(interworkingService) );
-        platform.setComments(Arrays.asList(comment));
-        platform.setLabels(Arrays.asList(label));
+        platform.setDescription(Arrays.asList(comment));
+        platform.setName(label);
         return platform;
     }
 
@@ -201,8 +201,8 @@ public class OldTestSetupConfig {
 
     public static CoreResource generateSensor(String label, String comment, String id, String serviceUrl, String rdfFilename, RDFFormat format) {
         CoreResource res = new CoreResource();
-        res.setComments(Arrays.asList(comment));
-        res.setLabels(Arrays.asList(label));
+        res.setDescription(Arrays.asList(comment));
+        res.setName(label);
         res.setId(id);
         res.setInterworkingServiceURL(serviceUrl);
         res.setType(CoreResourceType.STATIONARY_SENSOR);

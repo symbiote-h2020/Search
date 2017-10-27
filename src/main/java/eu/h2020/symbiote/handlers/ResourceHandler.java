@@ -1,10 +1,15 @@
 package eu.h2020.symbiote.handlers;
 
+import eu.h2020.symbiote.core.internal.CoreResource;
 import eu.h2020.symbiote.core.internal.CoreResourceRegisteredOrModifiedEventPayload;
-import eu.h2020.symbiote.core.model.internal.CoreResource;
+import eu.h2020.symbiote.filtering.AccessPolicy;
+import eu.h2020.symbiote.filtering.AccessPolicyRepo;
 import eu.h2020.symbiote.ontology.model.Ontology;
 import eu.h2020.symbiote.query.DeleteResourceRequestGenerator;
 import eu.h2020.symbiote.search.SearchStorage;
+import eu.h2020.symbiote.security.accesspolicies.IAccessPolicy;
+import eu.h2020.symbiote.security.accesspolicies.common.SingleTokenAccessPolicyFactory;
+import eu.h2020.symbiote.security.commons.exceptions.custom.InvalidArgumentsException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jena.rdf.model.Model;
@@ -23,9 +28,11 @@ public class ResourceHandler implements IResourceEvents {
     private static final Log log = LogFactory.getLog(ResourceHandler.class);
 
     private final SearchStorage storage;
+    private final AccessPolicyRepo accessPolicyRepo;
 
-    public ResourceHandler(SearchStorage storage) {
+    public ResourceHandler(SearchStorage storage, AccessPolicyRepo accessPolicyRepo) {
         this.storage = storage;
+        this.accessPolicyRepo = accessPolicyRepo;
     }
 
     @Override
@@ -66,6 +73,15 @@ public class ResourceHandler implements IResourceEvents {
             try (StringReader reader = new StringReader(coreResource.getRdf())) {
                 model.read(reader, null, coreResource.getRdfFormat().toString());
                 this.storage.registerResource(Ontology.getPlatformGraphURI(platformId), registeredServiceURI, Ontology.getResourceGraphURI(coreResource.getId()), model);
+                if( coreResource.getPolicySpecifier() != null ) {
+                    try {
+                        IAccessPolicy singleTokenAccessPolicy = SingleTokenAccessPolicyFactory.getSingleTokenAccessPolicy(coreResource.getPolicySpecifier());
+                        AccessPolicy policy = new AccessPolicy(coreResource.getId(), Ontology.getResourceGraphURI(coreResource.getId()), singleTokenAccessPolicy);
+                        this.accessPolicyRepo.save(policy);
+                    } catch (InvalidArgumentsException e) {
+                        log.error("[POLICY NOT SAVED] Error when parsing filtering policy: " + e.getMessage(), e);
+                    }
+                }
             }
         }
         storage.getTripleStore().printDataset();

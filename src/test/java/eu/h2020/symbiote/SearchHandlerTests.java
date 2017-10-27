@@ -3,9 +3,10 @@ package eu.h2020.symbiote;
 import eu.h2020.symbiote.core.ci.QueryResourceResult;
 import eu.h2020.symbiote.core.ci.SparqlQueryOutputFormat;
 import eu.h2020.symbiote.core.internal.CoreSparqlQueryRequest;
-import eu.h2020.symbiote.core.model.WGS84Location;
+import eu.h2020.symbiote.core.internal.RDFFormat;
+import eu.h2020.symbiote.filtering.SecurityManager;
 import eu.h2020.symbiote.handlers.SearchHandler;
-import eu.h2020.symbiote.ontology.model.RDFFormat;
+import eu.h2020.symbiote.model.cim.WGS84Location;
 import eu.h2020.symbiote.ontology.model.Registry;
 import eu.h2020.symbiote.ontology.model.TripleStore;
 import org.apache.commons.io.IOUtils;
@@ -13,6 +14,7 @@ import org.apache.jena.rdf.model.Model;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.BufferedReader;
@@ -22,6 +24,7 @@ import java.util.Arrays;
 
 import static eu.h2020.symbiote.TestSetupConfig.*;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Created by Mael on 26/01/2017.
@@ -34,13 +37,18 @@ public class SearchHandlerTests {
     private Registry registry;
     private TripleStore triplestore;
     private SearchHandler searchHandler;
+    @Mock
+    private SecurityManager securityManager;
 
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
+        when(securityManager.checkPolicyByResourceId(anyString(),any())).thenReturn(Boolean.TRUE);
+        when(securityManager.checkPolicyByResourceIri(anyString(),any())).thenReturn(Boolean.TRUE);
+
 
 //        storage = SearchStorage.getInstance(SearchStorage.TESTCASE_STORAGE_NAME);
-        triplestore = new TripleStore();
+        triplestore = new TripleStore(securityManager,false);
         registry = new Registry(triplestore);
         try {
             String platformA = IOUtils.toString(this.getClass()
@@ -67,7 +75,7 @@ public class SearchHandlerTests {
 //            registry.registerResource(PLATFORM_A_URI,PLATFORM_A_SERVICE_URI,RESOURCE_ACTUATOR_URI,actuatorModel);
 //            registry.registerResource(PLATFORM_A_URI,PLATFORM_A_SERVICE_URI,RESOURCE_ACTUATING_SERVICE_URI,actuatingServiceModel);
 
-            searchHandler = new SearchHandler(triplestore);
+            searchHandler = new SearchHandler(triplestore, securityManager);
 
             triplestore.printDataset();
         } catch (IOException e) {
@@ -91,8 +99,8 @@ public class SearchHandlerTests {
         query.append("SELECT ?location WHERE {\n" );
         query.append("\t?location a cim:Location ;\n");
         query.append("\t\ta cim:WGS84Location ;\n");
-        query.append("\t\trdfs:label \""+ location.getLabels().get(0) + "\" ;\n");
-        query.append("\t\trdfs:comment \"" + location.getComments().get(0) + "\" .\n");
+        query.append("\t\tcim:name \""+ location.getName()+ "\" ;\n");
+        query.append("\t\tcim:description \"" + location.getDescription().get(0) + "\" .\n");
 
         //Ensure that location is defined for this platform...
         query.append("\t?platform a owl:Ontology ;\n");
@@ -142,7 +150,7 @@ public class SearchHandlerTests {
 //            String query = IOUtils.toString(this.getClass()
 //                    .getResource("/q1.sparql"));
 
-            WGS84Location location = new WGS84Location(2.349014d,48.864716d,15.0d, Arrays.asList("Paris"),Arrays.asList("This is paris"));
+            WGS84Location location = new WGS84Location(2.349014d,48.864716d,15.0d, "Paris",Arrays.asList("This is paris"));
             String query = getWGS84SparqlQuery(location,"1");
 
             request.setBody(query);

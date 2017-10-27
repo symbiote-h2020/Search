@@ -4,8 +4,8 @@ package eu.h2020.symbiote;
  * Created by Mael on 11/01/2017.
  */
 
-import eu.h2020.symbiote.core.model.Platform;
 import eu.h2020.symbiote.handlers.HandlerUtils;
+import eu.h2020.symbiote.model.mim.Platform;
 import org.apache.commons.io.IOUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -28,7 +28,7 @@ public class PlatformRegistrationTest {
     public void testReadingModelFromFile() {
         try {
             InputStream modelToSave = IOUtils.toInputStream( IOUtils.toString(this.getClass()
-                    .getResource("/r2_models/platformA.ttl")));
+                    .getResource("/old_r2_models/platformA.ttl")));
             Model mFromFile = ModelFactory.createDefaultModel();
             mFromFile.read(modelToSave,null,"TURTLE");
             assertNotNull(mFromFile);
@@ -43,7 +43,7 @@ public class PlatformRegistrationTest {
 
         Model model = HandlerUtils.generateModelFromPlatform(platform);
         assertNotNull(model);
-        assertEquals("Created model should have " + 9l + " entries, but has " + model.size(), 9l, model.size() );
+        assertEquals("Created model should have " + 8l + " entries, but has " + model.size(), 8l, model.size() );
 
     }
 
@@ -54,7 +54,7 @@ public class PlatformRegistrationTest {
 
         try {
             InputStream modelToSave = IOUtils.toInputStream( IOUtils.toString(this.getClass()
-                    .getResource("/r2_models/platformA.ttl")));
+                    .getResource("/platformA.ttl")));
             Model modelFromFile = ModelFactory.createDefaultModel();
             modelFromFile.read(modelToSave,null,"TURTLE");
 

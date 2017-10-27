@@ -27,7 +27,7 @@ public class ResourceAndObservedPropertyQueryGenerator {
         query.append("\t?sensor a cim:Sensor ;\n");
         query.append("\t\tcim:id \""+resId+"\" ;\n");
         query.append("\t\tcim:observes ?property .\n");
-        query.append("\t?property rdfs:label ?propName .\n");
+        query.append("\t?property cim:name ?propName .\n");
     }
 
     @Override

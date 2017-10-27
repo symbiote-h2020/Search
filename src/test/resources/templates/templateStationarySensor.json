@@ -3,13 +3,13 @@
     "@id" : "_:b0",
     "@type" : "http://www.symbiote-h2020.eu/ontology/core#FeatureOfInterest",
     "hasProperty" : [ ${foi.properties} ],
-    "comment" : "${foi.desc}",
-    "label" : "${foi.name}"
+    "description" : "${foi.desc}",
+    "name" : "${foi.name}"
   }, {
     "@id" : "http://www.symbiote-h2020.eu/ontology/resources/${resource.id}/${location.name}",
     "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#WGS84Location", "http://www.symbiote-h2020.eu/ontology/core#Location" ],
-    "comment" : "${location.desc}",
-    "label" : "${location.name}",
+    "description" : "${location.desc}",
+    "name" : "${location.name}",
     "alt" : "${location.alt}",
     "lat" : "${location.lat}",
     "long" : "${location.long}"
@@ -20,19 +20,19 @@
     "id" : "${resource.id}",
     "locatedAt" : "http://www.symbiote-h2020.eu/ontology/resources/${resource.id}/${location.name}",
     "observes" : [ ${resource.properties} ],
-    "comment" : "${resource.desc}",
-    "label" : "${resource.name}"
+    "description" : "${resource.desc}",
+    "name" : "${resource.name}"
   } ],
   "@context" : {
     "hasProperty" : {
       "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasProperty",
       "@type" : "@id"
     },
-    "comment" : {
-      "@id" : "http://www.w3.org/2000/01/rdf-schema#comment"
+    "name" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#name"
     },
-    "label" : {
-      "@id" : "http://www.w3.org/2000/01/rdf-schema#label"
+    "description" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#description"
     },
     "hasFeatureOfInterest" : {
       "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasFeatureOfInterest",

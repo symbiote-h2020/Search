@@ -3,5 +3,5 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 SELECT ?sensor ?comment WHERE {
 	?sensor a cim:Sensor ;
-	        rdfs:comment ?comment .
+	        cim:description ?comment .
 }

@@ -42,7 +42,7 @@ public class SearchEngine {
     public ResultSet search(String modelGraphUri, String query) {
         List<ResultSet> partialResults = new ArrayList<>();
         // 1. execute query normally
-        partialResults.add(tripleStore.executeQuery(query));
+        partialResults.add(tripleStore.executeQuery(query,null,false));
 
         // 2. execute against all mappings
 //        ResultSet mappedModels = tripleStore.executeQueryOnGraph(generateFindMappingsQuery(modelGraphUri), Ontology.MAPPING_GRAPH);
@@ -66,7 +66,7 @@ public class SearchEngine {
     }
 
     public ResultSet search( Query query ) {
-        ResultSet resultSet = tripleStore.executeQuery(query);
+        ResultSet resultSet = tripleStore.executeQuery(query,null, false);
         return resultSet;
     }
 

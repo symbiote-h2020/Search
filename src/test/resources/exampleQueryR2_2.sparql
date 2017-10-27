@@ -4,5 +4,5 @@ PREFIX spatial: <http://jena.apache.org/spatial#>
 
 SELECT ?resource ?resourceName WHERE {
     ?sensor a cim:Resource.
-	?sensor rdfs:label ?resourceName .
+	?sensor cim:name ?resourceName .
 }

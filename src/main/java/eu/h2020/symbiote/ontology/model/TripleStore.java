@@ -5,17 +5,19 @@
  */
 package eu.h2020.symbiote.ontology.model;
 
-import eu.h2020.symbIoTe.ontology.BestPracticeInformationModel;
-import eu.h2020.symbIoTe.ontology.CoreInformationModel;
-import eu.h2020.symbIoTe.ontology.MetaInformationModel;
-import eu.h2020.symbIoTe.ontology.QU;
-import org.apache.commons.io.IOUtils;
+import eu.h2020.symbiote.core.internal.RDFFormat;
+import eu.h2020.symbiote.filtering.FilteringEvaluator;
+import eu.h2020.symbiote.filtering.SecurityManager;
+import eu.h2020.symbiote.security.communication.payloads.SecurityRequest;
+import eu.h2020.symbiote.semantics.GraphHelper;
+import eu.h2020.symbiote.semantics.ModelHelper;
+import eu.h2020.symbiote.semantics.ontology.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jena.permissions.Factory;
 import org.apache.jena.query.*;
 import org.apache.jena.query.spatial.EntityDefinition;
 import org.apache.jena.query.spatial.SpatialDatasetFactory;
-import org.apache.jena.rdf.model.InfModel;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.sparql.util.QueryExecUtils;
@@ -29,11 +31,6 @@ import org.apache.lucene.store.RAMDirectory;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Class representing a triplestore - connected to in-memory or disk (TDB) jena repository. Creates a spatial index
@@ -45,12 +42,24 @@ import java.util.List;
  */
 public class TripleStore {
 
+    private static final String CIM_ID = "CIM";
+    private static final String BIM_ID = "BIM";
+    private static final String MIM_ID = "MIM";
+    private static final String QU_ID = "QU";
+
     private final static boolean SHOULD_PRINT_DATASET = false;
 
+    private SecurityManager securityManager;
+    private boolean filteringEnabled;
     private final String currentDirectory;
     private final Dataset dataset;
+//    private final Dataset modelsDataset;
     private static final String BASE_REPO = "base";
     private static final String SPATIAL_REPO = "spatial";
+    private final Model securedModel;
+    private final Model model;
+    private FilteringEvaluator evaluator;
+
 
 //    private static final String CIM_FILE = "/core-v0.6.owl";
 //    private static final String BIM_FILE = "/bim-0.3.owl";
@@ -60,7 +69,10 @@ public class TripleStore {
     private static final Log log = LogFactory.getLog(TripleStore.class);
 
     //For tests only - in memory
-    public TripleStore() {
+    public TripleStore(SecurityManager securitymanager, boolean filteringEnabled ) {
+        this.filteringEnabled = filteringEnabled;
+        this.securityManager = securitymanager;
+
         currentDirectory = null;
 
         EntityDefinition entDef = new EntityDefinition("entityField", "geoField");
@@ -70,14 +82,23 @@ public class TripleStore {
         Directory ramDir = new RAMDirectory();
 
         dataset = SpatialDatasetFactory.createLucene(baseDataset, ramDir, entDef);
+//        modelsDataset = DatasetFactory.create();
 
         loadModels();
 
+        model = ModelFactory.createRDFSModel(dataset.getDefaultModel());
+        if( filteringEnabled ) {
+            evaluator = new FilteringEvaluator(model,securityManager);
+            evaluator.setPrincipal("test");
+            securedModel = Factory.getInstance(evaluator,"http://symbiote-h2020.eu/secureModel",model);
+        } else {
+            securedModel = model;
+        }
     }
 
-
-
-    public TripleStore( String directory ) {
+    public TripleStore( String directory, SecurityManager securitymanager, boolean filteringEnabled ) {
+        this.filteringEnabled = filteringEnabled;
+        this.securityManager = securitymanager;
         boolean newRepo = false;
         currentDirectory = directory;
 
@@ -129,55 +150,80 @@ public class TripleStore {
 //            }
             loadModels();
         }
+        model = ModelFactory.createRDFSModel(dataset.getUnionModel());
+        if( filteringEnabled ) {
+            evaluator = new FilteringEvaluator(model,securityManager);
+            evaluator.setPrincipal("test");
+            securedModel = Factory.getInstance(evaluator,"http://symbiote-h2020.eu/secureModel",model);
+        } else {
+            securedModel = model;
+        }
     }
 
     private void loadModels() {
-        try {
-            String cimRdf = IOUtils.toString(CoreInformationModel.SOURCE_PATH);
+//        try {
+//
+            loadBaseModel(CIM.getURI(), ModelHelper.getInformationModelURI(CIM_ID), dataset);
+            loadBaseModel(MIM.getURI(), ModelHelper.getInformationModelURI(MIM_ID), dataset);
+            loadBaseModel(BIM.getURI(), ModelHelper.getInformationModelURI(BIM_ID), dataset);
+            // should not be neccesarry if BIM is loaded with imports
+            loadBaseModel(QU.getURI(), ModelHelper.getInformationModelURI(QU_ID), dataset);
+            loadBaseModel(BIM_QU_ALIGN.getURI(), ModelHelper.getInformationModelURI("BIM_QU"), dataset);
 
-            String bimRdf = IOUtils.toString(BestPracticeInformationModel.SOURCE_PATH);
-
-            String mimRdf = IOUtils.toString(MetaInformationModel.SOURCE_PATH);
-
-            String quRecRdf = IOUtils.toString(QU.SOURCE_PATH);
-
-            insertGraph("", cimRdf, RDFFormat.Turtle);
-
-//            String bim_data = IOUtils.toString(TripleStore.class
-//                    .getResourceAsStream(BIM_FILE));
-            insertGraph("", bimRdf, RDFFormat.Turtle);
-
-//            String mim_data = IOUtils.toString(TripleStore.class
-//                    .getResourceAsStream(MIM_FILE));
-            insertGraph("", mimRdf, RDFFormat.Turtle);
+//            String cimRdf = IOUtils.toString(URI.create(CIM.getURI()), Charset.defaultCharset());
+//
+//            String bimRdf = IOUtils.toString(URI.create(BIM.getURI()), Charset.defaultCharset());
+//
+//            String mimRdf = IOUtils.toString(URI.create(MIM.getURI()), Charset.defaultCharset());
+//
+//            String quRecRdf = IOUtils.toString(URI.create(QU.getURI()), Charset.defaultCharset());
+//
+//            insertGraph("", cimRdf, RDFFormat.Turtle);
+//
+////            String bim_data = IOUtils.toString(TripleStore.class
+////                    .getResourceAsStream(BIM_FILE));
+////            insertGraph("", bimRdf, RDFFormat.Turtle);
+//
+////            String mim_data = IOUtils.toString(TripleStore.class
+////                    .getResourceAsStream(MIM_FILE));
+//            insertGraph("", mimRdf, RDFFormat.Turtle);
 
 //            String qureq20_data = IOUtils.toString(TripleStore.class
 //                    .getResourceAsStream(QU_FILE));
-            insertGraph("", quRecRdf, RDFFormat.RDFXML);
+//            insertGraph("", quRecRdf, RDFFormat.RDFXML);
+//
+//        } catch (IOException e) {
+//            log.fatal("Could not load CIM file: " + e.getMessage(), e);
+//        }
+    }
 
-        } catch (IOException e) {
-            log.fatal("Could not load CIM file: " + e.getMessage(), e);
+    private void loadBaseModel(String loadUri, String insertUri, Dataset dataset) {
+        try {
+            Model model = ModelHelper.readModel(loadUri,true,false);
+            insertGraph(null,  model);
+        } catch (IOException ex) {
+            log.error("could not load model '" + loadUri + "'. Reason: " + ex.getMessage());
         }
     }
 
-    private static void deleteOldFiles(File indexDir) {
-        if (indexDir.exists())
-            emptyAndDeleteDirectory(indexDir);
-    }
+//    private static void deleteOldFiles(File indexDir) {
+//        if (indexDir.exists())
+//            emptyAndDeleteDirectory(indexDir);
+//    }
 
-    private static void emptyAndDeleteDirectory(File dir) {
-        File[] contents = dir.listFiles() ;
-        if (contents != null) {
-            for (File content : contents) {
-                if (content.isDirectory()) {
-                    emptyAndDeleteDirectory(content) ;
-                } else {
-                    content.delete() ;
-                }
-            }
-        }
-        dir.delete() ;
-    }
+//    private static void emptyAndDeleteDirectory(File dir) {
+//        File[] contents = dir.listFiles() ;
+//        if (contents != null) {
+//            for (File content : contents) {
+//                if (content.isDirectory()) {
+//                    emptyAndDeleteDirectory(content) ;
+//                } else {
+//                    content.delete() ;
+//                }
+//            }
+//        }
+//        dir.delete() ;
+//    }
 
     public void executeQueryPP( String query ) {
 
@@ -210,16 +256,16 @@ public class TripleStore {
         dataset.end();
     }
 
-    public ResultSet executeQuery(String queryString) {
-        return executeQueryOnGraph(queryString, "urn:x-arq:UnionGraph");
+    public ResultSet executeQuery(String queryString, SecurityRequest securityRequest, boolean useSecureGraph) {
+        return executeQueryOnGraph(queryString, "urn:x-arq:DefaultGraph", securityRequest, useSecureGraph);
     }
 
-    public ResultSet executeQuery(Query query) {
-        return executeQueryOnGraph(query, "urn:x-arq:UnionGraph");
+    public ResultSet executeQuery(Query query, SecurityRequest securityRequest, boolean useSecureGraph) {
+        return executeQueryOnGraph(query, "urn:x-arq:DefaultGraph", securityRequest, useSecureGraph);
     }
 
-    public ResultSet executeQueryOnGraph(String queryString, String graphUri) {
-        return executeQueryOnGraph(QueryFactory.create(queryString, Syntax.syntaxARQ), graphUri);
+    public ResultSet executeQueryOnGraph(String queryString, String graphUri, SecurityRequest securityRequest, boolean useSecureGraph) {
+        return executeQueryOnGraph(QueryFactory.create(queryString, Syntax.syntaxARQ), graphUri, securityRequest, useSecureGraph);
     }
 
     public void executeUpdate( UpdateRequest request ) {
@@ -229,27 +275,50 @@ public class TripleStore {
         dataset.end();
     }
 
-    public ResultSet executeQueryOnGraph(Query query, String graphUri) {
+    public ResultSet executeQueryOnGraph(Query query, String graphUri, SecurityRequest securityRequest, boolean useSecureGraph) {
         dataset.begin(ReadWrite.READ);
+        ResultSet result;
+        //TODO not sure if synchronization here is needed
+//        synchronized( TripleStore.class ) {
+            setSecurityRequest(securityRequest);
 //        Model model = dataset.containsNamedModel(graphUri)
 //                ? dataset.getNamedModel(graphUri)
 //                : dataset.getDefaultModel();
 //        Model model = dataset.getDefaultModel();
-        ResultSet result = null;
-        try (QueryExecution qe = QueryExecutionFactory.create(query, ModelFactory.createRDFSModel(dataset.getDefaultModel())) ) {
-            result = ResultSetFactory.copyResults(qe.execSelect());
-            dataset.end();
+
+//        Model model = dataset.getDefaultModel();
+//        if( filteringEnabled ) {
+//            FilteringEvaluator evaluator = new FilteringEvaluator(model,securityManager);
+//            evaluator.setPrincipal("test");
+//            model = Factory.getInstance(evaluator,"http://symbiote-h2020.eu/secureModel",model);
+
+            Model modelToUse = useSecureGraph ? securedModel:model;
+
+            try (QueryExecution qe = QueryExecutionFactory.create(query, modelToUse)) {
+//                qe.setTimeout(30000);
+                result = ResultSetFactory.copyResults(qe.execSelect());
+                dataset.end();
+            }
+//        }
+        return result;
+    }
+
+    /**
+     * Helper method for properly setting security request in both cases: when security is on and off
+     * @param securityRequest
+     */
+    private void setSecurityRequest(SecurityRequest securityRequest) {
+        if( evaluator != null ) {
+            evaluator.setSecurityRequest(securityRequest);
         }
-
-        return result;
     }
 
-    public Model getGraph(String graph) {
-        dataset.begin(ReadWrite.READ);
-        Model result = dataset.getNamedModel(graph);
-        dataset.end();
-        return result;
-    }
+//    public Model getGraph(String graph) {
+//        dataset.begin(ReadWrite.READ);
+//        Model result = dataset.getNamedModel(graph);
+//        dataset.end();
+//        return result;
+//    }
 
     public Model getDefaultGraph() {
         dataset.begin(ReadWrite.READ);
@@ -258,24 +327,24 @@ public class TripleStore {
         return result;
     }
 
-    public String getGraphAsString(String graph, String syntax) {
-        StringWriter out = new StringWriter();
-        getGraph(graph).write(out, syntax);
-        return out.toString();
-    }
+//    public String getGraphAsString(String graph, String syntax) {
+//        StringWriter out = new StringWriter();
+//        getGraph(graph).write(out, syntax);
+//        return out.toString();
+//    }
 
-    public List<String> loadDataFromDataset() {
-        List<String> data = new ArrayList<>();
-        dataset.begin(ReadWrite.READ);
-        Iterator<String> stringIterator = dataset.listNames();
-        while (stringIterator.hasNext() ) {
-            String s = stringIterator.next();
-            log.debug( "Loaded dataset: " + s);
-            data.add(s);
-        }
-        dataset.end();
-        return data;
-    }
+//    public List<String> loadDataFromDataset() {
+//        List<String> data = new ArrayList<>();
+//        dataset.begin(ReadWrite.READ);
+//        Iterator<String> stringIterator = dataset.listNames();
+//        while (stringIterator.hasNext() ) {
+//            String s = stringIterator.next();
+//            log.debug( "Loaded dataset: " + s);
+//            data.add(s);
+//        }
+//        dataset.end();
+//        return data;
+//    }
 
     public void printDataset() {
         if( SHOULD_PRINT_DATASET ) {
@@ -286,7 +355,7 @@ public class TripleStore {
         }
     }
 
-    public String getGraphAsString(String graph) {
-        return getGraphAsString(graph, "RDF/XML-ABBREV");
-    }
+//    public String getGraphAsString(String graph) {
+//        return getGraphAsString(graph, "RDF/XML-ABBREV");
+//    }
 }

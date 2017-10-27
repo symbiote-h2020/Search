@@ -1,16 +1,15 @@
 package eu.h2020.symbiote.handlers;
 
-import com.netflix.loadbalancer.Server;
-import eu.h2020.symbIoTe.ontology.CoreInformationModel;
-import eu.h2020.symbIoTe.ontology.MetaInformationModel;
 import eu.h2020.symbiote.core.ci.QueryResourceResult;
 import eu.h2020.symbiote.core.ci.QueryResponse;
 import eu.h2020.symbiote.core.ci.ResourceType;
 import eu.h2020.symbiote.core.internal.CoreQueryRequest;
-import eu.h2020.symbiote.core.model.InterworkingService;
-import eu.h2020.symbiote.core.model.Platform;
+import eu.h2020.symbiote.model.mim.InterworkingService;
+import eu.h2020.symbiote.model.mim.Platform;
 import eu.h2020.symbiote.ontology.model.Ontology;
 import eu.h2020.symbiote.query.QueryGenerator;
+import eu.h2020.symbiote.semantics.ontology.CIM;
+import eu.h2020.symbiote.semantics.ontology.MIM;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jena.query.QuerySolution;
@@ -19,9 +18,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.RDFS;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,22 +63,21 @@ public class HandlerUtils {
 
         // construct proper Platform entry
         Resource platformResource = model.createResource(Ontology.getPlatformGraphURI(platform.getId()))
-                .addProperty(RDF.type, MetaInformationModel.Platform)
-                .addProperty(RDF.type, OWL.Ontology)
-                .addProperty(CoreInformationModel.id,platform.getId());
-        for( String comment: platform.getComments() ) {
-            platformResource.addProperty(RDFS.comment, comment);
+                .addProperty(RDF.type, MIM.Platform)
+                .addProperty(CIM.id,platform.getId());
+        for( String comment: platform.getDescription() ) {
+            platformResource.addProperty(CIM.description, comment);
         }
-        for( String label: platform.getLabels() ) {
-            platformResource.addProperty(RDFS.label, label);
-        }
+
+        platformResource.addProperty(CIM.name,platform.getName());
+
 
         for( InterworkingService service: platform.getInterworkingServices() ) {
             Resource interworkingServiceResource = model.createResource(generateInterworkingServiceUri(Ontology.getPlatformGraphURI(platform.getId()), service.getUrl()))
-                    .addProperty(RDF.type, MetaInformationModel.InterworkingService)
-                    .addProperty(MetaInformationModel.usesInformationModel,model.createResource(Ontology.getInformationModelUri(service.getInformationModelId())))
-                    .addProperty(MetaInformationModel.url,service.getUrl());
-            platformResource.addProperty(MetaInformationModel.hasService, interworkingServiceResource);
+                    .addProperty(RDF.type, MIM.InterworkingService)
+                    .addProperty(MIM.usesInformationModel,model.createResource(Ontology.getInformationModelUri(service.getInformationModelId())))
+                    .addProperty(MIM.url,service.getUrl());
+            platformResource.addProperty(MIM.hasService, interworkingServiceResource);
         }
 
 //        Model serviceModel = generateInterworkingService(platform);
@@ -227,6 +223,7 @@ public class HandlerUtils {
         if( !resultSet.hasNext() ) {
             System.out.println( "Could not generate search response from result set, cause resultSet is empty");
         }
+        System.out.println( "Found vars: " + resultSet.getResultVars() );
         while (resultSet.hasNext()) {
             QuerySolution solution = resultSet.next();
             String resId = solution.get(RESOURCE_ID).toString();
@@ -255,7 +252,7 @@ public class HandlerUtils {
             String propertyName = propertyNode!=null?propertyNode.toString():"";
             String type = solution.get(TYPE).toString();
             //TODO potential change with inference
-            if( !type.equals(CoreInformationModel.Resource.toString()) ) {
+            if( !type.equals(CIM.Resource.toString()) ) {
 
                 if (!responses.containsKey(resId)) {
                     List<String> properties = new ArrayList<>();
@@ -306,10 +303,10 @@ public class HandlerUtils {
     }
 
     private static boolean isPossibleType(String type) {
-        if( type.equals(CoreInformationModel.MobileSensor) ||
-                type.equals(CoreInformationModel.StationarySensor) ||
-                type.equals(CoreInformationModel.Actuator) ||
-                type.equals(CoreInformationModel.Service) ) {
+        if( type.equals(CIM.MobileSensor) ||
+                type.equals(CIM.StationarySensor) ||
+                type.equals(CIM.Actuator) ||
+                type.equals(CIM.Service) ) {
             return true;
         }
         return false;

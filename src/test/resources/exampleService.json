@@ -17,9 +17,8 @@
     "hasParameter" : "_:b1",
     "hasResultType" : "xsd:string",
     "id" : "service1",
-    "name" : "service1Name",
-    "comment" : "This is service 1",
-    "label" : "Service 1"
+    "name" : "Service 1",
+    "description" : "This is service 1"
   }, {
     "@id" : "xsd:string",
     "@type" : "rdfs:Datatype"
@@ -42,11 +41,8 @@
     "name" : {
       "@id" : "http://www.symbiote-h2020.eu/ontology/core#name"
     },
-    "comment" : {
-      "@id" : "http://www.w3.org/2000/01/rdf-schema#comment"
-    },
-    "label" : {
-      "@id" : "http://www.w3.org/2000/01/rdf-schema#label"
+    "description" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#description"
     },
     "id" : {
       "@id" : "http://www.symbiote-h2020.eu/ontology/core#id"

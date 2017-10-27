@@ -4,6 +4,7 @@ import eu.h2020.symbiote.core.ci.QueryResourceResult;
 import eu.h2020.symbiote.core.ci.QueryResponse;
 import eu.h2020.symbiote.core.internal.CoreQueryRequest;
 import eu.h2020.symbiote.core.internal.CoreSparqlQueryRequest;
+import eu.h2020.symbiote.filtering.SecurityManager;
 import eu.h2020.symbiote.ontology.model.TripleStore;
 import eu.h2020.symbiote.query.QueryGenerator;
 import eu.h2020.symbiote.query.QueryVarName;
@@ -20,6 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of the handler for the platform related events.
@@ -32,13 +34,16 @@ public class SearchHandler implements ISearchEvents {
 
     private final TripleStore triplestore;
 
+    private final SecurityManager securityManager;
+
     /**
      * Create a handler of the platform events for specified storage.
      *
      * @param triplestore Triplestore on which the events should be executed.
      */
-    public SearchHandler(TripleStore triplestore) {
+    public SearchHandler(TripleStore triplestore, SecurityManager securityManager) {
         this.triplestore = triplestore;
+        this.securityManager = securityManager;
     }
 
 
@@ -49,13 +54,28 @@ public class SearchHandler implements ISearchEvents {
 
             QueryGenerator q = HandlerUtils.generateQueryFromSearchRequest(request);
 
-            ResultSet results = this.triplestore.executeQuery(q.toString());
+            ResultSet results = this.triplestore.executeQuery(q.toString(),request.getSecurityRequest(),false);
 
             response = HandlerUtils.generateSearchResponseFromResultSet(results);
 
             if (q.isMultivaluequery()) {
                 response.getResources().forEach(this::searchForPropertiesOfResource);
             }
+
+            //Filtering of the results
+            log.debug("Initially found " + response.getResources().size() + " resources, performing filtering" );
+
+            List<QueryResourceResult> filteredResults = response.getResources().stream().filter(res -> {
+                try {
+                    return securityManager.checkPolicyByResourceId(res.getId(), request.getSecurityRequest());
+                } catch (Exception e) {
+                    log.error(e);
+                    return false;
+                }
+            }).collect(Collectors.toList());
+
+            log.debug("After filtering got " + filteredResults.size() + " results");
+            response.setResources(filteredResults);
 
         } catch (Exception e) {
             log.error("Error occurred during search: " + e.getMessage());
@@ -67,7 +87,7 @@ public class SearchHandler implements ISearchEvents {
     @Override
     public String sparqlSearch(CoreSparqlQueryRequest request) {
         String resultOfSearch = "";
-        ResultSet resultSet = this.triplestore.executeQuery(request.getBody());
+        ResultSet resultSet = this.triplestore.executeQuery(request.getBody(),request.getSecurityRequest(),true);
 
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -92,7 +112,7 @@ public class SearchHandler implements ISearchEvents {
 
     private void searchForPropertiesOfResource(QueryResourceResult resource) {
         ResourceAndObservedPropertyQueryGenerator q = new ResourceAndObservedPropertyQueryGenerator(resource.getId());
-        ResultSet resultSet = this.triplestore.executeQuery(q.toString());
+        ResultSet resultSet = this.triplestore.executeQuery(q.toString(),null,false);
 
         List<String> allProperties = new ArrayList<>();
         while (resultSet.hasNext()) {

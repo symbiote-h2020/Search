@@ -8,9 +8,9 @@
 @prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
 
 <http://www.symbiote-h2020.eu/ontology/platforms/3>
-        a                owl:Ontology , meta:Platform ;
-        rdfs:comment     "Test platform C" ;
-        rdfs:label       "Platform C" ;
+        a                meta:Platform ;
+        core:description     "Test platform C" ;
+        core:name       "Platform C" ;
         core:id          "3" ;
         meta:hasService  <http://www.symbiote-h2020.eu/ontology/platforms/3/service/somehost3.com/resourceAccessProxy> .
 

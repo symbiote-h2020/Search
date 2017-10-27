@@ -10,5 +10,5 @@ SELECT ?platform WHERE {
 	?service mim:hasResource ?sensor .
     ?sensor a cim:Sensor ;
             cim:observes ?prop .
-    ?prop rdfs:label "Temperature" .
+    ?prop cim:name "Temperature" .
 }

@@ -1,6 +1,6 @@
 package eu.h2020.symbiote.query;
 
-import eu.h2020.symbiote.core.model.Platform;
+import eu.h2020.symbiote.model.mim.Platform;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
 

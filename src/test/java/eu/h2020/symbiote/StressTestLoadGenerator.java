@@ -1,10 +1,10 @@
 package eu.h2020.symbiote;
 
 import eu.h2020.symbiote.core.ci.QueryResponse;
-import eu.h2020.symbiote.core.model.Platform;
-import eu.h2020.symbiote.core.model.RDFFormat;
-import eu.h2020.symbiote.core.model.WGS84Location;
+import eu.h2020.symbiote.core.internal.RDFFormat;
 import eu.h2020.symbiote.handlers.HandlerUtils;
+import eu.h2020.symbiote.model.cim.WGS84Location;
+import eu.h2020.symbiote.model.mim.Platform;
 import eu.h2020.symbiote.ontology.model.Ontology;
 import eu.h2020.symbiote.query.QueryGenerator;
 import eu.h2020.symbiote.search.SearchStorage;
@@ -24,6 +24,8 @@ import static org.junit.Assert.*;
 /**
  * Created by Szymon Mueller on 01/07/2017.
  */
+
+
 public class StressTestLoadGenerator {
 
     public static final String TEMPLATE_STATIONARY = "/templates/templateStationarySensor.json";
@@ -36,13 +38,13 @@ public class StressTestLoadGenerator {
 
     static {
         locations = Arrays.asList(
-                new WGS84Location(2.183370319d, 41.38329958d, 10.0d, Arrays.asList("Barcelona"), Arrays.asList("Barcelona")),
-                new WGS84Location(2.333335326d, 48.86669293d, 25.0d, Arrays.asList("Paris"), Arrays.asList("Paris")),
-                new WGS84Location(20.99999955d, 52.25000063d, 10.0d, Arrays.asList("Warsaw"), Arrays.asList("Warsaw")),
-                new WGS84Location(23.73332108d, 37.98332623d, 10.0d, Arrays.asList("Athens"), Arrays.asList("Athens")),
-                new WGS84Location(139.7514074d, 35.68501691d, 10.0d, Arrays.asList("Tokyo"), Arrays.asList("Tokyo")),
-                new WGS84Location(151.1851798d, -33.92001097d, 10.0d, Arrays.asList("Sydney"), Arrays.asList("Sydney")),
-                new WGS84Location(12.48325842d, 41.89595563d, 10.0d, Arrays.asList("Rome"), Arrays.asList("Rome")));
+                new WGS84Location(2.183370319d, 41.38329958d, 10.0d, "Barcelona", Arrays.asList("Barcelona")),
+                new WGS84Location(2.333335326d, 48.86669293d, 25.0d, "Paris", Arrays.asList("Paris")),
+                new WGS84Location(20.99999955d, 52.25000063d, 10.0d, "Warsaw", Arrays.asList("Warsaw")),
+                new WGS84Location(23.73332108d, 37.98332623d, 10.0d, "Athens", Arrays.asList("Athens")),
+                new WGS84Location(139.7514074d, 35.68501691d, 10.0d, "Tokyo", Arrays.asList("Tokyo")),
+                new WGS84Location(151.1851798d, -33.92001097d, 10.0d,"Sydney", Arrays.asList("Sydney")),
+                new WGS84Location(12.48325842d, 41.89595563d, 10.0d, "Rome", Arrays.asList("Rome")));
 
         properties = Arrays.asList(
                 "http://purl.oclc.org/NET/ssnx/qu/quantity#temperature",
@@ -59,9 +61,11 @@ public class StressTestLoadGenerator {
         );
     }
 
+
     public void testGenerate() {
         try {
-            SearchStorage searchStorage = SearchStorage.getInstance( "F:\\stressTest\\4" );
+            SearchStorage.clearStorage();
+            SearchStorage searchStorage = SearchStorage.getInstance( "F:\\stressTest\\5",null,false );
             generatePlatformsWithResources(searchStorage, 100, 100);
         } catch (IOException e) {
             e.printStackTrace();
@@ -70,20 +74,23 @@ public class StressTestLoadGenerator {
     }
 
     public void testCountResources() {
-        SearchStorage searchStorage = SearchStorage.getInstance( "F:\\stressTest\\4" );
+        SearchStorage.clearStorage();
+        SearchStorage searchStorage = SearchStorage.getInstance( "F:\\stressTest\\5",null,false );
 
         String query = new QueryGenerator().toString();
-        ResultSet resultSet = searchStorage.getTripleStore().executeQuery(query);
+        ResultSet resultSet = searchStorage.getTripleStore().executeQuery(query,null,false);
         QueryResponse searchResponse = HandlerUtils.generateSearchResponseFromResultSet(resultSet);
         int i = searchResponse.getResources().size();
 
         System.out.println("Counted: " + i);
     }
 
-    public void generatePlatformsWithResources(SearchStorage searchStorage, int numberOfPlatforms, int numberOfResourcesPerPlatform) throws IOException {
+    public Map<String,List<String>> generatePlatformsWithResources(SearchStorage searchStorage, int numberOfPlatforms, int numberOfResourcesPerPlatform) throws IOException {
+        Map<String,List<String>> platformResourcesMap = new HashMap<>(numberOfPlatforms);
         for (int platformNumber = 0; platformNumber < numberOfPlatforms; platformNumber++) {
             System.out.println("Generating platform " + platformNumber);
             String platformId = UUID.randomUUID().toString();
+            List<String> platformResourceUris = new ArrayList<>(numberOfResourcesPerPlatform);
             String platformDesc = "This is platform " + platformId;
             String platformName = "Platform_" + platformId;
             String platformUrl = "http://example.com/platform/" + platformId;
@@ -101,6 +108,7 @@ public class StressTestLoadGenerator {
 //                System.out.println("======================== " + resourceNumber + " ===============================");
                 parameters.clear();
                 String resourceId = UUID.randomUUID().toString();
+                platformResourceUris.add("http://www.symbiote-h2020.eu/ontology/resources/"+resourceId);
                 String resourceName = "Resource_" + resourceId;
                 String resourceDesc = "This is resource " + resourceId;
 
@@ -136,13 +144,15 @@ public class StressTestLoadGenerator {
 //                System.out.println(resolvedString);
 //                System.out.println("========================================================");
             }
+            platformResourcesMap.put(platformId,platformResourceUris);
         }
+        return platformResourcesMap;
     }
 
     private void addRandomLocationProperties(Map<String, String> map) {
         WGS84Location location = locations.get(new Random().nextInt(locations.size()));
-        map.put("location.name", location.getLabels().get(0));
-        map.put("location.desc", location.getComments().get(0));
+        map.put("location.name", location.getName());
+        map.put("location.desc", location.getDescription().get(0));
         map.put("location.alt", String.valueOf(location.getAltitude()));
         map.put("location.lat", String.valueOf(location.getLatitude()));
         map.put("location.long", String.valueOf(location.getLongitude()));
