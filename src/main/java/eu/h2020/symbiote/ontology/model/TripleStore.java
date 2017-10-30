@@ -150,7 +150,7 @@ public class TripleStore {
 //            }
             loadModels();
         }
-        model = ModelFactory.createRDFSModel(dataset.getUnionModel());
+        model = ModelFactory.createRDFSModel(dataset.getDefaultModel());
         if( filteringEnabled ) {
             evaluator = new FilteringEvaluator(model,securityManager);
             evaluator.setPrincipal("test");
@@ -294,6 +294,7 @@ public class TripleStore {
 
             Model modelToUse = useSecureGraph ? securedModel:model;
 
+//            Model mm = ModelFactory.createRDFSModel(dataset.getDefaultModel());
             try (QueryExecution qe = QueryExecutionFactory.create(query, modelToUse)) {
 //                qe.setTimeout(30000);
                 result = ResultSetFactory.copyResults(qe.execSelect());
