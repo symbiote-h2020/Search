@@ -18,7 +18,7 @@
     "mandatory" : "true",
     "name" : "inputParam1"
   }, {
-    "@id" : "http://www.symbiote-h2020.eu/ontology/resources/service1",
+    "@id" : "http://www.symbiote-h2020.eu/ontology/internal/resources/service1",
     "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#Service", "http://www.symbiote-h2020.eu/ontology/core#Resource" ],
     "hasInputParameter" : "_:b2",
     "hasOutputParameter" : "_:b0",

@@ -1,6 +1,6 @@
 {
   "@graph" : [ {
-    "@id" : "http://www.symbiote-h2020.eu/ontology/resources/mobile1/location",
+    "@id" : "http://www.symbiote-h2020.eu/ontology/internal/resources/mobile1/location",
     "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#WGS84Location", "http://www.symbiote-h2020.eu/ontology/core#Location" ],
     "comment" : "This is paris",
     "label" : "Paris",
@@ -8,10 +8,10 @@
     "lat" : "38.864716",
     "long" : "2.349014"
   }, {
-    "@id" : "http://www.symbiote-h2020.eu/ontology/resources/mobile1",
+    "@id" : "http://www.symbiote-h2020.eu/ontology/internal/resources/mobile1",
     "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#MobileSensor", "http://www.symbiote-h2020.eu/ontology/core#Resource" ],
     "id" : "mobile1",
-    "locatedAt" : "http://www.symbiote-h2020.eu/ontology/resources/mobile1/location",
+    "locatedAt" : "http://www.symbiote-h2020.eu/ontology/internal/resources/mobile1/location",
     "observes" : "http://purl.oclc.org/NET/ssnx/qu/quantity#temperature",
     "comment" : "This is mobile 1",
     "label" : "Mobile 1"

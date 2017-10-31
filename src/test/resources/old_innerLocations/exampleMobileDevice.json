@@ -32,7 +32,7 @@
     "lat" : "48.864716",
     "long" : "2.349014"
   }, {
-    "@id" : "http://www.symbiote-h2020.eu/ontology/resources/actuatingService1",
+    "@id" : "http://www.symbiote-h2020.eu/ontology/internal/resources/actuatingService1",
     "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#ActuatingService", "http://www.symbiote-h2020.eu/ontology/core#Resource" ],
     "affects" : "http://purl.oclc.org/NET/ssnx/qu/quantity#temperature",
     "hasFeatureOfInterest" : "_:b3",
@@ -43,9 +43,9 @@
     "comment" : "This is actuating service 1",
     "label" : "Actuating Service 1"
   }, {
-    "@id" : "http://www.symbiote-h2020.eu/ontology/resources/mobiledevice1",
+    "@id" : "http://www.symbiote-h2020.eu/ontology/internal/resources/mobiledevice1",
     "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#MobileSensor", "http://www.symbiote-h2020.eu/ontology/core#Actuator", "http://www.symbiote-h2020.eu/ontology/core#Resource" ],
-    "hasCapability" : "http://www.symbiote-h2020.eu/ontology/resources/actuatingService1",
+    "hasCapability" : "http://www.symbiote-h2020.eu/ontology/internal/resources/actuatingService1",
     "id" : "mobiledevice1",
     "locatedAt" : "_:b4",
     "observes" : "http://purl.oclc.org/NET/ssnx/qu/quantity#temperature",

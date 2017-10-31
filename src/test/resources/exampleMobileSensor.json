@@ -1,6 +1,6 @@
 {
   "@graph" : [ {
-    "@id" : "http://www.symbiote-h2020.eu/ontology/platforms/Platform1/location/59ad0b5f8d116620906557f1",
+    "@id" : "http://www.symbiote-h2020.eu/ontology/internal/platforms/Platform1/location/59ad0b5f8d116620906557f1",
     "@type" : "core:WGS84Location",
     "description" : "This is paris",
     "name" : "Paris",
@@ -8,10 +8,10 @@
     "lat" : "48.864716",
     "long" : "2.349014"
   }, {
-    "@id" : "http://www.symbiote-h2020.eu/ontology/resources/mobile1",
+    "@id" : "http://www.symbiote-h2020.eu/ontology/internal/resources/mobile1",
     "@type" : "core:MobileSensor",
     "id" : "mobile1",
-    "locatedAt" : "http://www.symbiote-h2020.eu/ontology/platforms/Platform1/location/59ad0b5f8d116620906557f1",
+    "locatedAt" : "http://www.symbiote-h2020.eu/ontology/internal/platforms/Platform1/location/59ad0b5f8d116620906557f1",
     "observesProperty" : "qu:temperature",
     "description" : "This is mobile 1",
     "name" : "Mobile 1"

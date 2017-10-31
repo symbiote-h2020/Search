@@ -24,7 +24,7 @@
     "max" : "10.0",
     "min" : "2.0"
   }, {
-    "@id" : "http://www.symbiote-h2020.eu/ontology/resources/stationary1/location2",
+    "@id" : "http://www.symbiote-h2020.eu/ontology/internal/resources/stationary1/location2",
     "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#WGS84Location", "http://www.symbiote-h2020.eu/ontology/core#Location" ],
     "comment" : "This is paris",
     "label" : "Paris",
@@ -32,15 +32,15 @@
     "lat" : "48.864716",
     "long" : "2.349014"
   }, {
-    "@id" : "http://www.symbiote-h2020.eu/ontology/resources/590b617566e02516806462e4",
+    "@id" : "http://www.symbiote-h2020.eu/ontology/internal/resources/590b617566e02516806462e4",
     "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#Actuator", "http://www.symbiote-h2020.eu/ontology/core#Resource" ],
-    "hasCapability" : "http://www.symbiote-h2020.eu/ontology/resources/590b617566e02516806462e5",
+    "hasCapability" : "http://www.symbiote-h2020.eu/ontology/internal/resources/590b617566e02516806462e5",
     "id" : "590b617566e02516806462e4",
-    "locatedAt" : "http://www.symbiote-h2020.eu/ontology/resources/stationary1/location2",
+    "locatedAt" : "http://www.symbiote-h2020.eu/ontology/internal/resources/stationary1/location2",
     "comment" : "This is actuator 1",
     "label" : "Actuator 1"
   }, {
-    "@id" : "http://www.symbiote-h2020.eu/ontology/resources/590b617566e02516806462e5",
+    "@id" : "http://www.symbiote-h2020.eu/ontology/internal/resources/590b617566e02516806462e5",
     "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#Resource", "http://www.symbiote-h2020.eu/ontology/core#ActuatingService" ],
     "affects" : "http://purl.oclc.org/NET/ssnx/qu/quantity#temperature",
     "hasFeatureOfInterest" : "_:b0",

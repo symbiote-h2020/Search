@@ -12,7 +12,7 @@
     "mandatory" : "true",
     "name" : "inputParam1"
   }, {
-    "@id" : "http://www.symbiote-h2020.eu/ontology/resources/service1",
+    "@id" : "http://www.symbiote-h2020.eu/ontology/internal/resources/service1",
     "@type" : "core:Service",
     "hasParameter" : "_:b1",
     "hasResultType" : "xsd:string",

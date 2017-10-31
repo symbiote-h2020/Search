@@ -6,8 +6,8 @@ import eu.h2020.symbiote.core.ci.ResourceType;
 import eu.h2020.symbiote.core.internal.CoreQueryRequest;
 import eu.h2020.symbiote.model.mim.InterworkingService;
 import eu.h2020.symbiote.model.mim.Platform;
-import eu.h2020.symbiote.ontology.model.Ontology;
 import eu.h2020.symbiote.query.QueryGenerator;
+import eu.h2020.symbiote.semantics.ModelHelper;
 import eu.h2020.symbiote.semantics.ontology.CIM;
 import eu.h2020.symbiote.semantics.ontology.MIM;
 import org.apache.commons.logging.Log;
@@ -62,7 +62,7 @@ public class HandlerUtils {
         model.setNsPrefix("qu", "http://purl.oclc.org/NET/ssnx/qu/quantity#");
 
         // construct proper Platform entry
-        Resource platformResource = model.createResource(Ontology.getPlatformGraphURI(platform.getId()))
+        Resource platformResource = model.createResource(ModelHelper.getPlatformURI(platform.getId()))
                 .addProperty(RDF.type, MIM.Platform)
                 .addProperty(CIM.id,platform.getId());
         for( String comment: platform.getDescription() ) {
@@ -73,9 +73,9 @@ public class HandlerUtils {
 
 
         for( InterworkingService service: platform.getInterworkingServices() ) {
-            Resource interworkingServiceResource = model.createResource(generateInterworkingServiceUri(Ontology.getPlatformGraphURI(platform.getId()), service.getUrl()))
+            Resource interworkingServiceResource = model.createResource(generateInterworkingServiceUri(ModelHelper.getPlatformURI(platform.getId()), service.getUrl()))
                     .addProperty(RDF.type, MIM.InterworkingService)
-                    .addProperty(MIM.usesInformationModel,model.createResource(Ontology.getInformationModelUri(service.getInformationModelId())))
+                    .addProperty(MIM.usesInformationModel,model.createResource(ModelHelper.getInformationModelURI(service.getInformationModelId())))
                     .addProperty(MIM.url,service.getUrl());
             platformResource.addProperty(MIM.hasService, interworkingServiceResource);
         }

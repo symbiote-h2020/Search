@@ -36,9 +36,9 @@
     "max" : "10.0",
     "min" : "2.0"
   }, {
-    "@id" : "http://www.symbiote-h2020.eu/ontology/resources/actuatingService1",
+    "@id" : "http://www.symbiote-h2020.eu/ontology/internal/resources/actuatingService1",
     "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#ActuatingService", "http://www.symbiote-h2020.eu/ontology/core#Resource", "http://www.symbiote-h2020.eu/ontology/core#Service" ],
-    "actsOn" : "http://www.symbiote-h2020.eu/ontology/platforms/Platform1/foi/Room1",
+    "actsOn" : "http://www.symbiote-h2020.eu/ontology/internal/platforms/Platform1/foi/Room1",
     "affects" : "http://www.symbiote-h2020.eu/ontology/bim/Temperature",
     "hasInputParameter" : [ "_:b1", "_:b3" ],
     "hasOutputParameter" : [ "_:b2", "_:b0" ],

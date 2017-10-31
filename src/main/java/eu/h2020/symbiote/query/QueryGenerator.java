@@ -71,14 +71,15 @@ public class QueryGenerator {
             query.append("\t?location geo:alt ?locationAlt .\n");
 
             if (!locationquery) {
-
                 query.append("\t?location cim:name ?locationName.\n");
             }
+            query.append("} \n");
             if (!propertyquery) {
+                query.append("OPTIONAL { ");
                 query.append("\t?sensor cim:observesProperty ?property.\n");
                 query.append("\t?property cim:name ?propName.\n");
+                query.append("} \n");
             }
-            query.append("} \n");
 
     }
 

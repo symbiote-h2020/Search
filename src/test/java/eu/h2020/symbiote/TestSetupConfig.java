@@ -30,8 +30,8 @@ public class TestSetupConfig {
     public static final String PLATFORM_A_DESCRIPTION = "Test platform A";
     public static final String PLATFORM_A_FILENAME = "/platformA.ttl";
     //RDF URIs
-    public static final String PLATFORM_A_URI = "http://www.symbiote-h2020.eu/ontology/platforms/1";
-    public static final String PLATFORM_A_SERVICE_URI = "http://www.symbiote-h2020.eu/ontology/platforms/1/service/somehost1.com/resourceAccessProxy";
+    public static final String PLATFORM_A_URI = "http://www.symbiote-h2020.eu/ontology/internal/platforms/1";
+    public static final String PLATFORM_A_SERVICE_URI = "http://www.symbiote-h2020.eu/ontology/internal/platforms/1/service/somehost1.com/resourceAccessProxy";
 
     //LINK to Interworking Service
     //TODO check
@@ -47,18 +47,18 @@ public class TestSetupConfig {
     public static final String PLATFORM_B_MODEL_ID = "21";
     public static final String PLATFORM_B_DESCRIPTION = "Test platform B";
     public static final String PLATFORM_B_FILENAME = "/platformB.ttl";
-    public static final String PLATFORM_B_URI = "http://www.symbiote-h2020.eu/ontology/platforms/2";
-    public static final String PLATFORM_B_SERVICE_URI = "http://www.symbiote-h2020.eu/ontology/platforms/2/service/somehost2.com/resourceAccessProxy";
+    public static final String PLATFORM_B_URI = "http://www.symbiote-h2020.eu/ontology/internal/platforms/2";
+    public static final String PLATFORM_B_SERVICE_URI = "http://www.symbiote-h2020.eu/ontology/internal/platforms/2/service/somehost2.com/resourceAccessProxy";
 
     public static final String PLATFORM_C_ID = "3";
 //    public static final String PLATFORM_C_NAME = "Platform C";
 //    public static final String PLATFORM_C_MODEL_ID = "31";
 //    public static final String PLATFORM_C_DESCRIPTION = "Test platform C";
     public static final String PLATFORM_C_FILENAME = "/platformC.ttl";
-    public static final String PLATFORM_C_URI = "http://www.symbiote-h2020.eu/ontology/platforms/3";
-    public static final String PLATFORM_C_SERVICE_URI = "http://www.symbiote-h2020.eu/ontology/platforms/3/service/somehost3.com/resourceAccessProxy";
+    public static final String PLATFORM_C_URI = "http://www.symbiote-h2020.eu/ontology/internal/platforms/3";
+    public static final String PLATFORM_C_SERVICE_URI = "http://www.symbiote-h2020.eu/ontology/internal/platforms/3/service/somehost3.com/resourceAccessProxy";
 
-    public static final String RESOURCE_PREDICATE = "http://www.symbiote-h2020.eu/ontology/resources/";
+    public static final String RESOURCE_PREDICATE = "http://www.symbiote-h2020.eu/ontology/internal/resources/";
 
     public static final String RESOURCE_101_FILENAME = "/exampleStationarySensor.json";
     public static final String RESOURCE_101_URI = RESOURCE_PREDICATE + "stationary1";

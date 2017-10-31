@@ -6,6 +6,8 @@
 package eu.h2020.symbiote.ontology.model;
 
 import eu.h2020.symbiote.core.internal.RDFFormat;
+import eu.h2020.symbiote.semantics.ModelHelper;
+import eu.h2020.symbiote.semantics.ontology.MIM;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jena.rdf.model.Model;
@@ -30,13 +32,13 @@ public class Registry {
     }
 
     public void registerPlatform(String platformId, String rdf, RDFFormat format) {
-        tripleStore.insertGraph(Ontology.getPlatformGraphURI(platformId), rdf, format);
+        tripleStore.insertGraph(ModelHelper.getPlatformURI(platformId), rdf, format);
 //        tripleStore.insertGraph(Ontology.PLATFORMS_GRAPH, Ontology.getPlatformMetadata(platformId, modelId), format);
         log.debug(String.format("platform registered: platformId={}, format={}, rdf={}", platformId, format, rdf));
     }
 
     public void registerPlatform(String platformId, Model rdf) {
-        tripleStore.insertGraph(Ontology.getPlatformGraphURI(platformId), rdf);
+        tripleStore.insertGraph(ModelHelper.getPlatformURI(platformId), rdf);
 //        tripleStore.insertGraph(Ontology.PLATFORMS_GRAPH, Ontology.getPlatformMetadata(platformId, modelId), RDFFormat.Turtle);
         log.debug(String.format("platform registered: platformId={}, rdf={}", platformId,rdf));
     }
@@ -49,8 +51,12 @@ public class Registry {
      */
     public void registerResource(String platformUri, String serviceURI, String resourceUri, Model resourceModel) {
         tripleStore.insertGraph(platformUri, resourceModel);
-        tripleStore.insertGraph(platformUri, Ontology.getResourceMetadata(serviceURI,resourceUri), RDFFormat.Turtle);
+        tripleStore.insertGraph(platformUri, getResourceMetadata(serviceURI,resourceUri), RDFFormat.Turtle);
         log.debug(String.format("Resource={%s} registered for platform: platformUri={%s}", resourceUri, platformUri));
+    }
+
+    private String getResourceMetadata( String serviceURI, String resourceUri ) {
+        return "<" + serviceURI + "> <" + MIM.hasResource + "> <" +resourceUri + "> .";
     }
 
 //    public void registerMapping(BigInteger mappingId, BigInteger modelId1, BigInteger modelId2, String mapping) throws UnsupportedEncodingException {

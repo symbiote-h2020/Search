@@ -5,9 +5,9 @@ import eu.h2020.symbiote.core.internal.RDFFormat;
 import eu.h2020.symbiote.handlers.HandlerUtils;
 import eu.h2020.symbiote.model.cim.WGS84Location;
 import eu.h2020.symbiote.model.mim.Platform;
-import eu.h2020.symbiote.ontology.model.Ontology;
 import eu.h2020.symbiote.query.QueryGenerator;
 import eu.h2020.symbiote.search.SearchStorage;
+import eu.h2020.symbiote.semantics.ModelHelper;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.jena.query.ResultSet;
@@ -108,7 +108,7 @@ public class StressTestLoadGenerator {
 //                System.out.println("======================== " + resourceNumber + " ===============================");
                 parameters.clear();
                 String resourceId = UUID.randomUUID().toString();
-                platformResourceUris.add("http://www.symbiote-h2020.eu/ontology/resources/"+resourceId);
+                platformResourceUris.add("http://www.symbiote-h2020.eu/ontology/internal/resources/"+resourceId);
                 String resourceName = "Resource_" + resourceId;
                 String resourceDesc = "This is resource " + resourceId;
 
@@ -138,8 +138,8 @@ public class StressTestLoadGenerator {
                 Model mFromFile = ModelFactory.createDefaultModel();
                 mFromFile.read(resourceInputStream,null,"JSONLD");
 
-                searchStorage.registerResource(Ontology.getPlatformGraphURI(platform.getId()),
-                        HandlerUtils.generateInterworkingServiceUri(Ontology.getPlatformGraphURI(platform.getId()),platform.getInterworkingServices().get(0).getUrl()),RESOURCE_PREDICATE+resourceId, mFromFile);
+                searchStorage.registerResource(ModelHelper.getPlatformURI(platform.getId()),
+                        HandlerUtils.generateInterworkingServiceUri(ModelHelper.getPlatformURI(platform.getId()),platform.getInterworkingServices().get(0).getUrl()),RESOURCE_PREDICATE+resourceId, mFromFile);
 
 //                System.out.println(resolvedString);
 //                System.out.println("========================================================");

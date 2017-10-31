@@ -88,33 +88,33 @@ public class SearchEngine {
         return queryTranslated;
     }
 
-    private String generateFindMappingsQuery(String modelGraphUri) {
-        ParameterizedSparqlString query = new ParameterizedSparqlString();
-        query.setCommandText(String.join("\n",
-                "SELECT ?mapping ?mapDest ",
-                "WHERE {",
-                "	?mapping a ?mappingClass .",
-                "       ?mapping ?from ?modelGraphURI .",
-                "	?mapping ?to ?mapDest .",
-                "} "));
-        query.setIri("mappingClass", Ontology.MAPPING);
-        query.setIri("from", Ontology.FROM);
-        query.setIri("to", Ontology.TO);
-        query.setIri("modelGraphURI", modelGraphUri);
-        return query.toString();
-    }
-
-    private String generateFindPlatformsForModelQuery(String modelGraphURI) {
-        ParameterizedSparqlString query = new ParameterizedSparqlString();
-        query.setCommandText(String.join("\n",
-                "SELECT ?platform ",
-                "WHERE {",
-                "	?platform a ?platformClass .",
-                "	?platform ?uses ?modelGraphURI .",
-                "} "));
-        query.setIri("platformClass", Ontology.PLATFORM);
-        query.setIri("uses", Ontology.USES);
-        query.setIri("modelGraphURI", modelGraphURI);
-        return query.toString();
-    }
+//    private String generateFindMappingsQuery(String modelGraphUri) {
+//        ParameterizedSparqlString query = new ParameterizedSparqlString();
+//        query.setCommandText(String.join("\n",
+//                "SELECT ?mapping ?mapDest ",
+//                "WHERE {",
+//                "	?mapping a ?mappingClass .",
+//                "       ?mapping ?from ?modelGraphURI .",
+//                "	?mapping ?to ?mapDest .",
+//                "} "));
+//        query.setIri("mappingClass", Ontology.MAPPING);
+//        query.setIri("from", Ontology.FROM);
+//        query.setIri("to", Ontology.TO);
+//        query.setIri("modelGraphURI", modelGraphUri);
+//        return query.toString();
+//    }
+//
+//    private String generateFindPlatformsForModelQuery(String modelGraphURI) {
+//        ParameterizedSparqlString query = new ParameterizedSparqlString();
+//        query.setCommandText(String.join("\n",
+//                "SELECT ?platform ",
+//                "WHERE {",
+//                "	?platform a ?platformClass .",
+//                "	?platform ?uses ?modelGraphURI .",
+//                "} "));
+//        query.setIri("platformClass", Ontology.PLATFORM);
+//        query.setIri("uses", Ontology.USES);
+//        query.setIri("modelGraphURI", modelGraphURI);
+//        return query.toString();
+//    }
 }

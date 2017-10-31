@@ -4,12 +4,12 @@ import eu.h2020.symbiote.core.internal.CoreResource;
 import eu.h2020.symbiote.core.internal.CoreResourceRegisteredOrModifiedEventPayload;
 import eu.h2020.symbiote.filtering.AccessPolicy;
 import eu.h2020.symbiote.filtering.AccessPolicyRepo;
-import eu.h2020.symbiote.ontology.model.Ontology;
 import eu.h2020.symbiote.query.DeleteResourceRequestGenerator;
 import eu.h2020.symbiote.search.SearchStorage;
 import eu.h2020.symbiote.security.accesspolicies.IAccessPolicy;
 import eu.h2020.symbiote.security.accesspolicies.common.SingleTokenAccessPolicyFactory;
 import eu.h2020.symbiote.security.commons.exceptions.custom.InvalidArgumentsException;
+import eu.h2020.symbiote.semantics.ModelHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jena.rdf.model.Model;
@@ -51,7 +51,7 @@ public class ResourceHandler implements IResourceEvents {
 
             String resourceURL = coreResource.getInterworkingServiceURL(); //match this with
 
-            log.debug( "Querying for interworking service URI... ");
+            log.debug( "Querying for interworking service URI... resUrl: " + resourceURL + " platformId: " + platformId);
             String registeredServiceURI = findServiceURI(resourceURL,platformId);
             if( registeredServiceURI == null ) {
                 //Try with slash in the end - most common mistake from platforms
@@ -72,11 +72,11 @@ public class ResourceHandler implements IResourceEvents {
 
             try (StringReader reader = new StringReader(coreResource.getRdf())) {
                 model.read(reader, null, coreResource.getRdfFormat().toString());
-                this.storage.registerResource(Ontology.getPlatformGraphURI(platformId), registeredServiceURI, Ontology.getResourceGraphURI(coreResource.getId()), model);
+                this.storage.registerResource(ModelHelper.getPlatformURI(platformId), registeredServiceURI, ModelHelper.getResourceURI(coreResource.getId()), model);
                 if( coreResource.getPolicySpecifier() != null ) {
                     try {
                         IAccessPolicy singleTokenAccessPolicy = SingleTokenAccessPolicyFactory.getSingleTokenAccessPolicy(coreResource.getPolicySpecifier());
-                        AccessPolicy policy = new AccessPolicy(coreResource.getId(), Ontology.getResourceGraphURI(coreResource.getId()), singleTokenAccessPolicy);
+                        AccessPolicy policy = new AccessPolicy(coreResource.getId(), ModelHelper.getResourceURI(coreResource.getId()), singleTokenAccessPolicy);
                         this.accessPolicyRepo.save(policy);
                     } catch (InvalidArgumentsException e) {
                         log.error("[POLICY NOT SAVED] Error when parsing filtering policy: " + e.getMessage(), e);
@@ -104,7 +104,7 @@ public class ResourceHandler implements IResourceEvents {
         String registeredServiceURI = null;
         String query = getSearchInterworkingServiceSPARQL(resourceURL, platformId);
 
-        List<String> response = this.storage.query(Ontology.getPlatformGraphURI(platformId), query);
+        List<String> response = this.storage.query(ModelHelper.getPlatformURI(platformId), query);
 
         if (response != null && response.size() == 1) {
             log.debug("response: " + response.get(0));

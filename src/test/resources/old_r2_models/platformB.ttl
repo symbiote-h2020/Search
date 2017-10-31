@@ -1,4 +1,4 @@
-@prefix : <https://www.symbiote-h2020.eu/ontology/platforms/2#> .
+@prefix : <https://www.symbiote-h2020.eu/ontology/internal/platforms/2#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix xml: <http://www.w3.org/XML/1998/namespace> .
@@ -7,15 +7,15 @@
 @prefix mim: <http://www.symbiote-h2020.eu/ontology/meta#> .
 @prefix cim: <http://www.symbiote-h2020.eu/ontology/core#> .
 
-<http://www.symbiote-h2020.eu/ontology/platforms/2/service/somehost2.com/resourceAccessProxy> rdf:type mim:InterworkingService ;
+<http://www.symbiote-h2020.eu/ontology/internal/platforms/2/service/somehost2.com/resourceAccessProxy> rdf:type mim:InterworkingService ;
     mim:hasInformationModel [
                 cim:id "21" ;
         ] ;
     mim:hasURL "http://somehost2.com/resourceAccessProxy" .
 
 
-<http://www.symbiote-h2020.eu/ontology/platforms/2> rdf:type owl:Ontology ;
+<http://www.symbiote-h2020.eu/ontology/internal/platforms/2> rdf:type owl:Ontology ;
      mim:hasDescription "Test platform B" ;
      rdfs:label "Platform B" ;
      cim:id "2" ;
-     mim:hasService <http://www.symbiote-h2020.eu/ontology/platforms/2/service/somehost2.com/resourceAccessProxy> .
+     mim:hasService <http://www.symbiote-h2020.eu/ontology/internal/platforms/2/service/somehost2.com/resourceAccessProxy> .

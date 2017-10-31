@@ -2,10 +2,10 @@ PREFIX cim: <http://www.symbiote-h2020.eu/ontology/core#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX qu: <http://purl.oclc.org/NET/ssnx/qu/qu#>
 PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+PREFIX spatial: <http://jena.apache.org/spatial#>
 SELECT ?location ?locationLat ?locationLong ?locationAlt WHERE {
-  ?res a cim:Resource .
-  ?res cim:locatedAt ?location .
   	?location geo:lat ?locationLat .
   	?location geo:long ?locationLong .
   	?location geo:alt ?locationAlt .
+  	?location spatial:nearby (22.864716 2.549014 1000 'm') .
 }

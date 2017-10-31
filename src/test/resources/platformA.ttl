@@ -7,14 +7,14 @@
 @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
 @prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
 
-<http://www.symbiote-h2020.eu/ontology/platforms/1>
+<http://www.symbiote-h2020.eu/ontology/internal/platforms/1>
         a                meta:Platform ;
         core:description     "Test platform A" ;
         core:name       "Platform A" ;
         core:id          "1" ;
-        meta:hasService  <http://www.symbiote-h2020.eu/ontology/platforms/1/service/somehost1.com/resourceAccessProxy> .
+        meta:hasService  <http://www.symbiote-h2020.eu/ontology/internal/platforms/1/service/somehost1.com/resourceAccessProxy> .
 
-<http://www.symbiote-h2020.eu/ontology/platforms/1/service/somehost1.com/resourceAccessProxy>
+<http://www.symbiote-h2020.eu/ontology/internal/platforms/1/service/somehost1.com/resourceAccessProxy>
         a                          meta:InterworkingService ;
         meta:url                   "http://somehost1.com/resourceAccessProxy" ;
-        meta:usesInformationModel  <http://www.symbiote-h2020.eu/ontology/model/11> .
+        meta:usesInformationModel  <http://www.symbiote-h2020.eu/ontology/internal/models/11> .

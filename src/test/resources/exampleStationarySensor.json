@@ -6,7 +6,7 @@
     "description" : "This is room 1",
     "name" : "Room1"
   }, {
-    "@id" : "http://www.symbiote-h2020.eu/ontology/platforms/Platform1/location/59ad0b5f8d116620906557ee",
+    "@id" : "http://www.symbiote-h2020.eu/ontology/internal/platforms/Platform1/location/59ad0b5f8d116620906557ee",
     "@type" : "core:WGS84Location",
     "description" : "This is paris",
     "name" : "Paris",
@@ -14,11 +14,11 @@
     "lat" : "48.864716",
     "long" : "2.349014"
   }, {
-    "@id" : "http://www.symbiote-h2020.eu/ontology/resources/stationary1",
+    "@id" : "http://www.symbiote-h2020.eu/ontology/internal/resources/stationary1",
     "@type" : "core:StationarySensor",
     "hasFeatureOfInterest" : "_:b0",
     "id" : "stationary1",
-    "locatedAt" : "http://www.symbiote-h2020.eu/ontology/platforms/Platform1/location/59ad0b5f8d116620906557ee",
+    "locatedAt" : "http://www.symbiote-h2020.eu/ontology/internal/platforms/Platform1/location/59ad0b5f8d116620906557ee",
     "observesProperty" : [ "qu:humidity", "qu:temperature" ],
     "description" : "This is stationary 1",
     "name" : "Stationary 1"

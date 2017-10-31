@@ -42,7 +42,7 @@
     "max" : "10.0",
     "min" : "2.0"
   }, {
-    "@id" : "http://www.symbiote-h2020.eu/ontology/resources/actuatingService1",
+    "@id" : "http://www.symbiote-h2020.eu/ontology/internal/resources/actuatingService1",
     "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#ActuatingService", "http://www.symbiote-h2020.eu/ontology/core#Resource", "http://www.symbiote-h2020.eu/ontology/core#Service" ],
     "affects" : "http://purl.oclc.org/NET/ssnx/qu/quantity#temperature",
     "hasFeatureOfInterest" : "_:b0",

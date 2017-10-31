@@ -1,13 +1,28 @@
 PREFIX cim: <http://www.symbiote-h2020.eu/ontology/core#>
-PREFIX cimowl: <http://www.symbiote-h2020.eu/ontology/core.owl#>
-PREFIX mim: <http://www.symbiote-h2020.eu/ontology/meta.owl#>
+PREFIX mim: <http://www.symbiote-h2020.eu/ontology/meta#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
-
-SELECT ?sensor WHERE {
-	?platform a owl:Ontology ;
-		mim:hasService ?service .
-	?service mim:hasResource ?sensor .
-	?platform cimowl:hasID "1" .
+PREFIX spatial: <http://jena.apache.org/spatial#>
+PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+SELECT ?resId ?resName ?resDescription ?locationName ?locationLat ?locationLong ?locationAlt ?platformId ?platformName ?type ?property WHERE {
+         ?sensor a ?type ;
+                 cim:id ?resId ;
+                 cim:name ?resName ;
+                 cim:description ?resDescription.
+         ?platform cim:id ?platformId ;
+                 cim:name ?platformName .
+         ?platform a mim:Platform;
+                 mim:hasService ?service .
+         ?service mim:hasResource ?sensor .
+OPTIONAL {          ?sensor cim:locatedAt ?location.
+         ?location geo:lat ?locationLat .
+         ?location geo:long ?locationLong .
+         ?location geo:alt ?locationAlt .
+         ?location cim:name ?locationName.
+         }
+OPTIONAL {
+                         ?sensor cim:observesProperty ?property.
+                         ?property cim:name ?propName.
 }
+ }

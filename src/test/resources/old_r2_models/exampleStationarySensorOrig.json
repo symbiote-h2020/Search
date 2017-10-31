@@ -14,7 +14,7 @@
     "lat" : "48.864716",
     "long" : "2.349014"
   }, {
-    "@id" : "http://www.symbiote-h2020.eu/ontology/resources/stationary1",
+    "@id" : "http://www.symbiote-h2020.eu/ontology/internal/resources/stationary1",
     "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#StationarySensor", "http://www.symbiote-h2020.eu/ontology/core#Resource" ],
     "hasFeatureOfInterest" : "_:b0",
     "id" : "stationary1",

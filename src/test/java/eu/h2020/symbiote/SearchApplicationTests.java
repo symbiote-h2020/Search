@@ -40,8 +40,12 @@ public class SearchApplicationTests {
     public void simplePlatformTest() throws Exception {
         when(securityManager.checkPolicyByResourceId(anyString(),any())).thenReturn(Boolean.TRUE);
         when(securityManager.checkPolicyByResourceIri(anyString(),any())).thenReturn(Boolean.TRUE);
+        //In memory
         TripleStore triplestore = new TripleStore(securityManager,false);
         Registry registry = new Registry(triplestore);
+        //Real
+//        TripleStore triplestore = new TripleStore("f:\\coreSearchTriplestore",securityManager,false);
+
         try {
             String platformToSave = IOUtils.toString(this.getClass()
                     .getResource(PLATFORM_A_FILENAME));
@@ -53,13 +57,18 @@ public class SearchApplicationTests {
 //                System.out.println( next.getSubject().toString() + " - " + next.getPredicate().toString() + " - " + next.getObject().toString() );
 //            }
 
-            Model stationaryModel = loadFileAsModel(RESOURCE_STATIONARY_FILENAME, "JSONLD");
+            //Stationary res
+//            Model stationaryModel = loadFileAsModel(RESOURCE_STATIONARY_FILENAME, "JSONLD");
+//            registry.registerResource(PLATFORM_A_URI, PLATFORM_A_SERVICE_URI, RESOURCE_STATIONARY_URI, stationaryModel);
 
-            registry.registerResource(PLATFORM_A_URI, PLATFORM_A_SERVICE_URI, RESOURCE_STATIONARY_URI, stationaryModel);
+            //Actuator res
+            Model stationaryModel = loadFileAsModel(RESOURCE_ACTUATOR_FILENAME, "JSONLD");
+            registry.registerResource(PLATFORM_A_URI, PLATFORM_A_SERVICE_URI, RESOURCE_ACTUATOR_URI, stationaryModel);
 
-            executeQuery(triplestore,"/q6.sparql");
+            executeQuery(triplestore,"/q8.sparql");
 
         } catch( Exception e ) {
+            e.printStackTrace();
             fail();
         }
 

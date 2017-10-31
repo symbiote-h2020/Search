@@ -16,8 +16,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jena.permissions.Factory;
 import org.apache.jena.query.*;
-import org.apache.jena.query.spatial.EntityDefinition;
-import org.apache.jena.query.spatial.SpatialDatasetFactory;
+import org.apache.jena.query.spatial.*;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.sparql.util.QueryExecUtils;
@@ -87,6 +86,8 @@ public class TripleStore {
         loadModels();
 
         model = ModelFactory.createRDFSModel(dataset.getDefaultModel());
+
+
         if( filteringEnabled ) {
             evaluator = new FilteringEvaluator(model,securityManager);
             evaluator.setPrincipal("test");
@@ -126,6 +127,10 @@ public class TripleStore {
         }
 
         dataset = SpatialDatasetFactory.createLucene(baseDataset, realDir, entDef);
+//        DatasetGraphSpatial datasetGraph = (DatasetGraphSpatial) (dataset.asDatasetGraph());
+//
+//        SpatialIndex spatialIndex = datasetGraph.getSpatialIndex();
+
         if( newRepo ) {
 //            try {
 //                String cim_data = IOUtils.toString(TripleStore.class
@@ -292,13 +297,20 @@ public class TripleStore {
 //            evaluator.setPrincipal("test");
 //            model = Factory.getInstance(evaluator,"http://symbiote-h2020.eu/secureModel",model);
 
-            Model modelToUse = useSecureGraph ? securedModel:model;
-
-//            Model mm = ModelFactory.createRDFSModel(dataset.getDefaultModel());
-            try (QueryExecution qe = QueryExecutionFactory.create(query, modelToUse)) {
+//            Model modelToUse = useSecureGraph ? securedModel:model;
+            if( useSecureGraph ) {
+                try (QueryExecution qe = QueryExecutionFactory.create(query, securedModel)) {
 //                qe.setTimeout(30000);
-                result = ResultSetFactory.copyResults(qe.execSelect());
-                dataset.end();
+                    result = ResultSetFactory.copyResults(qe.execSelect());
+                    dataset.end();
+                }
+            } else {
+//            Model mm = ModelFactory.createRDFSModel(dataset.getDefaultModel());
+                try (QueryExecution qe = QueryExecutionFactory.create(query, dataset)) {
+//                qe.setTimeout(30000);
+                    result = ResultSetFactory.copyResults(qe.execSelect());
+                    dataset.end();
+                }
             }
 //        }
         return result;

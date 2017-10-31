@@ -1,4 +1,4 @@
-@prefix : <https://www.symbiote-h2020.eu/ontology/resources/201#> .
+@prefix : <https://www.symbiote-h2020.eu/ontology/internal/resources/201#> .
 @prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -7,18 +7,18 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix cim: <http://www.symbiote-h2020.eu/ontology/core#> .
 
-<https://www.symbiote-h2020.eu/ontology/resources/201/locaiton> rdf:type cim:Location ;
+<https://www.symbiote-h2020.eu/ontology/internal/resources/201/locaiton> rdf:type cim:Location ;
          rdfs:label "Somewhere" ;
          rdfs:comment "somewhere" ;
          geo:lat "54.401790" ;
          geo:long "15.960144" ;
          geo:alt "100" .
 
-<https://www.symbiote-h2020.eu/ontology/resources/201> rdf:type cim:Sensor ;
+<https://www.symbiote-h2020.eu/ontology/internal/resources/201> rdf:type cim:Sensor ;
      rdfs:label "Resource 201" ;
      rdfs:comment "This is resource 201" ;
      cim:id "201" ;
-     cim:locatedAt <https://www.symbiote-h2020.eu/ontology/resources/201/locaiton> ;
+     cim:locatedAt <https://www.symbiote-h2020.eu/ontology/internal/resources/201/locaiton> ;
      cim:observes [
             rdfs:label "Temperature" ;
             rdfs:comment "Temperature comment" ;

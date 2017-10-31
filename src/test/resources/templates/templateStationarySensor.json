@@ -6,7 +6,7 @@
     "description" : "${foi.desc}",
     "name" : "${foi.name}"
   }, {
-    "@id" : "http://www.symbiote-h2020.eu/ontology/resources/${resource.id}/${location.name}",
+    "@id" : "http://www.symbiote-h2020.eu/ontology/internal/resources/${resource.id}/${location.name}",
     "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#WGS84Location", "http://www.symbiote-h2020.eu/ontology/core#Location" ],
     "description" : "${location.desc}",
     "name" : "${location.name}",
@@ -14,11 +14,11 @@
     "lat" : "${location.lat}",
     "long" : "${location.long}"
   }, {
-    "@id" : "http://www.symbiote-h2020.eu/ontology/resources/${resource.id}",
+    "@id" : "http://www.symbiote-h2020.eu/ontology/internal/resources/${resource.id}",
     "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#StationarySensor", "http://www.symbiote-h2020.eu/ontology/core#Resource" ],
     "hasFeatureOfInterest" : "_:b0",
     "id" : "${resource.id}",
-    "locatedAt" : "http://www.symbiote-h2020.eu/ontology/resources/${resource.id}/${location.name}",
+    "locatedAt" : "http://www.symbiote-h2020.eu/ontology/internal/resources/${resource.id}/${location.name}",
     "observes" : [ ${resource.properties} ],
     "description" : "${resource.desc}",
     "name" : "${resource.name}"

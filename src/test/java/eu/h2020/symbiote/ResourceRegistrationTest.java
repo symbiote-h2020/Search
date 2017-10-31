@@ -39,15 +39,15 @@ public class ResourceRegistrationTest {
     private AccessPolicyRepo accessPolicyRepo;
 
 //    private static final String PLATFORM_A_ID = "1";
-//    private static final String PLATFORM_A_URI = "http://www.symbiote-h2020.eu/ontology/platforms/1";
-//    private static final String PLATFORM_A_SERVICE_URI = "http://www.symbiote-h2020.eu/ontology/platforms/1/service/somehost1.com/resourceAccessProxy";
+//    private static final String PLATFORM_A_URI = "http://www.symbiote-h2020.eu/ontology/internal/platforms/1";
+//    private static final String PLATFORM_A_SERVICE_URI = "http://www.symbiote-h2020.eu/ontology/internal/platforms/1/service/somehost1.com/resourceAccessProxy";
 //    private static final String PLATFORM_A_INFORMATION_MODEL_ID = "11";
 //    private static final String PLATFORM_A_DESCRIPTION = "Test platform A";
 //    private static final String PLATFORM_A_NAME = "Platform A";
 //    private static final String PLATFORM_A_URL = "http://somehost1.com/resourceAccessProxy";
 
 
-//    private static final String RESOURCE_PREDICATE = "https://www.symbiote-h2020.eu/ontology/resources/";
+//    private static final String RESOURCE_PREDICATE = "https://www.symbiote-h2020.eu/ontology/internal/resources/";
 
 
 //    public static final String PLATFORM_ID = "1";

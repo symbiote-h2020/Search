@@ -8,7 +8,7 @@
     "lat" : "48.864716",
     "long" : "2.349014"
   }, {
-    "@id" : "http://www.symbiote-h2020.eu/ontology/resources/mobile1",
+    "@id" : "http://www.symbiote-h2020.eu/ontology/internal/resources/mobile1",
     "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#MobileSensor", "http://www.symbiote-h2020.eu/ontology/core#Resource" ],
     "id" : "mobile1",
     "locatedAt" : "_:b0",

@@ -394,7 +394,7 @@ public class QueryGenerationTests {
     }
 
     //TODO fix nearby
-    //@Test
+    @Test
     public void testSearchByNearby() {
         Double latitude = Double.valueOf("48.864716");
         Double longitude = Double.valueOf("2.349014");
@@ -404,11 +404,11 @@ public class QueryGenerationTests {
         ResultSet resultSet = triplestore.executeQuery(query,null,false);
 
         int size = countAndPrintSearchResponses(resultSet);
-        assertEquals("Resource query should return " + 2 + " but got " + size, 2, size);
+        assertEquals("Resource query should return " + 3 + " but got " + size, 3, size);
     }
 
     //TODO fix
-//    @Test
+    @Test
     public void testSearchByNearby_NotExisting() {
         Double latitude = Double.valueOf("72.401790");
         Double longitude = Double.valueOf("55.960144");

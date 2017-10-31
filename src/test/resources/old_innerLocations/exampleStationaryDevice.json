@@ -38,7 +38,7 @@
     "mandatory" : "true",
     "name" : "inputParam1"
   }, {
-    "@id" : "http://www.symbiote-h2020.eu/ontology/resources/actuatingService1",
+    "@id" : "http://www.symbiote-h2020.eu/ontology/internal/resources/actuatingService1",
     "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#ActuatingService", "http://www.symbiote-h2020.eu/ontology/core#Resource" ],
     "affects" : "http://purl.oclc.org/NET/ssnx/qu/quantity#temperature",
     "hasFeatureOfInterest" : "_:b4",
@@ -49,9 +49,9 @@
     "comment" : "This is actuating service 1",
     "label" : "Actuating Service 1"
   }, {
-    "@id" : "http://www.symbiote-h2020.eu/ontology/resources/stationardevice1",
+    "@id" : "http://www.symbiote-h2020.eu/ontology/internal/resources/stationardevice1",
     "@type" : [ "http://www.symbiote-h2020.eu/ontology/core#Actuator", "http://www.symbiote-h2020.eu/ontology/core#Resource", "http://www.symbiote-h2020.eu/ontology/core#StationarySensor" ],
-    "hasCapability" : "http://www.symbiote-h2020.eu/ontology/resources/actuatingService1",
+    "hasCapability" : "http://www.symbiote-h2020.eu/ontology/internal/resources/actuatingService1",
     "hasFeatureOfInterest" : "_:b1",
     "id" : "stationardevice1",
     "locatedAt" : "_:b0",

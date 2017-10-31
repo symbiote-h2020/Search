@@ -28,7 +28,7 @@
     "max" : "10.0",
     "min" : "2.0"
   }, {
-    "@id" : "http://www.symbiote-h2020.eu/ontology/platforms/Platform1/location/59ad0b5f8d116620906557f2",
+    "@id" : "http://www.symbiote-h2020.eu/ontology/internal/platforms/Platform1/location/59ad0b5f8d116620906557f2",
     "@type" : "core:WGS84Location",
     "description" : "This is paris",
     "name" : "Paris",
@@ -36,11 +36,11 @@
     "lat" : "48.864716",
     "long" : "2.349014"
   }, {
-    "@id" : "http://www.symbiote-h2020.eu/ontology/resources/actuator1",
+    "@id" : "http://www.symbiote-h2020.eu/ontology/internal/resources/actuator1",
     "@type" : "core:Actuator",
     "hasCapability" : "_:b0",
     "id" : "actuator1",
-    "locatedAt" : "http://www.symbiote-h2020.eu/ontology/platforms/Platform1/location/59ad0b5f8d116620906557f2",
+    "locatedAt" : "http://www.symbiote-h2020.eu/ontology/internal/platforms/Platform1/location/59ad0b5f8d116620906557f2",
     "description" : "This is actuator 1",
     "name" : "Actuator 1"
   }, {
