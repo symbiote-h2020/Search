@@ -7,6 +7,7 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
+import eu.h2020.symbiote.core.ci.SparqlQueryResponse;
 import eu.h2020.symbiote.core.internal.CoreSparqlQueryRequest;
 import eu.h2020.symbiote.handlers.SearchHandler;
 import org.apache.commons.logging.Log;
@@ -48,7 +49,7 @@ public class SparqlSearchRequestedConsumer extends DefaultConsumer {
             ObjectMapper mapper = new ObjectMapper();
             CoreSparqlQueryRequest searchRequest = mapper.readValue(msg, CoreSparqlQueryRequest.class);
 
-            String response = null;
+            SparqlQueryResponse response = null;
              try {
                  response = handler.sparqlSearch(searchRequest);
              } catch( Exception e ) {

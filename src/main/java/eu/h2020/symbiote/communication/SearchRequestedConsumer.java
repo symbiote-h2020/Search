@@ -56,8 +56,8 @@ public class SearchRequestedConsumer extends DefaultConsumer {
             try {
                 response = handler.search(searchRequest);
                 //Send the response back to the client
-                if (response != null && response.getResources() != null) {
-                    responseMessage = "size is " + response.getResources().size();
+                if (response != null && response.getBody() != null) {
+                    responseMessage = "size is " + response.getBody().size();
                 } else {
                     responseMessage = "Response is null or empty";
                 }

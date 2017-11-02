@@ -285,7 +285,7 @@ public class TripleStore {
         ResultSet result;
         //TODO not sure if synchronization here is needed
 //        synchronized( TripleStore.class ) {
-            setSecurityRequest(securityRequest);
+
 //        Model model = dataset.containsNamedModel(graphUri)
 //                ? dataset.getNamedModel(graphUri)
 //                : dataset.getDefaultModel();
@@ -299,10 +299,13 @@ public class TripleStore {
 
 //            Model modelToUse = useSecureGraph ? securedModel:model;
             if( useSecureGraph ) {
-                try (QueryExecution qe = QueryExecutionFactory.create(query, securedModel)) {
-//                qe.setTimeout(30000);
-                    result = ResultSetFactory.copyResults(qe.execSelect());
-                    dataset.end();
+                synchronized( TripleStore.class ) {
+                    setSecurityRequest(securityRequest);
+                    try (QueryExecution qe = QueryExecutionFactory.create(query, securedModel)) {
+                        qe.setTimeout(30000);
+                        result = ResultSetFactory.copyResults(qe.execSelect());
+                        dataset.end();
+                    }
                 }
             } else {
 //            Model mm = ModelFactory.createRDFSModel(dataset.getDefaultModel());

@@ -17,6 +17,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -27,6 +28,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static eu.h2020.symbiote.TestSetupConfig.*;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
@@ -105,7 +107,60 @@ public class MessagingTests {
             String jsonPlatform = mapper.writeValueAsString(platform);
             sendMessage(PLATFORM_EXCHANGE_NAME, PLATFORM_CREATED, null, jsonPlatform);
             Thread.sleep(1000);
-            verify(mockHandler).registerPlatform(isA(Platform.class));
+            ArgumentCaptor<Platform> platformCaptor = ArgumentCaptor.forClass(Platform.class);
+            verify(mockHandler,times(1)).registerPlatform(platformCaptor.capture());
+            assertEquals("ID of the platforms must be the same",platform.getId(),platformCaptor.getValue().getId());
+            assertEquals("Name of the platforms must be the same",platform.getName(),platformCaptor.getValue().getName());
+            assertEquals("Description of the platforms must be the same",platform.getDescription(),platformCaptor.getValue().getDescription());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testPlatformConsumerForDeleteCalled() {
+        PlatformHandler mockHandler = mock(PlatformHandler.class);
+        try {
+            rabbitManager.registerPlatformDeletedConsumer(mockHandler);
+
+            ObjectMapper mapper = new ObjectMapper();
+            Platform platform = generatePlatformA();
+            String jsonPlatform = mapper.writeValueAsString(platform);
+            sendMessage(PLATFORM_EXCHANGE_NAME, PLATFORM_DELETED, null, jsonPlatform);
+            Thread.sleep(1000);
+            ArgumentCaptor<String> platformIdCaptor = ArgumentCaptor.forClass(String.class);
+            verify(mockHandler,times(1)).deletePlatform(platformIdCaptor.capture());
+            assertEquals("ID to delete must be the same", platform.getId(),platformIdCaptor.getValue());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testPlatformConsumerForModifyCalled() {
+        PlatformHandler mockHandler = mock(PlatformHandler.class);
+        try {
+            rabbitManager.registerPlatformUpdatedConsumer(mockHandler);
+
+            ObjectMapper mapper = new ObjectMapper();
+            Platform platform = generatePlatformA();
+            String jsonPlatform = mapper.writeValueAsString(platform);
+            sendMessage(PLATFORM_EXCHANGE_NAME, PLATFORM_MODIFIED, null, jsonPlatform);
+            Thread.sleep(1000);
+            ArgumentCaptor<Platform> platformUpdateCaptor = ArgumentCaptor.forClass(Platform.class);
+            verify(mockHandler,times(1)).updatePlatform(platformUpdateCaptor.capture());
+
+            assertEquals("ID of the platforms must be the same",platform.getId(),platformUpdateCaptor.getValue().getId());
+            assertEquals("Name of the platforms must be the same",platform.getName(),platformUpdateCaptor.getValue().getName());
+            assertEquals("Description of the platforms must be the same",platform.getDescription(),platformUpdateCaptor.getValue().getDescription());
 
         } catch (IOException e) {
             e.printStackTrace();

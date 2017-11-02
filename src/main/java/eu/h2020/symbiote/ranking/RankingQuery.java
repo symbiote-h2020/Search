@@ -29,7 +29,7 @@ public class RankingQuery {
     private Map<String, QueryResourceResult> resourcesMap = new HashMap<>();
 
     public RankingQuery( QueryResponse queryResponse ) {
-        queryResponse.getResources().stream().forEach( queryResourceResult
+        queryResponse.getBody().stream().forEach( queryResourceResult
                 -> {resourcesMap.put(queryResourceResult.getId(),queryResourceResult);});
     }
 
@@ -83,10 +83,10 @@ public class RankingQuery {
 
     public QueryResponse toResponse() {
         QueryResponse qr = new QueryResponse();
-        qr.setResources(this.resourcesMap.values().stream().sorted(Comparator.comparing(QueryResourceResult::getRanking).reversed())
+        qr.setBody(this.resourcesMap.values().stream().sorted(Comparator.comparing(QueryResourceResult::getRanking).reversed())
                 .collect(Collectors.toList()));
 
-        qr.getResources().stream().forEach(res-> System.out.println(res.getId() + " : " + this.resourcesMap.get(res.getId()).getRanking() ));
+        qr.getBody().stream().forEach(res-> System.out.println(res.getId() + " : " + this.resourcesMap.get(res.getId()).getRanking() ));
         return qr;
     }
 }

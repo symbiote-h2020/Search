@@ -297,7 +297,7 @@ public class HandlerUtils {
         QueryResponse response = null;
         if( responses!=null ) {
             response = new QueryResponse();
-            response.setResources(responses.values().stream().collect(Collectors.toList()));
+            response.setBody(responses.values().stream().collect(Collectors.toList()));
         };
         return response;
     }

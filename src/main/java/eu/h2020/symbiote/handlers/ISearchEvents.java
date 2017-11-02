@@ -1,6 +1,7 @@
 package eu.h2020.symbiote.handlers;
 
 import eu.h2020.symbiote.core.ci.QueryResponse;
+import eu.h2020.symbiote.core.ci.SparqlQueryResponse;
 import eu.h2020.symbiote.core.internal.CoreQueryRequest;
 import eu.h2020.symbiote.core.internal.CoreSparqlQueryRequest;
 
@@ -25,6 +26,6 @@ public interface ISearchEvents {
      * @param request Request containing SPARQL.
      * @return Response in format specified in the request.
      */
-    String sparqlSearch(CoreSparqlQueryRequest request );
+    SparqlQueryResponse sparqlSearch(CoreSparqlQueryRequest request );
 
 }

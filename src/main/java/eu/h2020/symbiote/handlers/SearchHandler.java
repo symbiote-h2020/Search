@@ -2,6 +2,7 @@ package eu.h2020.symbiote.handlers;
 
 import eu.h2020.symbiote.core.ci.QueryResourceResult;
 import eu.h2020.symbiote.core.ci.QueryResponse;
+import eu.h2020.symbiote.core.ci.SparqlQueryResponse;
 import eu.h2020.symbiote.core.internal.CoreQueryRequest;
 import eu.h2020.symbiote.core.internal.CoreSparqlQueryRequest;
 import eu.h2020.symbiote.filtering.SecurityManager;
@@ -9,8 +10,10 @@ import eu.h2020.symbiote.ontology.model.TripleStore;
 import eu.h2020.symbiote.query.QueryGenerator;
 import eu.h2020.symbiote.query.QueryVarName;
 import eu.h2020.symbiote.query.ResourceAndObservedPropertyQueryGenerator;
+import eu.h2020.symbiote.security.commons.exceptions.custom.SecurityHandlerException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpStatus;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.query.ResultSetFormatter;
@@ -29,6 +32,8 @@ import java.util.stream.Collectors;
  * Created by Mael on 11/01/2017.
  */
 public class SearchHandler implements ISearchEvents {
+
+    public static final String SUCCESS_MESSAGE = "Search performed correctly";
 
     private static final Log log = LogFactory.getLog(SearchHandler.class);
 
@@ -59,34 +64,43 @@ public class SearchHandler implements ISearchEvents {
             response = HandlerUtils.generateSearchResponseFromResultSet(results);
 
             if (q.isMultivaluequery()) {
-                response.getResources().forEach(this::searchForPropertiesOfResource);
+                response.getBody().forEach(this::searchForPropertiesOfResource);
             }
 
             //Filtering of the results
-            log.debug("Initially found " + response.getResources().size() + " resources, performing filtering" );
+            log.debug("Initially found " + response.getBody().size() + " resources, performing filtering" );
 
-            List<QueryResourceResult> filteredResults = response.getResources().stream().filter(res -> {
-                try {
+
+
+            List<QueryResourceResult> filteredResults = response.getBody().stream().filter(res -> {
+                    log.debug("Checking policies for for res: " + res.getId());
                     return securityManager.checkPolicyByResourceId(res.getId(), request.getSecurityRequest());
-                } catch (Exception e) {
-                    log.error(e);
-                    return false;
-                }
             }).collect(Collectors.toList());
 
             log.debug("After filtering got " + filteredResults.size() + " results");
-            response.setResources(filteredResults);
+            response.setBody(filteredResults);
+            response.setStatus(HttpStatus.SC_OK);
+            response.setMessage(SUCCESS_MESSAGE);
 
         } catch (Exception e) {
             log.error("Error occurred during search: " + e.getMessage());
-            e.printStackTrace();
+            response.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+            response.setMessage("Internal server error occurred during search : " + e.getMessage());
+        }
+        try {
+            response.setServiceResponse(securityManager.generateSecurityResponse());
+        } catch (SecurityHandlerException e) {
+            log.error("Error occurred when generating security response. Setting response to empty string. Message of error: " + e.getMessage(), e);
+            response.setServiceResponse("");
         }
         return response;
     }
 
     @Override
-    public String sparqlSearch(CoreSparqlQueryRequest request) {
+    public SparqlQueryResponse sparqlSearch(CoreSparqlQueryRequest request) {
         String resultOfSearch = "";
+        SparqlQueryResponse response = new SparqlQueryResponse();
+
         ResultSet resultSet = this.triplestore.executeQuery(request.getBody(),request.getSecurityRequest(),true);
 
 
@@ -105,9 +119,22 @@ public class SearchHandler implements ISearchEvents {
             resultOfSearch = stream.toString("UTF-8");
         } catch (UnsupportedEncodingException e) {
             log.error("Error occurred when doing sparqlSearch formatting: " + e.getMessage(), e);
-            e.printStackTrace();
+            response.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+            response.setMessage("Error occurred when generating result output");
         }
-        return resultOfSearch;
+
+        response.setBody(resultOfSearch);
+        response.setStatus(HttpStatus.SC_OK);
+        response.setMessage(SUCCESS_MESSAGE);
+
+        try {
+            response.setServiceResponse(securityManager.generateSecurityResponse());
+        } catch (SecurityHandlerException e) {
+            log.error("Error occurred when generating security response. Setting response to empty string. Message of error: " + e.getMessage(), e);
+            response.setServiceResponse("");
+            response.setMessage("Security response could not be correctly generated");
+        }
+        return response;
     }
 
     private void searchForPropertiesOfResource(QueryResourceResult resource) {

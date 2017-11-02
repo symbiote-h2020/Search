@@ -2,6 +2,7 @@ package eu.h2020.symbiote;
 
 import eu.h2020.symbiote.core.ci.QueryResourceResult;
 import eu.h2020.symbiote.core.ci.SparqlQueryOutputFormat;
+import eu.h2020.symbiote.core.ci.SparqlQueryResponse;
 import eu.h2020.symbiote.core.internal.CoreSparqlQueryRequest;
 import eu.h2020.symbiote.core.internal.RDFFormat;
 import eu.h2020.symbiote.filtering.SecurityManager;
@@ -158,11 +159,11 @@ public class SearchHandlerTests {
 
             request.setSecurityRequest(null);
 
-            String result = searchHandler.sparqlSearch(request);
+            SparqlQueryResponse result = searchHandler.sparqlSearch(request);
             assertNotNull(result);
-            assertFalse(result.isEmpty());
+            assertFalse(result.getBody().isEmpty());
 
-            BufferedReader reader = new BufferedReader(new StringReader(result));
+            BufferedReader reader = new BufferedReader(new StringReader(result.getBody()));
             String l1 = reader.readLine();
             String l2 = reader.readLine();
             String l3 = reader.readLine();
@@ -191,11 +192,11 @@ public class SearchHandlerTests {
 
             request.setSecurityRequest(null);
 
-            String result = searchHandler.sparqlSearch(request);
+            SparqlQueryResponse result = searchHandler.sparqlSearch(request);
             assertNotNull(result);
-            assertFalse(result.isEmpty());
+            assertFalse(result.getBody().isEmpty());
 
-            BufferedReader reader = new BufferedReader(new StringReader(result));
+            BufferedReader reader = new BufferedReader(new StringReader(result.getBody()));
             String line;
             while((line = reader.readLine()) != null ) {
                 System.out.println(line);

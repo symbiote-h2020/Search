@@ -50,33 +50,58 @@ public class SecurityManager implements IFilteringManager {
         }
     }
 
+    public String generateSecurityResponse() throws SecurityHandlerException {
+        if( securityEnabled ) {
+            return componentSecurityHandler.generateServiceResponse();
+        }
+        return "";
+    }
+
     @Override
-    public boolean checkPolicyByResourceId(String resourceId, SecurityRequest request ) throws Exception {
+    public boolean checkPolicyByResourceId(String resourceId, SecurityRequest request ) {
         return checkPolicy(accessPolicyRepo.findById(resourceId), request);
     }
 
     @Override
-    public boolean checkPolicyByResourceIri(String resourceIri, SecurityRequest request) throws Exception {
+    public boolean checkPolicyByResourceIri(String resourceIri, SecurityRequest request) {
         return checkPolicy(accessPolicyRepo.findByIri(resourceIri),request);
     }
 
-    private boolean checkPolicy( Optional<AccessPolicy> policy, SecurityRequest request ) throws Exception {
+    private boolean checkPolicy( Optional<AccessPolicy> policy, SecurityRequest request ) {
         boolean result = true;
-
-        //TODO uncomment for proper validation
-        if( policy.isPresent() ) {
-            Map<String, IAccessPolicy> accessPolicyMap = new HashMap<>();
-            accessPolicyMap.put(policy.get().getResourceId(), policy.get().getPolicy());
-            Set<String> ids = componentSecurityHandler.getSatisfiedPoliciesIdentifiers(accessPolicyMap, request);
-            if(!ids.contains(policy.get().getResourceId())) {
-                throw new Exception("Security Policy is not valid");
+        if( request == null ) {
+            log.info("Security Request is null");
+            result = false;
+        } else {
+            //TODO uncomment for proper validation
+            if (policy.isPresent()) {
+                Map<String, IAccessPolicy> accessPolicyMap = new HashMap<>();
+                if (policy.get().getResourceId() != null) {
+                    if (policy.get().getPolicy() != null) {
+                        accessPolicyMap.put(policy.get().getResourceId(), policy.get().getPolicy());
+                        Set<String> ids = componentSecurityHandler.getSatisfiedPoliciesIdentifiers(accessPolicyMap, request);
+                        if (!ids.contains(policy.get().getResourceId())) {
+                            log.debug("Security Policy is not valid for res: " + policy.get().getResourceId());
+                            result = false;
+                            //                throw new Exception("Security Policy is not valid");
+                        } else {
+                            log.debug("Security Policy is valid "  + policy.get().getResourceId());
+                            result = true;
+                        }
+                    } else {
+                        log.debug("Policy is null");
+                    }
+                } else {
+                    log.debug("Resource id of policy is null");
+                }
+            } else {
+                log.debug("No policy to check is present");
             }
         }
-
-        Random rand = new Random();
-        result = rand.nextBoolean();
-
-        log.debug("Checking if policy is right for resource " + policy.get().getResourceId() + " result: " + result );
+//        Random rand = new Random();
+//        result = rand.nextBoolean();
+//
+//        log.debug("Checking if policy is right for resource " + policy.get().getResourceId() + " result: " + result );
 
         return result;
     }

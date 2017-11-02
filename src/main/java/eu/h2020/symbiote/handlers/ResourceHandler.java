@@ -147,7 +147,8 @@ public class ResourceHandler implements IResourceEvents {
         log.debug("Deleting resource " + resourceId);
         UpdateRequest updateRequest = new DeleteResourceRequestGenerator(resourceId).generateRequest();
         this.storage.getTripleStore().executeUpdate(updateRequest);
-        storage.getTripleStore().printDataset();
+        this.storage.getTripleStore().printDataset();
+        this.accessPolicyRepo.delete(resourceId);
         return true;
     }
 }
