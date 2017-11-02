@@ -302,7 +302,7 @@ public class TripleStore {
                 synchronized( TripleStore.class ) {
                     setSecurityRequest(securityRequest);
                     try (QueryExecution qe = QueryExecutionFactory.create(query, securedModel)) {
-                        qe.setTimeout(30000);
+                        qe.setTimeout(40000);
                         result = ResultSetFactory.copyResults(qe.execSelect());
                         dataset.end();
                     }

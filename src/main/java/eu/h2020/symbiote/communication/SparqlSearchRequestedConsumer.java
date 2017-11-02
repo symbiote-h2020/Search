@@ -10,8 +10,10 @@ import com.rabbitmq.client.Envelope;
 import eu.h2020.symbiote.core.ci.SparqlQueryResponse;
 import eu.h2020.symbiote.core.internal.CoreSparqlQueryRequest;
 import eu.h2020.symbiote.handlers.SearchHandler;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpStatus;
 
 import java.io.IOException;
 
@@ -54,6 +56,7 @@ public class SparqlSearchRequestedConsumer extends DefaultConsumer {
                  response = handler.sparqlSearch(searchRequest);
              } catch( Exception e ) {
                  log.error("Error occurred when performing sparql search: " + e.getMessage(), e);
+                 response = new SparqlQueryResponse(HttpStatus.SC_INTERNAL_SERVER_ERROR,"Error occurred during sparql search: " + e.getMessage(),"");
              }
             //Send the response back to the client
 //            String responseMessage = "msg";
@@ -63,7 +66,7 @@ public class SparqlSearchRequestedConsumer extends DefaultConsumer {
 //                responseMessage = "Response is null or empty";
 //            }
 
-            log.debug( "Got Sparql response : " + response );
+            log.debug( "Got Sparql response : " + StringUtils.substring(response.getBody(), 0,200 ));
 
             byte[] responseBytes = mapper.writeValueAsBytes(response!=null?response:"[]");
 

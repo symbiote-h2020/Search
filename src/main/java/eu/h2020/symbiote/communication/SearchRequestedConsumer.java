@@ -12,8 +12,10 @@ import eu.h2020.symbiote.core.internal.CoreQueryRequest;
 import eu.h2020.symbiote.handlers.SearchHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpStatus;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Consumer of the search requested event. Translates the message as list of query parameters, translates them into
@@ -63,6 +65,7 @@ public class SearchRequestedConsumer extends DefaultConsumer {
                 }
             } catch( Exception e ) {
                 log.error("Error occurred when performing search operation: " + e.getMessage(), e);
+                response = new QueryResponse(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Error occurred during search: " + e.getMessage(), new ArrayList<>());
             }
 
 
