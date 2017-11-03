@@ -7,6 +7,7 @@ import eu.h2020.symbiote.handlers.PlatformHandler;
 import eu.h2020.symbiote.handlers.ResourceHandler;
 import eu.h2020.symbiote.handlers.SearchHandler;
 import eu.h2020.symbiote.ranking.PopularityManager;
+import eu.h2020.symbiote.ranking.RankingHandler;
 import eu.h2020.symbiote.search.SearchStorage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -47,16 +48,20 @@ public class SearchApplication {
         private final PopularityManager popularityManager;
         private final AccessPolicyRepo accessPolicyRepo;
         private final SecurityManager securityManager;
+        private final RankingHandler rankingHandler;
         private final boolean securityEnabled;
+        private final boolean rankingEnabled;
 
         @Autowired
-        public CLR(RabbitManager manager, PopularityManager popularityManager, AccessPolicyRepo accessPolicyRepo, SecurityManager securityManager,
-                   @Value("${search.security.enabled}") boolean securityEnabled) {
+        public CLR(RabbitManager manager, PopularityManager popularityManager, AccessPolicyRepo accessPolicyRepo, SecurityManager securityManager, RankingHandler rankingHandler,
+                   @Value("${search.security.enabled}") boolean securityEnabled, @Value("${search.ranking.enabled}") boolean rankingEnabled) {
             this.manager = manager;
             this.popularityManager = popularityManager;
             this.accessPolicyRepo = accessPolicyRepo;
             this.securityManager = securityManager;
+            this.rankingHandler = rankingHandler;
             this.securityEnabled = securityEnabled;
+            this.rankingEnabled = rankingEnabled;
         }
 
         @Override
@@ -77,7 +82,7 @@ public class SearchApplication {
 
             manager.registerResourceUpdatedConsumer(resourceHandler);
 
-            SearchHandler searchHandler = new SearchHandler(searchStorage.getTripleStore(), securityManager );
+            SearchHandler searchHandler = new SearchHandler(searchStorage.getTripleStore(), securityManager, rankingHandler, rankingEnabled );
             manager.registerResourceSearchConsumer(searchHandler);
             manager.registerResourceSparqlSearchConsumer(searchHandler);
 

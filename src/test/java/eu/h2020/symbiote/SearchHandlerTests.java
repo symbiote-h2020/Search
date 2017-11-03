@@ -10,6 +10,7 @@ import eu.h2020.symbiote.handlers.SearchHandler;
 import eu.h2020.symbiote.model.cim.WGS84Location;
 import eu.h2020.symbiote.ontology.model.Registry;
 import eu.h2020.symbiote.ontology.model.TripleStore;
+import eu.h2020.symbiote.ranking.RankingHandler;
 import org.apache.commons.io.IOUtils;
 import org.apache.jena.rdf.model.Model;
 import org.junit.Before;
@@ -40,6 +41,8 @@ public class SearchHandlerTests {
     private SearchHandler searchHandler;
     @Mock
     private SecurityManager securityManager;
+    @Mock
+    private RankingHandler rankingHandler;
 
 
     @Before
@@ -76,7 +79,7 @@ public class SearchHandlerTests {
 //            registry.registerResource(PLATFORM_A_URI,PLATFORM_A_SERVICE_URI,RESOURCE_ACTUATOR_URI,actuatorModel);
 //            registry.registerResource(PLATFORM_A_URI,PLATFORM_A_SERVICE_URI,RESOURCE_ACTUATING_SERVICE_URI,actuatingServiceModel);
 
-            searchHandler = new SearchHandler(triplestore, securityManager);
+            searchHandler = new SearchHandler(triplestore, securityManager, rankingHandler, false);
 
             triplestore.printDataset();
         } catch (IOException e) {

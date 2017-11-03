@@ -28,7 +28,10 @@ public class RankingQuery {
 
     private Map<String, QueryResourceResult> resourcesMap = new HashMap<>();
 
+    private QueryResponse initialQuery;
+
     public RankingQuery( QueryResponse queryResponse ) {
+        this.initialQuery = queryResponse;
         queryResponse.getBody().stream().forEach( queryResourceResult
                 -> {resourcesMap.put(queryResourceResult.getId(),queryResourceResult);});
     }
@@ -83,6 +86,10 @@ public class RankingQuery {
 
     public QueryResponse toResponse() {
         QueryResponse qr = new QueryResponse();
+        qr.setMessage(initialQuery.getMessage());
+        qr.setStatus(initialQuery.getStatus());
+        qr.setServiceResponse(initialQuery.getServiceResponse());
+
         qr.setBody(this.resourcesMap.values().stream().sorted(Comparator.comparing(QueryResourceResult::getRanking).reversed())
                 .collect(Collectors.toList()));
 

@@ -10,6 +10,8 @@ import eu.h2020.symbiote.ontology.model.TripleStore;
 import eu.h2020.symbiote.query.QueryGenerator;
 import eu.h2020.symbiote.query.QueryVarName;
 import eu.h2020.symbiote.query.ResourceAndObservedPropertyQueryGenerator;
+import eu.h2020.symbiote.ranking.RankingHandler;
+import eu.h2020.symbiote.ranking.RankingQuery;
 import eu.h2020.symbiote.security.commons.exceptions.custom.SecurityHandlerException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,15 +42,20 @@ public class SearchHandler implements ISearchEvents {
     private final TripleStore triplestore;
 
     private final SecurityManager securityManager;
+    private final RankingHandler rankingHandler;
+
+    private final boolean shouldRank;
 
     /**
      * Create a handler of the platform events for specified storage.
      *
      * @param triplestore Triplestore on which the events should be executed.
      */
-    public SearchHandler(TripleStore triplestore, SecurityManager securityManager) {
+    public SearchHandler(TripleStore triplestore, SecurityManager securityManager, RankingHandler rankingHandler, boolean shouldRank) {
         this.triplestore = triplestore;
         this.securityManager = securityManager;
+        this.rankingHandler = rankingHandler;
+        this.shouldRank = shouldRank;
     }
 
 
@@ -78,9 +85,15 @@ public class SearchHandler implements ISearchEvents {
             }).collect(Collectors.toList());
 
             log.debug("After filtering got " + filteredResults.size() + " results");
+
             response.setBody(filteredResults);
             response.setStatus(HttpStatus.SC_OK);
             response.setMessage(SUCCESS_MESSAGE);
+
+            if( shouldRank ) {
+                log.debug("Generating ranking for response...");
+                response = rankingHandler.generateRanking(new RankingQuery(response));
+            }
 
         } catch (Exception e) {
             log.error("Error occurred during search: " + e.getMessage());

@@ -12,6 +12,7 @@ import eu.h2020.symbiote.handlers.ResourceHandler;
 import eu.h2020.symbiote.handlers.SearchHandler;
 import eu.h2020.symbiote.ontology.model.Registry;
 import eu.h2020.symbiote.ontology.model.TripleStore;
+import eu.h2020.symbiote.ranking.RankingHandler;
 import eu.h2020.symbiote.search.SearchStorage;
 import eu.h2020.symbiote.semantics.ontology.CIM;
 import org.apache.commons.io.IOUtils;
@@ -46,6 +47,8 @@ public class DeleteAndUpdateHandlerTests {
     private AccessPolicyRepo accessPolicyRepo;
     @Mock
     private SecurityManager securityManager;
+    @Mock
+    private RankingHandler rankingHandler;
 
     @Before
     public void setUp() throws Exception {
@@ -85,7 +88,7 @@ public class DeleteAndUpdateHandlerTests {
         System.out.println(" ===== PRE ==== ");
         printDataset();
         System.out.println(" ===== PRE ==== ");
-        SearchHandler searchHandler = new SearchHandler(triplestore,securityManager);
+        SearchHandler searchHandler = new SearchHandler(triplestore,securityManager,rankingHandler, false);
 
         CoreQueryRequest searchReq = new CoreQueryRequest();
         searchReq.setId("stationary1");
@@ -156,7 +159,7 @@ public class DeleteAndUpdateHandlerTests {
         boolean hasAtLeastOne = graph.listStatements().hasNext();
         assertTrue("Initial graph should have at least some statements", hasAtLeastOne);
 
-        SearchHandler searchHandler = new SearchHandler(triplestore,securityManager);
+        SearchHandler searchHandler = new SearchHandler(triplestore,securityManager, rankingHandler,false);
         CoreQueryRequest searchReq = new CoreQueryRequest();
         searchReq.setName("*stationary*");
         QueryResponse searchResponse = searchHandler.search(searchReq);
