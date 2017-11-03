@@ -156,6 +156,24 @@ public class RankingTests {
     }
 
     @Test
+    public void testRankingForEmpty() {
+        when(popularityManager.getPopularityForResource(RES1_ID)).thenReturn(Integer.valueOf(0));
+        when(availabilityManager.getAvailabilityForResource(RES1_ID)).thenReturn(Float.valueOf(0.0f).floatValue());
+
+        QueryResponse queryResponse = new QueryResponse();
+        List<QueryResourceResult> queryResourceResults = new ArrayList<>();
+
+        queryResourceResults.add(RESOURCE1);
+
+        queryResponse.setBody(queryResourceResults);
+        RankingQuery rankingQuery = new RankingQuery(queryResponse);
+        rankingQuery.setIncludeAvailability(true);
+        rankingQuery.setIncludePopularity(true);
+        rankingQuery.setIncludeDistance(false);
+        QueryResponse rankedQueryResponse = rankingHandler.generateRanking(rankingQuery);
+    }
+
+    @Test
     public void testAvailabilityManagerFindAvailable() {
         CloudMonitoringDevice monit = new CloudMonitoringDevice();
         monit.setId(RES1_ID);

@@ -74,6 +74,9 @@ public class RankingHandler {
             normalisedDistanceMap = normaliseFloatMap(distanceMap);
         } else {
             //TODO setup normalised distance map properly
+            for(QueryResourceResult resource: query.getResourcesMap().values() ) {
+                normalisedDistanceMap.put(resource.getId(),Float.valueOf(0.0f));
+            }
         }
 
         Map<String,Integer> popularityMap = new HashMap<>();
