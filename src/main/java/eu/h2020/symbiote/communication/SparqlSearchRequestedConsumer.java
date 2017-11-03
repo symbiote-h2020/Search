@@ -25,6 +25,8 @@ import java.io.IOException;
  */
 public class SparqlSearchRequestedConsumer extends DefaultConsumer {
 
+    private static int MAX_SPARQL_SIZE = 30000000;
+
     private static Log log = LogFactory.getLog(SparqlSearchRequestedConsumer.class);
 
     private final SearchHandler handler;
@@ -66,7 +68,16 @@ public class SparqlSearchRequestedConsumer extends DefaultConsumer {
 //                responseMessage = "Response is null or empty";
 //            }
 
-            log.debug( "Got Sparql response : " + StringUtils.substring(response.getBody(), 0,200 ));
+            log.debug( "Got Sparql response : " + StringUtils.substring(response.getBody(), 0,500 ));
+
+            if( response.getBody().length() > MAX_SPARQL_SIZE ) {
+                log.debug( "Size is too big: " + response.getBody().length() );
+                response.setMessage("Size of the response is too big for communication");
+                response.setStatus(HttpStatus.SC_NOT_ACCEPTABLE);
+                response.setBody("");
+            } else {
+                log.debug("Size of the response ok: " + response.getBody().length());
+            }
 
             byte[] responseBytes = mapper.writeValueAsBytes(response!=null?response:"[]");
 
