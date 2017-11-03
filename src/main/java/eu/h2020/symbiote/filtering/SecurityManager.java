@@ -81,7 +81,7 @@ public class SecurityManager implements IFilteringManager {
                 //Check in cache
                 String resourceId = policy.get().getResourceId();
                 SecurityCacheKey securityCacheKey = new SecurityCacheKey(request, resourceId);
-                if (!cache.get(securityCacheKey)) {
+                if (cache.get(securityCacheKey) == null) {
                     log.debug("No cache available for res " + resourceId + " and request timestamp + "
                             + request.getTimestamp() + ". Checking policy");
                     Map<String, IAccessPolicy> accessPolicyMap = new HashMap<>();

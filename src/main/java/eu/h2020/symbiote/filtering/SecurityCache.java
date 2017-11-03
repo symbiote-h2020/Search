@@ -17,7 +17,7 @@ public class SecurityCache<K, T> {
     private static final Log log = LogFactory.getLog(SecurityCache.class);
 
     private static final long TIME_TO_LIVE = 10 * 1000;
-    private static final long CLEANUP_INTERVAL = 600 * 1000; //Every 10 minutes
+    private static final long CLEANUP_INTERVAL = 120 * 1000; //Every 2 minutes
     private LRUMap securityCache;
 
     protected class SecurityCacheObject {
@@ -100,7 +100,6 @@ public class SecurityCache<K, T> {
                     deleteKey.add(key);
                 }
             }
-            log.debug("Cache clearing found " + deleteKey.size() + " keys for delete");
         }
 
         for (K key : deleteKey) {
@@ -108,6 +107,5 @@ public class SecurityCache<K, T> {
                 securityCache.remove(key);
             }
         }
-        log.debug("After delete cache size is: " + securityCache.size());
     }
 }
