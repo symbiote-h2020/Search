@@ -92,7 +92,9 @@ public class SearchHandler implements ISearchEvents {
 
             if( shouldRank ) {
                 log.debug("Generating ranking for response...");
-                response = rankingHandler.generateRanking(new RankingQuery(response));
+                RankingQuery rankingQuery = new RankingQuery(response);
+                rankingQuery.setIncludeDistance(HandlerUtils.isDistanceQuery(request));
+                response = rankingHandler.generateRanking(rankingQuery);
             }
 
         } catch (Exception e) {

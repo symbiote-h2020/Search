@@ -302,6 +302,10 @@ public class HandlerUtils {
         return response;
     }
 
+    public static boolean isDistanceQuery( CoreQueryRequest request ) {
+        return request != null && request.getLocation_lat() != null && request.getLocation_long() != null && request.getMax_distance() != null;
+    }
+
     private static boolean isPossibleType(String type) {
         if( type.equals(CIM.MobileSensor) ||
                 type.equals(CIM.StationarySensor) ||

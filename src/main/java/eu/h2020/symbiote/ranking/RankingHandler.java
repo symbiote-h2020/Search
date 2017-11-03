@@ -80,8 +80,6 @@ public class RankingHandler {
         query.getResourcesMap().values().stream().forEach(queryResourceResult -> popularityMap.put(queryResourceResult.getId(),popularityManager.getPopularityForResource(queryResourceResult.getId())));
         Map<String,Float> normalisedPopularity = normaliseIntegerMap(popularityMap);
 
-
-
         float[] perfect = generatePerfectPoint(3);
         float[] worst = generateWorstPoint(3);
         float[] weights = generateWeights();
@@ -94,7 +92,9 @@ public class RankingHandler {
                     availabilityManager.getAvailabilityForResource(resource.getId()),
                     normalisedDistanceMap.get(resource.getId()));
 
+
             float weightednDistance = nWeightedDistance(perfect, resValues, weights);
+
 //            log.debug("Res " + resource.getQueryResult().getId() + " calculated weighted distance: " + weightednDistance);
 //            if( first ) {
 //                minWeightednDistance = weightednDistance;
@@ -176,8 +176,12 @@ public class RankingHandler {
     }
 
     private Float normaliseInteger(Integer value, Integer max ) {
-        Float f = (float)value/(float)max;
-        return Float.valueOf(1.0f - f);
+        if( max == Integer.valueOf(0) ) {
+            return Float.valueOf(1.0f);
+        } else {
+            Float f = (float)value/(float)max;
+            return Float.valueOf(1.0f - f);
+        }
     }
 
     private float[] generatePerfectPoint(int size) {
