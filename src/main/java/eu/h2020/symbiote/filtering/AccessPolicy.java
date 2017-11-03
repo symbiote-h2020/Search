@@ -7,24 +7,24 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection="policies")
 public class AccessPolicy {
     @Id
-    private final String resourceId;
+    private final String id;
     private final String iri;
     private final IAccessPolicy policy;
     
     public AccessPolicy() {
-        resourceId = "";
+        id = "";
         iri = "";
         policy = null;
     }
     
     public AccessPolicy(String resourceId, String iri, IAccessPolicy policy) {
-        this.resourceId = resourceId;
+        this.id = resourceId;
         this.iri = iri;
         this.policy = policy;
     }
 
     public String getResourceId() {
-        return resourceId;
+        return id;
     }
 
     public String getIri() {

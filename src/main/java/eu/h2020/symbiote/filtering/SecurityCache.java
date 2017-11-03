@@ -2,6 +2,8 @@ package eu.h2020.symbiote.filtering;
 
 import org.apache.commons.collections4.MapIterator;
 import org.apache.commons.collections4.map.LRUMap;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -11,6 +13,8 @@ import java.util.TimerTask;
  * Created by Szymon Mueller on 03/11/2017.
  */
 public class SecurityCache<K, T> {
+
+    private static final Log log = LogFactory.getLog(SecurityCache.class);
 
     private static final long TIME_TO_LIVE = 10 * 1000;
     private static final long CLEANUP_INTERVAL = 600 * 1000; //Every 10 minutes
@@ -96,6 +100,7 @@ public class SecurityCache<K, T> {
                     deleteKey.add(key);
                 }
             }
+            log.debug("Cache clearing found " + deleteKey.size() + " keys for delete");
         }
 
         for (K key : deleteKey) {
@@ -103,5 +108,6 @@ public class SecurityCache<K, T> {
                 securityCache.remove(key);
             }
         }
+        log.debug("After delete cache size is: " + securityCache.size());
     }
 }
