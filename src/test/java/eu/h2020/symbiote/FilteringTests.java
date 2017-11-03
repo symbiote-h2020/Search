@@ -297,7 +297,7 @@ public class FilteringTests {
         while (resultSet.hasNext()) {
             QuerySolution solution = resultSet.next();
             String resName = solution.get("resName").toString();
-            System.out.println(" - resName - " + resName);
+//            System.out.println(" - resName - " + resName);
             if (resName.equals(RESOURCE_MOBILE_LABEL)) {
                 foundPublic = true;
             }
@@ -314,7 +314,7 @@ public class FilteringTests {
         while (resultSet.hasNext()) {
             QuerySolution solution = resultSet.next();
             String resName = solution.get("resName").toString();
-            System.out.println(" - resName - " + resName);
+//            System.out.println(" - resName - " + resName);
             if (resName.equals(RESOURCE_MOBILE_LABEL)) {
                 foundPublic = true;
             }

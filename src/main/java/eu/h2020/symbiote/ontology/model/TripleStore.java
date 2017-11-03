@@ -58,6 +58,7 @@ public class TripleStore {
     private final Model securedModel;
     private final Model model;
     private FilteringEvaluator evaluator;
+    private int sparqlQueryTimeout = 30000;
 
 
 //    private static final String CIM_FILE = "/core-v0.6.owl";
@@ -163,6 +164,10 @@ public class TripleStore {
         } else {
             securedModel = model;
         }
+    }
+
+    public void setSparqlQueryTimeout(int sparqlQueryTimeout) {
+        this.sparqlQueryTimeout = sparqlQueryTimeout;
     }
 
     private void loadModels() {
@@ -302,7 +307,7 @@ public class TripleStore {
                 synchronized( TripleStore.class ) {
                     setSecurityRequest(securityRequest);
                     try (QueryExecution qe = QueryExecutionFactory.create(query, securedModel)) {
-                        qe.setTimeout(40000);
+                        qe.setTimeout(sparqlQueryTimeout);
                         result = ResultSetFactory.copyResults(qe.execSelect());
                         dataset.end();
                     }

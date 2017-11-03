@@ -91,7 +91,7 @@ public class RankingTests {
         queryResourceResults.add(RESOURCE2);
         queryResourceResults.add(RESOURCE3);
 
-        queryResponse.setResources(queryResourceResults);
+        queryResponse.setBody(queryResourceResults);
         RankingQuery rankingQuery = new RankingQuery(queryResponse);
         rankingQuery.setIncludeAvailability(true);
         rankingQuery.setIncludePopularity(true);
@@ -135,7 +135,7 @@ public class RankingTests {
         queryResourceResults.add(RESOURCE2);
         queryResourceResults.add(RESOURCE3);
 
-        queryResponse.setResources(queryResourceResults);
+        queryResponse.setBody(queryResourceResults);
         RankingQuery rankingQuery = new RankingQuery(queryResponse);
         rankingQuery.setIncludeAvailability(true);
         rankingQuery.setIncludePopularity(true);
