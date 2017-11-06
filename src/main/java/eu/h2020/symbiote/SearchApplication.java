@@ -6,6 +6,7 @@ import eu.h2020.symbiote.filtering.SecurityManager;
 import eu.h2020.symbiote.handlers.PlatformHandler;
 import eu.h2020.symbiote.handlers.ResourceHandler;
 import eu.h2020.symbiote.handlers.SearchHandler;
+import eu.h2020.symbiote.ranking.AvailabilityManager;
 import eu.h2020.symbiote.ranking.PopularityManager;
 import eu.h2020.symbiote.ranking.RankingHandler;
 import eu.h2020.symbiote.search.SearchStorage;
@@ -46,6 +47,7 @@ public class SearchApplication {
         private final RabbitManager manager;
 
         private final PopularityManager popularityManager;
+        private final AvailabilityManager availabilityManager;
         private final AccessPolicyRepo accessPolicyRepo;
         private final SecurityManager securityManager;
         private final RankingHandler rankingHandler;
@@ -53,10 +55,11 @@ public class SearchApplication {
         private final boolean rankingEnabled;
 
         @Autowired
-        public CLR(RabbitManager manager, PopularityManager popularityManager, AccessPolicyRepo accessPolicyRepo, SecurityManager securityManager, RankingHandler rankingHandler,
+        public CLR(RabbitManager manager, PopularityManager popularityManager, AvailabilityManager availabilityManager, AccessPolicyRepo accessPolicyRepo, SecurityManager securityManager, RankingHandler rankingHandler,
                    @Value("${search.security.enabled}") boolean securityEnabled, @Value("${search.ranking.enabled}") boolean rankingEnabled) {
             this.manager = manager;
             this.popularityManager = popularityManager;
+            this.availabilityManager = availabilityManager;
             this.accessPolicyRepo = accessPolicyRepo;
             this.securityManager = securityManager;
             this.rankingHandler = rankingHandler;
@@ -87,6 +90,7 @@ public class SearchApplication {
             manager.registerResourceSparqlSearchConsumer(searchHandler);
 
             manager.registerPopularityUpdateConsumer(popularityManager);
+            manager.registerAvailabilityUpdateConsumer(availabilityManager);
 
         }
     }

@@ -1,10 +1,18 @@
 package eu.h2020.symbiote.ranking;
 
 import eu.h2020.symbiote.cloud.monitoring.model.CloudMonitoringDevice;
+import eu.h2020.symbiote.cloud.monitoring.model.CloudMonitoringPlatformRequest;
+import eu.h2020.symbiote.core.internal.popularity.PopularityUpdate;
+import eu.h2020.symbiote.core.internal.popularity.PopularityUpdatesMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Szymon Mueller on 27/07/2017.
@@ -21,17 +29,30 @@ public class AvailabilityManager {
         this.availabilityRepository = availabilityRepository;
     }
 
+    public void saveAvailabilityMessage( CloudMonitoringPlatformRequest message ) {
+        if( message != null && message.getBody() != null ) {
+            if( message.getBody().getDevices() !=null ) {
+                log.debug("Saving availability update, size " + message.getBody().getDevices().length);
+                for( CloudMonitoringDevice device: Arrays.asList(message.getBody().getDevices()) ) {
+                    this.availabilityRepository.save(new MonitoringInfo(device.getId(),device));
+                }
+            }
+        } else {
+            log.debug("Could not save availability message, cause " + (message==null?"message is null":"message has null body"));
+        }
+    }
+
     public float getAvailabilityForResource(String resourceId ) {
         float result = 0.0f;
-        CloudMonitoringDevice monitoringInfo = availabilityRepository.findOne(resourceId);
-        if( monitoringInfo == null ) {
+        Optional<MonitoringInfo> monitoringInfo = availabilityRepository.findById(resourceId);
+        if( !monitoringInfo.isPresent() ) {
             log.debug("Could not find availability for resource " + resourceId + ", setting " + result);
         } else {
-            if( monitoringInfo.getAvailability() == 1 ) {
+            if( monitoringInfo.get().getMonitoringDeviceInfo().getAvailability() == 1 ) {
                 log.debug("Resource " + resourceId + " available");
                 result = 1.0f;
             } else {
-                log.warn("Resource " + resourceId + " has different availability value: " + monitoringInfo.getAvailability() + ". Returning availability rank as a " + result);
+                log.warn("Resource " + resourceId + " has different availability value: " + monitoringInfo.get().getMonitoringDeviceInfo().getAvailability()  + ". Returning availability rank as a " + result);
             }
         }
 

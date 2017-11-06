@@ -23,6 +23,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -180,11 +181,12 @@ public class RankingTests {
         monit.setAvailability(1);
         monit.setLoad(50);
         monit.setTimestamp(""+DateTime.now().getMillis());
-        when(availabilityRepository.findOne(RES1_ID)).thenReturn(monit);
+        Optional<MonitoringInfo> monitoringInfo = Optional.of(new MonitoringInfo(RES1_ID, monit));
+        when(availabilityRepository.findById(RES1_ID)).thenReturn(monitoringInfo);
 
         AvailabilityManager manager = new AvailabilityManager(availabilityRepository);
         float availabilityVal = manager.getAvailabilityForResource(RES1_ID);
-        verify(availabilityRepository).findOne(RES1_ID);
+        verify(availabilityRepository).findById(RES1_ID);
         assertEquals(1.0f,availabilityVal,0.0f);
     }
 
@@ -195,11 +197,12 @@ public class RankingTests {
         monit.setAvailability(0);
         monit.setLoad(50);
         monit.setTimestamp(""+DateTime.now().getMillis());
-        when(availabilityRepository.findOne(RES1_ID)).thenReturn(monit);
+        Optional<MonitoringInfo> monitoringInfo = Optional.of(new MonitoringInfo(RES1_ID, monit));
+        when(availabilityRepository.findById(RES1_ID)).thenReturn(monitoringInfo);
 
         AvailabilityManager manager = new AvailabilityManager(availabilityRepository);
         float availabilityVal = manager.getAvailabilityForResource(RES1_ID);
-        verify(availabilityRepository).findOne(RES1_ID);
+        verify(availabilityRepository).findById(RES1_ID);
         assertEquals(0.0f,availabilityVal,0.0f);
     }
 
@@ -210,11 +213,12 @@ public class RankingTests {
         monit.setAvailability(67);
         monit.setLoad(50);
         monit.setTimestamp(""+DateTime.now().getMillis());
-        when(availabilityRepository.findOne(RES1_ID)).thenReturn(monit);
+        Optional<MonitoringInfo> monitoringInfo = Optional.of(new MonitoringInfo(RES1_ID, monit));
+        when(availabilityRepository.findById(RES1_ID)).thenReturn(monitoringInfo);
 
         AvailabilityManager manager = new AvailabilityManager(availabilityRepository);
         float availabilityVal = manager.getAvailabilityForResource(RES1_ID);
-        verify(availabilityRepository).findOne(RES1_ID);
+        verify(availabilityRepository).findById(RES1_ID);
         assertEquals(0.0f,availabilityVal,0.0f);
     }
 

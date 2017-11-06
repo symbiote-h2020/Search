@@ -82,7 +82,6 @@ dependencies {
         exclude group: 'org.slf4j'
     }
 
-
     compile('org.springframework.cloud:spring-cloud-starter')
     compile('org.springframework.cloud:spring-cloud-starter-config')
     compile('org.springframework.cloud:spring-cloud-starter-eureka')

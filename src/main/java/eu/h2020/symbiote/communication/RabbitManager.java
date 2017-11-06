@@ -6,6 +6,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import eu.h2020.symbiote.handlers.PlatformHandler;
 import eu.h2020.symbiote.handlers.ResourceHandler;
 import eu.h2020.symbiote.handlers.SearchHandler;
+import eu.h2020.symbiote.ranking.AvailabilityManager;
 import eu.h2020.symbiote.ranking.PopularityManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -359,5 +360,17 @@ public class RabbitManager {
         log.debug("Creating popularity consumer");
         channel.basicConsume(queueName, false, consumer);
         log.debug( "Consumer popularity created!!!" );
+    }
+
+    public void registerAvailabilityUpdateConsumer(AvailabilityManager availabilityManager) throws IOException {
+        Channel channel = connection.createChannel();
+        String queueName = channel.queueDeclare().getQueue();
+        channel.queueBind(queueName, "symbIoTe.CoreResourceMonitor.exchange.out", "monitoring" );
+
+        AvailabilityUpdatesConsumer consumer = new AvailabilityUpdatesConsumer(channel,availabilityManager);
+
+        log.debug("Creating availability consumer");
+        channel.basicConsume(queueName, false, consumer);
+        log.debug( "Consumer availability created!!!" );
     }
 }
