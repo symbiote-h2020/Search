@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Szymon Mueller on 01/08/2017.
@@ -12,6 +13,12 @@ import java.util.List;
 @Repository
 public interface PopularityRepository extends MongoRepository<PopularityUpdate, String> {
 
-//    List<PopularityUpdate> findById(String id);
+    /**
+     * Returns latest Popularity Update stored for a resource with specified id.
+     *
+     * @param id Id of the resource
+     * @return Popularity of the resource.
+     */
+    public Optional<PopularityUpdate> findById(String id);
 
 }

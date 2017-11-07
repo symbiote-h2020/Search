@@ -15,6 +15,7 @@ import org.joda.time.DateTimeUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
@@ -62,23 +63,6 @@ public class FilteringTests {
         registry = new Registry(triplestore);
 
         setUpTwoResources();
-
-//        try {
-//            String platformA = IOUtils.toString(this.getClass()
-//                    .getResource(PLATFORM_A_FILENAME));
-//            registry.registerPlatform(PLATFORM_A_ID, platformA, RDFFormat.Turtle);
-//
-//            Model stationaryModel = loadFileAsModel(RESOURCE_STATIONARY_FILENAME, "JSONLD");
-//            Model mobileModel = loadFileAsModel(RESOURCE_MOBILE_FILENAME, "JSONLD");
-//
-//            registry.registerResource(PLATFORM_A_URI, PLATFORM_A_SERVICE_URI, RESOURCE_STATIONARY_URI, stationaryModel);
-//            registry.registerResource(PLATFORM_A_URI, PLATFORM_A_SERVICE_URI, RESOURCE_MOBILE_URI, mobileModel);
-//
-//            triplestore.printDataset();
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
     }
 
     public void setUpContentsGenerated() throws Exception {
@@ -106,12 +90,7 @@ public class FilteringTests {
 
     }
 
-    //@Before
     public void setUpTwoResources() {
-//        SearchStorage instance = SearchStorage.getInstance(TESTCASE_STORAGE_NAME, securityManager, securityEnabled);
-//
-//        triplestore = instance.getTripleStore();
-//        registry = new Registry(triplestore);
         try {
             String platformA = IOUtils.toString(this.getClass()
                     .getResource(PLATFORM_A_FILENAME));
@@ -129,13 +108,6 @@ public class FilteringTests {
             e.printStackTrace();
         }
     }
-//
-//    private void initPolicies() throws Exception {
-//        when(securityManager.checkPolicyByResourceId(eq(RESOURCE_STATIONARY_ID), any())).thenReturn(Boolean.TRUE);
-//        when(securityManager.checkPolicyByResourceIri(eq(RESOURCE_STATIONARY_URI), any())).thenReturn(Boolean.TRUE);
-//        when(securityManager.checkPolicyByResourceId(eq(RESOURCE_MOBILE_ID), any())).thenReturn(Boolean.FALSE);
-//        when(securityManager.checkPolicyByResourceIri(eq(RESOURCE_MOBILE_URI), any())).thenReturn(Boolean.FALSE);
-//    }
 
     private void initPolicies2() throws Exception {
         reqUser1 = new SecurityRequest("test1");
@@ -148,126 +120,6 @@ public class FilteringTests {
         when(securityManager.checkPolicyByResourceIri(eq(RESOURCE_MOBILE_URI), eq(reqUser2))).thenReturn(Boolean.TRUE);
     }
 
-//    @Test
-//    public void testAccessToAuthorisedResourceOnlyId() throws Exception {
-////        setUpTwoResources();
-//        initPolicies2();
-//
-//        searchAllForTwoUsers(2,1);
-//
-////        Model service = loadFileAsModel(RESOURCE_SERVICE_FILENAME, "JSONLD");
-////
-////        registry.registerResource(PLATFORM_A_URI, PLATFORM_A_SERVICE_URI, RESOURCE_SERVICE_URI, service);
-//
-//
-////        when(securityManager.checkPolicyByResourceId(eq(RESOURCE_SERVICE_ID),any())).thenReturn(Boolean.TRUE);
-////        when(securityManager.checkPolicyByResourceIri(eq(RESOURCE_SERVICE_URI),any())).thenReturn(Boolean.TRUE);
-////
-////        query = new QueryGenerator().toString();
-////        resultSet = triplestore.executeQuery(query,);
-////        size = countResultSetSize(resultSet);
-////        assertEquals("Platform query should return " + 2 + " but got " + size, 2, size);
-//
-//    }
-//
-//    @Test
-//    public void performanceSecurityTest() {
-//        System.out.println("Starting test " + new Date());
-//        String query = new QueryGenerator().toString();
-//        long in1 = DateTimeUtils.currentTimeMillis();
-//        ResultSet resultSet = executeQuery(query, reqUser1,securityEnabled);
-//        long out1 = DateTimeUtils.currentTimeMillis();
-//        int size1 = countResultSetSize(resultSet);
-//
-//        System.out.println("Starting test2 " + new Date());
-//        long in2 = DateTimeUtils.currentTimeMillis();
-//        resultSet = executeQuery(query, reqUser2,securityEnabled);
-//        long out2 = DateTimeUtils.currentTimeMillis();
-//        int size2 = countResultSetSize(resultSet);
-//
-//        System.out.println("Found " + size1 + " resources for reqUser1 in " +  (out1 - in1) + " ms");
-//        System.out.println("Found " + size2 + " resources for reqUser2 in " +  (out2 - in2) + " ms");
-//    }
-//
-//    @Test
-//    public void performanceSecurityTest2() {
-//        String query = new String("PREFIX cim: <http://www.symbiote-h2020.eu/ontology/core#>\n" +
-//                "PREFIX meta: <http://www.symbiote-h2020.eu/ontology/meta#>\n" +
-//                "\n" +
-//                "SELECT ?sensor ?resName ?ii WHERE {\n" +
-//                "\t?sensor cim:name ?resName .\n" +
-//                "\t?sensor a cim:Resource .\n" +
-//                "\t?ii meta:hasResource ?sensor .\n" +
-//                "}");
-//
-////        String query = new String("SELECT ?s ?p ?o WHERE {\n" +
-////                "\t?s ?p ?o .\n" +
-////                "}");
-//
-//        System.out.println("Starting test " + new Date());
-//        long in1 = DateTimeUtils.currentTimeMillis();
-//        ResultSet resultSet = executeQuery(query, reqUser1,securityEnabled);
-//        long out1 = DateTimeUtils.currentTimeMillis();
-//        int size1 = countResultSetSize(resultSet);
-//
-//        System.out.println("Starting test2 " + new Date());
-//        long in2 = DateTimeUtils.currentTimeMillis();
-//        resultSet = executeQuery(query, reqUser2,securityEnabled);
-//        long out2 = DateTimeUtils.currentTimeMillis();
-//        int size2 = countResultSetSize(resultSet);
-//
-//        System.out.println("Found " + size1 + " resources for reqUser1 in " +  (out1 - in1) + " ms");
-//        System.out.println("Found " + size2 + " resources for reqUser2 in " +  (out2 - in2) + " ms");
-//    }
-
-
-//    @Test
-//    public void testTimings() throws Exception {
-//        initPolicies2();
-//
-//        ArrayList<Long> timings = new ArrayList<>();
-//        long in;
-//        long time;
-//        double sum =0;
-//        for( int i = 0; i <100;  i++){
-//            in = DateTimeUtils.currentTimeMillis();
-//            searchAllForTwoUsers();
-//            time = Long.valueOf(DateTimeUtils.currentTimeMillis()-in);
-//            System.out.println(time);
-//            timings.add(time);
-//            sum += time;
-//        }
-//        double avg = (double) (sum/timings.size());
-//        timings.stream().forEach(tt -> System.out.println(tt));
-//        System.out.println("Average: " + avg);
-//    }
-
-//    @Test
-//    public void testTimings2() throws Exception {
-//        initPolicies2();
-//
-//        String query = new String("PREFIX cim: <http://www.symbiote-h2020.eu/ontology/core#>\n" +
-//                "\n" +
-//                "SELECT ?resName WHERE {\n" +
-//                "\t?sensor cim:name ?resName .\n" +
-//                "}");
-//
-//        ArrayList<Long> timings = new ArrayList<>();
-//        long in;
-//        long time;
-//        double sum =0;
-//        for( int i = 0; i <100;  i++){
-//            in = DateTimeUtils.currentTimeMillis();
-//            executeQuery(query, reqUser2,securityEnabled);
-//            time = Long.valueOf(DateTimeUtils.currentTimeMillis()-in);
-//            System.out.println(time);
-//            timings.add(time);
-//            sum += time;
-//        }
-//        double avg = (double) (sum/timings.size());
-//        timings.stream().forEach(tt -> System.out.println(tt));
-//        System.out.println("Average: " + avg);
-//    }
 
     private void searchAllForTwoUsers(int expectedForUser1, int expectedForUser2) {
         String query = new QueryGenerator().toString();
@@ -326,12 +178,6 @@ public class FilteringTests {
         assertTrue("Name of a public resource should be found", foundPublic);
         assertTrue("Name of a private resource should be not returned", foundPrivate);
     }
-
-//    @Test
-//    public void testAccessToUnauthorisedResourceOnlyId() throws Exception {
-//        initPolicies();
-//        setUpTwoResources();
-//    }
 
     private ResultSet executeQuery(String query, SecurityRequest req, boolean useSecureModel) {
         long in = DateTimeUtils.currentTimeMillis();

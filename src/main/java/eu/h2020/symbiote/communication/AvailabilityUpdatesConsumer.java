@@ -46,7 +46,7 @@ public class AvailabilityUpdatesConsumer extends DefaultConsumer {
         try {
             ObjectMapper mapper = new ObjectMapper();
             CloudMonitoringPlatformRequest availabilityUpdate = mapper.readValue(msg, CloudMonitoringPlatformRequest.class);
-
+            System.out.println("Here");
             manager.saveAvailabilityMessage(availabilityUpdate);
 
 //            boolean success = handler.registerPlatform(platform);
@@ -58,6 +58,8 @@ public class AvailabilityUpdatesConsumer extends DefaultConsumer {
             log.error("Error occurred when parsing Monitoring object JSON: " + msg, e);
         } catch( IOException e ) {
             log.error("I/O Exception occurred when parsing Monitoring object" , e);
+        } catch( Exception e ) {
+            log.error("Exception occurred when parsing Monitoring object" , e);
         }
 
 

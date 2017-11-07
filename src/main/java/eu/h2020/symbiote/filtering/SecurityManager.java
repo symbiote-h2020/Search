@@ -26,39 +26,20 @@ public class SecurityManager implements IFilteringManager {
 
     private final Log log = LogFactory.getLog(SecurityManager.class);
 
-    private final Boolean securityEnabled;
     private final AccessPolicyRepo accessPolicyRepo;
     IComponentSecurityHandler componentSecurityHandler;
     private SecurityCache<SecurityCacheKey, Boolean> cache = new SecurityCache<>(150);
 
     @Autowired
     public SecurityManager(AccessPolicyRepo accessPolicyRepo,
-                           @Value("${aam.deployment.owner.username}") String componentOwnerName,
-                           @Value("${aam.deployment.owner.password}") String componentOwnerPassword,
-                           @Value("${aam.environment.aamAddress}") String aamAddress,
-                           @Value("${aam.environment.clientId}") String clientId,
-                           @Value("${aam.environment.keystoreName}") String keystoreName,
-                           @Value("${aam.environment.keystorePass}") String keystorePass,
-                           @Value("${search.security.enabled}") Boolean securityEnabled) throws SecurityHandlerException {
-        this.securityEnabled = securityEnabled;
+                           SecurityHandlerComponent securityHandlerComponent) throws SecurityHandlerException {
         this.accessPolicyRepo = accessPolicyRepo;
-        if (securityEnabled) {
-            componentSecurityHandler = ComponentSecurityHandlerFactory.getComponentSecurityHandler(aamAddress,
-                    keystoreName,
-                    keystorePass,
-                    clientId,
-                    aamAddress,
-                    false,
-                    componentOwnerName,
-                    componentOwnerPassword);
-        }
+        this.componentSecurityHandler = securityHandlerComponent.getHandler();
+
     }
 
     public String generateSecurityResponse() throws SecurityHandlerException {
-        if (securityEnabled) {
             return componentSecurityHandler.generateServiceResponse();
-        }
-        return "";
     }
 
     @Override
@@ -89,14 +70,16 @@ public class SecurityManager implements IFilteringManager {
                         if (policy.get().getPolicy() != null) {
                             accessPolicyMap.put(resourceId, policy.get().getPolicy());
                             Set<String> ids = componentSecurityHandler.getSatisfiedPoliciesIdentifiers(accessPolicyMap, request);
-                            if (!ids.contains(resourceId)) {
-                                log.debug("Security Policy is not valid for res: " + resourceId);
-                                result = false;
-                            } else {
-                                log.debug("Security Policy is valid " + resourceId);
-                                result = true;
+                            if( ids != null ) {
+                                if (!ids.contains(resourceId)) {
+                                    log.debug("Security Policy is not valid for res: " + resourceId);
+                                    result = false;
+                                } else {
+                                    log.debug("Security Policy is valid " + resourceId);
+                                    result = true;
+                                }
+                                cache.put(securityCacheKey, Boolean.valueOf(result));
                             }
-                            cache.put(securityCacheKey, Boolean.valueOf(result));
                         } else {
                             log.debug("Policy is null");
                         }
@@ -112,10 +95,6 @@ public class SecurityManager implements IFilteringManager {
                 log.debug("No policy to check is present");
             }
         }
-//        Random rand = new Random();
-//        result = rand.nextBoolean();
-//
-//        log.debug("Checking if policy is right for resource " + policy.get().getResourceId() + " result: " + result );
 
         return result;
     }

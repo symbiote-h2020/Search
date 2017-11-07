@@ -3,16 +3,26 @@ package eu.h2020.symbiote;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
+import eu.h2020.symbiote.cloud.monitoring.model.CloudMonitoringDevice;
+import eu.h2020.symbiote.cloud.monitoring.model.CloudMonitoringPlatform;
+import eu.h2020.symbiote.cloud.monitoring.model.CloudMonitoringPlatformRequest;
 import eu.h2020.symbiote.communication.RabbitManager;
 import eu.h2020.symbiote.core.ci.QueryResourceResult;
 import eu.h2020.symbiote.core.ci.QueryResponse;
+import eu.h2020.symbiote.core.ci.SparqlQueryResponse;
 import eu.h2020.symbiote.core.internal.CoreQueryRequest;
 import eu.h2020.symbiote.core.internal.CoreResource;
 import eu.h2020.symbiote.core.internal.CoreResourceRegisteredOrModifiedEventPayload;
+import eu.h2020.symbiote.core.internal.CoreSparqlQueryRequest;
+import eu.h2020.symbiote.core.internal.popularity.PopularityUpdatesMessage;
 import eu.h2020.symbiote.handlers.PlatformHandler;
 import eu.h2020.symbiote.handlers.ResourceHandler;
 import eu.h2020.symbiote.handlers.SearchHandler;
 import eu.h2020.symbiote.model.mim.Platform;
+import eu.h2020.symbiote.ranking.AvailabilityManager;
+import eu.h2020.symbiote.ranking.PopularityManager;
+import eu.h2020.symbiote.security.communication.payloads.SecurityRequest;
+import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,6 +58,10 @@ public class MessagingTests {
     public static final String RESOURCE_DELETED = "resource.removed";
     public static final String SEARCH_REQUESTED = "resource.searchRequested";
     public static final String SEARCH_PERFORMED = "resource.searchPerformed";
+    public static final String SPARQL_REQUESTED = "resource.sparqlRequested";
+    public static final String SPARQL_PERFORMED = "resource.sparqlPerformed";
+    public static final String EXCHANGE_SEARCH = "symbiote.search";
+    public static final String POPULARITY_RK = "symbiote.popularity.rk";
 
     @InjectMocks
     private RabbitManager rabbitManager;
@@ -78,15 +92,18 @@ public class MessagingTests {
         ReflectionTestUtils.setField(rabbitManager, "resourceModifiedRoutingKey", RESOURCE_MODIFIED);
         ReflectionTestUtils.setField(rabbitManager, "resourceDeletedRoutingKey", RESOURCE_DELETED);
 
-        ReflectionTestUtils.setField(rabbitManager, "exchangeSearchName", "symbiote.search");
+        ReflectionTestUtils.setField(rabbitManager, "exchangeSearchName", EXCHANGE_SEARCH);
         ReflectionTestUtils.setField(rabbitManager, "exchangeSearchType", "topic");
         ReflectionTestUtils.setField(rabbitManager, "exchangeSearchDurable", true );
         ReflectionTestUtils.setField(rabbitManager, "exchangeSearchAutodelete", false );
         ReflectionTestUtils.setField(rabbitManager, "exchangeSearchInternal", false );
-        ReflectionTestUtils.setField(rabbitManager, "popularityUpdatesRoutingKey", "symbiote.popularity.rk");
+        ReflectionTestUtils.setField(rabbitManager, "popularityUpdatesRoutingKey", POPULARITY_RK);
 
         ReflectionTestUtils.setField(rabbitManager, "resourceSearchRequestedRoutingKey", SEARCH_REQUESTED);
         ReflectionTestUtils.setField(rabbitManager, "resourceSearchPerformedRoutingKey", SEARCH_PERFORMED);
+        ReflectionTestUtils.setField(rabbitManager, "resourceSparqlSearchRequestedRoutingKey", SPARQL_REQUESTED);
+        ReflectionTestUtils.setField(rabbitManager, "resourceSparqlSearchPerformedRoutingKey", SPARQL_PERFORMED);
+
 
         ReflectionTestUtils.invokeMethod(rabbitManager, "init");
     }
@@ -260,7 +277,103 @@ public class MessagingTests {
 
             sendMessage(RESOURCE_EXCHANGE_NAME, SEARCH_REQUESTED, props, jsonRequest);
             Thread.sleep(1000);
-            verify(mockHandler).search(isA(CoreQueryRequest.class));
+            verify(mockHandler,times(1)).search(isA(CoreQueryRequest.class));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testSPARQLRequestCalled() {
+        String rdf = "This_is_RDF";
+        SearchHandler mockHandler = mock(SearchHandler.class);
+        try {
+            rabbitManager.registerResourceSparqlSearchConsumer(mockHandler);
+            SparqlQueryResponse response = mock(SparqlQueryResponse.class);
+            when(response.getBody()).thenReturn(rdf);
+            when(mockHandler.sparqlSearch(isA(CoreSparqlQueryRequest.class))).thenReturn(response);
+
+            ObjectMapper mapper = new ObjectMapper();
+            CoreSparqlQueryRequest searchRequest = new CoreSparqlQueryRequest();
+            String jsonRequest = mapper.writeValueAsString(searchRequest);
+            AMQP.BasicProperties props = new AMQP.BasicProperties()
+                    .builder()
+                    .correlationId("corrId")
+                    .replyTo("replyq")
+                    .build();
+
+            sendMessage(RESOURCE_EXCHANGE_NAME, SPARQL_REQUESTED, props, jsonRequest);
+            Thread.sleep(1000);
+            verify(mockHandler,times(1)).sparqlSearch(isA(CoreSparqlQueryRequest.class));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testAvailabilityRequestCalled() {
+        AvailabilityManager mockHandler = mock(AvailabilityManager.class);
+        try {
+            rabbitManager.registerAvailabilityUpdateConsumer(mockHandler);
+
+            ObjectMapper mapper = new ObjectMapper();
+            CloudMonitoringPlatform monit = new CloudMonitoringPlatform();
+            monit.setInternalId("internalId");
+            CloudMonitoringDevice[] devices = new CloudMonitoringDevice[1];
+            CloudMonitoringDevice device = new CloudMonitoringDevice();
+            device.setTimestamp(String.valueOf(System.currentTimeMillis()));
+            device.setAvailability(1);
+            device.setId("res1");
+            device.setLoad(15);
+            devices[0] = device;
+            monit.setDevices(devices);
+            SecurityRequest request = new SecurityRequest("test1");
+            CloudMonitoringPlatformRequest searchRequest = new CloudMonitoringPlatformRequest(request,monit);
+            String jsonRequest = mapper.writeValueAsString(searchRequest);
+            AMQP.BasicProperties props = new AMQP.BasicProperties()
+                    .builder()
+                    .correlationId("corrId")
+                    .replyTo("replyq")
+                    .build();
+
+            sendMessage(RabbitManager.MONITORING_EXCHANGE, RabbitManager.MONITORING_ROUTING_KEY, props, jsonRequest);
+            Thread.sleep(1000);
+            verify(mockHandler,times(1)).saveAvailabilityMessage(isA(CloudMonitoringPlatformRequest.class));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testPopularityRequestCalled() {
+        PopularityManager mockHandler = mock(PopularityManager.class);
+        try {
+            rabbitManager.registerPopularityUpdateConsumer(mockHandler);
+
+            ObjectMapper mapper = new ObjectMapper();
+            PopularityUpdatesMessage searchRequest = new PopularityUpdatesMessage();
+            String jsonRequest = mapper.writeValueAsString(searchRequest);
+            AMQP.BasicProperties props = new AMQP.BasicProperties()
+                    .builder()
+                    .correlationId("corrId")
+                    .replyTo("replyq")
+                    .build();
+
+            sendMessage(EXCHANGE_SEARCH, POPULARITY_RK, props, jsonRequest);
+            Thread.sleep(1000);
+            verify(mockHandler,times(1)).savePopularityMessage(isA(PopularityUpdatesMessage.class));
 
         } catch (IOException e) {
             e.printStackTrace();

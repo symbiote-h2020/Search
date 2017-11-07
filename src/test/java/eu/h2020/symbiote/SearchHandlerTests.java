@@ -1,8 +1,10 @@
 package eu.h2020.symbiote;
 
 import eu.h2020.symbiote.core.ci.QueryResourceResult;
+import eu.h2020.symbiote.core.ci.QueryResponse;
 import eu.h2020.symbiote.core.ci.SparqlQueryOutputFormat;
 import eu.h2020.symbiote.core.ci.SparqlQueryResponse;
+import eu.h2020.symbiote.core.internal.CoreQueryRequest;
 import eu.h2020.symbiote.core.internal.CoreSparqlQueryRequest;
 import eu.h2020.symbiote.core.internal.RDFFormat;
 import eu.h2020.symbiote.filtering.SecurityManager;
@@ -59,26 +61,9 @@ public class SearchHandlerTests {
                     .getResource(PLATFORM_A_FILENAME));
             registry.registerPlatform(PLATFORM_A_ID, platformA, RDFFormat.Turtle);
 
-//            String platformB = IOUtils.toString(this.getClass()
-//                    .getResource(PLATFORM_B_FILENAME));
-//            registry.registerPlatform(PLATFORM_B_ID, platformB, RDFFormat.Turtle, PLATFORM_B_MODEL_ID);
-//
-//            String platformC = IOUtils.toString(this.getClass()
-//                    .getResource(PLATFORM_C_FILENAME));
-//            registry.registerPlatform(PLATFORM_C_ID, platformC, RDFFormat.Turtle, PLATFORM_C_MODEL_ID);
-
             Model stationaryModel = loadFileAsModel(RESOURCE_STATIONARY_FILENAME, "JSONLD" );
-//            Model mobileModel = loadFileAsModel(RESOURCE_MOBILE_FILENAME, "JSONLD" );
-//            Model serviceModel = loadFileAsModel(RESOURCE_SERVICE_FILENAME, "JSONLD" );
-//            Model actuatingServiceModel = loadFileAsModel(RESOURCE_ACTUATING_SERVICE_FILENAME, "JSONLD" );
-//            Model actuatorModel = loadFileAsModel(RESOURCE_ACTUATOR_FILENAME, "JSONLD" );
 
             registry.registerResource(PLATFORM_A_URI,PLATFORM_A_SERVICE_URI,RESOURCE_STATIONARY_URI,stationaryModel);
-//            registry.registerResource(PLATFORM_B_URI,PLATFORM_B_SERVICE_URI,RESOURCE_MOBILE_URI,mobileModel);
-//            registry.registerResource(PLATFORM_A_URI,PLATFORM_A_SERVICE_URI,RESOURCE_SERVICE_URI,serviceModel);
-//            registry.registerResource(PLATFORM_A_URI,PLATFORM_A_SERVICE_URI,RESOURCE_ACTUATOR_URI,actuatorModel);
-//            registry.registerResource(PLATFORM_A_URI,PLATFORM_A_SERVICE_URI,RESOURCE_ACTUATING_SERVICE_URI,actuatingServiceModel);
-
             searchHandler = new SearchHandler(triplestore, securityManager, rankingHandler, false);
 
             triplestore.printDataset();
@@ -209,6 +194,23 @@ public class SearchHandlerTests {
         }
     }
 
+    @Test
+    public void testMultivalueSearch() {
+        CoreQueryRequest searchReq = new CoreQueryRequest();
+        searchReq.setObserved_property(Arrays.asList("temperature"));
+        QueryResponse searchResponse = searchHandler.search(searchReq);
+
+        assertNotNull("Response must not be null", searchResponse);
+        assertNotNull("Response resources must not be null",searchResponse.getResources());
+        assertEquals("Should return 1 temperature sensor",1,searchResponse.getResources().size());
+
+        searchReq = new CoreQueryRequest();
+        searchReq.setObserved_property(Arrays.asList("pH"));
+        searchResponse = searchHandler.search(searchReq);
+        assertNotNull("Response must not be null", searchResponse);
+        assertNotNull("Response resources must not be null",searchResponse.getResources());
+        assertEquals("Should return 0 pH sensors",0,searchResponse.getResources().size());
+    }
 
     private void ensureFieldsNotNull( QueryResourceResult response ) {
         assertNotNull(response.getId());

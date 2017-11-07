@@ -1,20 +1,20 @@
 package eu.h2020.symbiote;
 
 import eu.h2020.symbiote.cloud.monitoring.model.CloudMonitoringDevice;
+import eu.h2020.symbiote.cloud.monitoring.model.CloudMonitoringPlatform;
+import eu.h2020.symbiote.cloud.monitoring.model.CloudMonitoringPlatformRequest;
 import eu.h2020.symbiote.communication.RabbitManager;
 import eu.h2020.symbiote.core.ci.QueryResourceResult;
 import eu.h2020.symbiote.core.ci.QueryResponse;
 import eu.h2020.symbiote.core.internal.popularity.PopularityUpdate;
 import eu.h2020.symbiote.core.internal.popularity.PopularityUpdatesMessage;
 import eu.h2020.symbiote.ranking.*;
+import eu.h2020.symbiote.security.communication.payloads.SecurityRequest;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.annotation.Repeat;
@@ -76,6 +76,37 @@ public class RankingTests {
         ReflectionTestUtils.setField(rankingHandler, "distanceWeight",Float.valueOf(0.5f));
         MockitoAnnotations.initMocks(this);
 
+    }
+
+    @Test
+    public void testAvailabilityManager() {
+        AvailabilityManager realManager = new AvailabilityManager(availabilityRepository);
+
+        CloudMonitoringPlatform monit = new CloudMonitoringPlatform();
+        monit.setInternalId("internalId");
+        CloudMonitoringDevice[] devices = new CloudMonitoringDevice[1];
+        CloudMonitoringDevice device = new CloudMonitoringDevice();
+        device.setTimestamp(String.valueOf(System.currentTimeMillis()));
+        device.setAvailability(1);
+        device.setId("res1");
+        device.setLoad(15);
+        devices[0] = device;
+        monit.setDevices(devices);
+        SecurityRequest secRequest = new SecurityRequest("test1");
+        CloudMonitoringPlatformRequest request= new CloudMonitoringPlatformRequest(secRequest,monit);
+
+        realManager.saveAvailabilityMessage(request);
+
+        ArgumentCaptor<MonitoringInfo> argumentCaptor = ArgumentCaptor.forClass(MonitoringInfo.class);
+
+        verify(availabilityRepository,times(1)).save(argumentCaptor.capture());
+        CloudMonitoringDevice savedDeviceInfo = argumentCaptor.getValue().getMonitoringDeviceInfo();
+        assertEquals(device.getId(),savedDeviceInfo.getId());
+        assertEquals(device.getTimestamp(),savedDeviceInfo.getTimestamp());
+        assertEquals(device.getAvailability(),savedDeviceInfo.getAvailability());
+        assertEquals(device.getLoad(),savedDeviceInfo.getLoad());
+        assertEquals(device.getId(),savedDeviceInfo.getId());
+        assertEquals(device.getId(),argumentCaptor.getValue().getId());
     }
 
     @Test
@@ -220,6 +251,23 @@ public class RankingTests {
         float availabilityVal = manager.getAvailabilityForResource(RES1_ID);
         verify(availabilityRepository).findById(RES1_ID);
         assertEquals(0.0f,availabilityVal,0.0f);
+    }
+
+    @Test
+    public void testGetPopularityForResource() {
+        PopularityManager realManager = new PopularityManager(popularityRepository);
+        String res1 = "res1";
+        Integer views = 15;
+        PopularityUpdate popularityUpdate = new PopularityUpdate();
+        popularityUpdate.setId(res1);
+        popularityUpdate.setViewsInDefinedInterval(views);
+        Optional<PopularityUpdate> popularity = Optional.of(popularityUpdate);
+        when(popularityRepository.findById(res1)).thenReturn(popularity);
+
+        Integer result = realManager.getPopularityForResource(res1);
+        verify(popularityRepository,times(1)).findById(res1);
+        assertEquals("Result of popularity query must be the same as the one from repo", views,result);
+
     }
 
     @Test

@@ -24,15 +24,8 @@ public class MonitoringInfo {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public CloudMonitoringDevice getMonitoringDeviceInfo() {
         return monitoringDeviceInfo;
     }
 
-    public void setMonitoringDeviceInfo(CloudMonitoringDevice monitoringDeviceInfo) {
-        this.monitoringDeviceInfo = monitoringDeviceInfo;
-    }
 }

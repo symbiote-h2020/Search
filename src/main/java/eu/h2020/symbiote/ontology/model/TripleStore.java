@@ -216,38 +216,6 @@ public class TripleStore {
         }
     }
 
-//    private static void deleteOldFiles(File indexDir) {
-//        if (indexDir.exists())
-//            emptyAndDeleteDirectory(indexDir);
-//    }
-
-//    private static void emptyAndDeleteDirectory(File dir) {
-//        File[] contents = dir.listFiles() ;
-//        if (contents != null) {
-//            for (File content : contents) {
-//                if (content.isDirectory()) {
-//                    emptyAndDeleteDirectory(content) ;
-//                } else {
-//                    content.delete() ;
-//                }
-//            }
-//        }
-//        dir.delete() ;
-//    }
-
-    public void executeQueryPP( String query ) {
-
-        log.debug("QUERY: ---------------");
-        log.debug(query);
-        log.debug("----------------------");
-
-        Query q = QueryFactory.create(query);
-        QueryExecution qexec = QueryExecutionFactory.create(q, dataset);
-        QueryExecUtils.executeQuery(q, qexec);
-
-    }
-
-
     public void insertGraph(String uri, String rdf, RDFFormat format) {
         Model model = ModelFactory.createDefaultModel();
         model.read(new ByteArrayInputStream(rdf.getBytes()), null, format.toString());
@@ -334,38 +302,12 @@ public class TripleStore {
         }
     }
 
-//    public Model getGraph(String graph) {
-//        dataset.begin(ReadWrite.READ);
-//        Model result = dataset.getNamedModel(graph);
-//        dataset.end();
-//        return result;
-//    }
-
     public Model getDefaultGraph() {
         dataset.begin(ReadWrite.READ);
         Model result = dataset.getDefaultModel();
         dataset.end();
         return result;
     }
-
-//    public String getGraphAsString(String graph, String syntax) {
-//        StringWriter out = new StringWriter();
-//        getGraph(graph).write(out, syntax);
-//        return out.toString();
-//    }
-
-//    public List<String> loadDataFromDataset() {
-//        List<String> data = new ArrayList<>();
-//        dataset.begin(ReadWrite.READ);
-//        Iterator<String> stringIterator = dataset.listNames();
-//        while (stringIterator.hasNext() ) {
-//            String s = stringIterator.next();
-//            log.debug( "Loaded dataset: " + s);
-//            data.add(s);
-//        }
-//        dataset.end();
-//        return data;
-//    }
 
     public void printDataset() {
         if( SHOULD_PRINT_DATASET ) {
@@ -376,7 +318,4 @@ public class TripleStore {
         }
     }
 
-//    public String getGraphAsString(String graph) {
-//        return getGraphAsString(graph, "RDF/XML-ABBREV");
-//    }
 }

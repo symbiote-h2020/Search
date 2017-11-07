@@ -25,6 +25,8 @@ import java.util.concurrent.TimeoutException;
 @Component
 public class RabbitManager {
 
+    public static final String MONITORING_EXCHANGE = "symbIoTe.CoreResourceMonitor.exchange.out";
+    public static final String MONITORING_ROUTING_KEY = "monitoring";
     private static Log log = LogFactory.getLog(RabbitManager.class);
 
     @Value("${rabbit.host}")
@@ -147,6 +149,13 @@ public class RabbitManager {
                     this.exchangeSearchDurable,
                     this.exchangeSearchAutodelete,
                     this.exchangeSearchInternal,
+                    null);
+
+            channel.exchangeDeclare(MONITORING_EXCHANGE,
+                    "direct",
+                    true,
+                    false,
+                    false,
                     null);
 
             //message retrieval
@@ -365,7 +374,7 @@ public class RabbitManager {
     public void registerAvailabilityUpdateConsumer(AvailabilityManager availabilityManager) throws IOException {
         Channel channel = connection.createChannel();
         String queueName = channel.queueDeclare().getQueue();
-        channel.queueBind(queueName, "symbIoTe.CoreResourceMonitor.exchange.out", "monitoring" );
+        channel.queueBind(queueName, MONITORING_EXCHANGE, MONITORING_ROUTING_KEY);
 
         AvailabilityUpdatesConsumer consumer = new AvailabilityUpdatesConsumer(channel,availabilityManager);
 

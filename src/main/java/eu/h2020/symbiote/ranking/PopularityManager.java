@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Popularity manager responsible for handling popularity related tasks. Allows storing new popularity update
@@ -45,20 +46,12 @@ public class PopularityManager {
 
         Integer result = Integer.valueOf(0);
 
-        PopularityUpdate popularity = popularityRepository.findOne(resourceId);
+        Optional<PopularityUpdate> popularity = popularityRepository.findById(resourceId);
 
-//        if( popularityObjects == null ) {
-//            log.warn("Null popularities found for " + resourceId );
-//        } else if( popularityObjects.size() == 0 ) {
-//            log.warn("Popularities empty for " + resourceId );
-//        } else {
-//            popularityObjects.si
-//        }
-
-        if( popularity == null ) {
-            log.warn("Null popularities found for " + resourceId );
+        if( popularity.isPresent()) {
+            result = popularity.get().getViewsInDefinedInterval();
         } else {
-            result = popularity.getViewsInDefinedInterval();
+            log.warn("Null popularities found for " + resourceId );
         }
 
         return result;
