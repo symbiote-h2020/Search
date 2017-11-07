@@ -16,8 +16,12 @@ public class SecurityCache<K, T> {
 
     private static final Log log = LogFactory.getLog(SecurityCache.class);
 
-    private static final long TIME_TO_LIVE = 10 * 1000;
-    private static final long CLEANUP_INTERVAL = 120 * 1000; //Every 2 minutes
+//    private static final long TIME_TO_LIVE = 10 * 1000;
+//    private static final long CLEANUP_INTERVAL = 120 * 1000; //Every 2 minutes
+
+    private final long ttl;
+    private final long cleanupInterval;
+
     private LRUMap securityCache;
 
     protected class SecurityCacheObject {
@@ -29,11 +33,14 @@ public class SecurityCache<K, T> {
         }
     }
 
-    public SecurityCache(int maxItems) {
+    public SecurityCache(long ttl, long cleanupInterval, int maxItems) {
+
+        this.ttl = ttl;
+        this.cleanupInterval = cleanupInterval;
 
         securityCache = new LRUMap(maxItems);
 
-        if (TIME_TO_LIVE > 0 && CLEANUP_INTERVAL > 0) {
+        if (ttl > 0 && cleanupInterval > 0) {
 
             TimerTask task = new TimerTask() {
                 @Override
@@ -43,7 +50,7 @@ public class SecurityCache<K, T> {
             };
 
             Timer timer = new Timer("SecurityCacheCleanup",true);
-            timer.schedule(task,CLEANUP_INTERVAL,CLEANUP_INTERVAL);
+            timer.schedule(task,cleanupInterval,cleanupInterval);
         }
     }
 
@@ -96,7 +103,7 @@ public class SecurityCache<K, T> {
                 key = (K) itr.next();
                 c = (SecurityCacheObject) itr.getValue();
 
-                if (c != null && (now > (TIME_TO_LIVE + c.lastAccessed))) {
+                if (c != null && (now > (ttl + c.lastAccessed))) {
                     deleteKey.add(key);
                 }
             }

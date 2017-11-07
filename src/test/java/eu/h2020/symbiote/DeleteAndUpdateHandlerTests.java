@@ -148,8 +148,7 @@ public class DeleteAndUpdateHandlerTests {
         assertFalse("After delete platform A should not exist", contains);
     }
 
-    //TODO
-//    @Test
+    @Test
     public void modifyResourceTest() {
         System.out.println(">>>>>>>>>>>>>>>>>>>BEFORE<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
         printDataset();

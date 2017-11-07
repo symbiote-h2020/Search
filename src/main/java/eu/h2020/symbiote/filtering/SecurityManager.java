@@ -28,7 +28,7 @@ public class SecurityManager implements IFilteringManager {
 
     private final AccessPolicyRepo accessPolicyRepo;
     IComponentSecurityHandler componentSecurityHandler;
-    private SecurityCache<SecurityCacheKey, Boolean> cache = new SecurityCache<>(150);
+    private SecurityCache<SecurityCacheKey, Boolean> cache = new SecurityCache<>(10 * 1000,120*1000,150);
 
     @Autowired
     public SecurityManager(AccessPolicyRepo accessPolicyRepo,

@@ -20,8 +20,8 @@
     "id" : "stationary1",
     "locatedAt" : "http://www.symbiote-h2020.eu/ontology/internal/platforms/Platform1/location/59ad0b5f8d116620906557ee",
     "observesProperty" : [ "qu:humidity", "qu:temperature" ],
-    "description" : "New sensor 1",
-    "name" : "Stationary 1"
+    "description" : "New sensor 1 description",
+    "name" : "New sensor 1"
   } ],
   "@context" : {
     "hasProperty" : {
