@@ -46,7 +46,6 @@ public class AvailabilityUpdatesConsumer extends DefaultConsumer {
         try {
             ObjectMapper mapper = new ObjectMapper();
             CloudMonitoringPlatformRequest availabilityUpdate = mapper.readValue(msg, CloudMonitoringPlatformRequest.class);
-            System.out.println("Here");
             manager.saveAvailabilityMessage(availabilityUpdate);
 
 //            boolean success = handler.registerPlatform(platform);
