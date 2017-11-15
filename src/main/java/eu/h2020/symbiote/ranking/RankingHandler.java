@@ -183,7 +183,7 @@ public class RankingHandler {
             return Float.valueOf(1.0f);
         } else {
             Float f = (float)value/(float)max;
-            return Float.valueOf(1.0f - f);
+            return Float.valueOf(f);
         }
     }
 

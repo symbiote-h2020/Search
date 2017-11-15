@@ -43,7 +43,13 @@ public class RankingTests {
     private static final Double RES1_LONG = Double.valueOf(16.953166d);
 
     private static final String RES2_ID = "2";
+
+    public static final Double RES2_LAT = Double.valueOf(52.402802d);
+    public static final Double RES2_LONG = Double.valueOf(16.969817d);
+
     private static final String RES3_ID = "3";
+    public static final Double RES3_LAT = Double.valueOf(52.414447d);
+    public static final Double RES3_LONG = Double.valueOf(16.860812d);
 
     @Mock
     PopularityRepository popularityRepository;
@@ -188,6 +194,80 @@ public class RankingTests {
     }
 
     @Test
+    public void testRankingValues2() {
+        when(popularityManager.getPopularityForResource(RES1_ID)).thenReturn(Integer.valueOf(0));
+        when(availabilityManager.getAvailabilityForResource(RES1_ID)).thenReturn(Float.valueOf(0.0f));
+
+        when(popularityManager.getPopularityForResource(RES2_ID)).thenReturn(Integer.valueOf(3));
+        when(availabilityManager.getAvailabilityForResource(RES2_ID)).thenReturn(Float.valueOf(0.0f));
+
+        when(popularityManager.getPopularityForResource(RES3_ID)).thenReturn(Integer.valueOf(95));
+        when(availabilityManager.getAvailabilityForResource(RES3_ID)).thenReturn(Float.valueOf(0.0f));
+
+        QueryResponse queryResponse = new QueryResponse();
+        List<QueryResourceResult> queryResourceResults = new ArrayList<>();
+
+        queryResourceResults.add(RESOURCE1);
+        queryResourceResults.add(RESOURCE2);
+        queryResourceResults.add(RESOURCE3);
+
+        queryResponse.setBody(queryResourceResults);
+        RankingQuery rankingQuery = new RankingQuery(queryResponse);
+        rankingQuery.setIncludeAvailability(true);
+        rankingQuery.setIncludePopularity(true);
+        rankingQuery.setIncludeDistance(false);
+        QueryResponse rankedQueryResponse = rankingHandler.generateRanking(rankingQuery);
+
+        List<QueryResourceResult> rankedResources = rankedQueryResponse.getResources();
+        assertEquals(3,rankedResources.size());
+        float res1Ranking = rankingQuery.getResourcesMap().get(RES1_ID).getRanking();
+        float res2Ranking = rankingQuery.getResourcesMap().get(RES2_ID).getRanking();
+        float res3Ranking = rankingQuery.getResourcesMap().get(RES3_ID).getRanking();
+
+        assertTrue( res2Ranking > res1Ranking );
+        assertTrue( res3Ranking > res2Ranking );
+    }
+
+    @Test
+    public void testRankingValues3() {
+        when(popularityManager.getPopularityForResource(RES1_ID)).thenReturn(Integer.valueOf(0));
+        when(availabilityManager.getAvailabilityForResource(RES1_ID)).thenReturn(Float.valueOf(0.0f));
+
+        when(popularityManager.getPopularityForResource(RES2_ID)).thenReturn(Integer.valueOf(3));
+        when(availabilityManager.getAvailabilityForResource(RES2_ID)).thenReturn(Float.valueOf(0.0f));
+
+        when(popularityManager.getPopularityForResource(RES3_ID)).thenReturn(Integer.valueOf(95));
+        when(availabilityManager.getAvailabilityForResource(RES3_ID)).thenReturn(Float.valueOf(0.0f));
+
+        QueryResponse queryResponse = new QueryResponse();
+        List<QueryResourceResult> queryResourceResults = new ArrayList<>();
+
+        queryResourceResults.add(RESOURCE1);
+        queryResourceResults.add(RESOURCE2);
+        queryResourceResults.add(RESOURCE3);
+
+        queryResponse.setBody(queryResourceResults);
+        RankingQuery rankingQuery = new RankingQuery(queryResponse);
+        rankingQuery.setIncludeAvailability(true);
+        rankingQuery.setIncludePopularity(true);
+        rankingQuery.setIncludeDistance(true);
+        rankingQuery.setLatitude(RES3_LAT);
+        rankingQuery.setLongitude(RES3_LONG);
+        QueryResponse rankedQueryResponse = rankingHandler.generateRanking(rankingQuery);
+
+        List<QueryResourceResult> rankedResources = rankedQueryResponse.getResources();
+        assertEquals(3,rankedResources.size());
+        float res1Ranking = rankingQuery.getResourcesMap().get(RES1_ID).getRanking();
+        float res2Ranking = rankingQuery.getResourcesMap().get(RES2_ID).getRanking();
+        float res3Ranking = rankingQuery.getResourcesMap().get(RES3_ID).getRanking();
+
+        assertTrue( res3Ranking > res1Ranking );
+        assertTrue( res3Ranking > res2Ranking );
+        assertTrue( res1Ranking > res2Ranking );
+    }
+
+
+    @Test
     public void testRankingForEmpty() {
         when(popularityManager.getPopularityForResource(RES1_ID)).thenReturn(Integer.valueOf(0));
         when(availabilityManager.getAvailabilityForResource(RES1_ID)).thenReturn(Float.valueOf(0.0f).floatValue());
@@ -309,8 +389,8 @@ public class RankingTests {
         resourceResult.setPlatformName("Platform1");
         resourceResult.setResourceType(Arrays.asList("Stationary"));
         resourceResult.setLocationAltitude(Double.valueOf(15.0d));
-        resourceResult.setLocationLatitude(Double.valueOf(52.402802d));
-        resourceResult.setLocationLongitude(Double.valueOf(16.969817d));
+        resourceResult.setLocationLatitude(RES2_LAT);
+        resourceResult.setLocationLongitude(RES2_LONG);
         resourceResult.setObservedProperties(Arrays.asList("Temperature"));
         return resourceResult;
     }
@@ -325,8 +405,8 @@ public class RankingTests {
         resourceResult.setPlatformName("Platform1");
         resourceResult.setResourceType(Arrays.asList("Mobile"));
         resourceResult.setLocationAltitude(Double.valueOf(15.0d));
-        resourceResult.setLocationLatitude(Double.valueOf(52.414447d));
-        resourceResult.setLocationLongitude(Double.valueOf(16.860812d));
+        resourceResult.setLocationLatitude(RES3_LAT);
+        resourceResult.setLocationLongitude(RES3_LONG);
         resourceResult.setObservedProperties(Arrays.asList("Temperature","Humidity"));
         return resourceResult;
     }
