@@ -2,7 +2,7 @@
 // initial extensions to gradle
 buildscript {
     ext {
-        springBootVersion = '1.5.7.RELEASE'
+        springBootVersion = '1.5.8.RELEASE'
     }
     repositories {
         mavenCentral()
@@ -30,7 +30,7 @@ apply plugin: 'idea'
 apply plugin: 'com.cinnober.gradle.semver-git'
 
 // XXX please change with your commits according to http://semver.org/
-project.version = '1.0.0'
+project.version = '1.1.0'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -78,11 +78,10 @@ dependencies {
             4) never commit build.gradle which has project dependencies active as it will break CI builds
     */
     compile('com.github.symbiote-h2020:SymbIoTeLibraries:4.+')
-    compile('com.github.symbiote-h2020:SymbIoTeSemantics:develop-SNAPSHOT') {changing = true
+    compile('com.github.symbiote-h2020:SymbIoTeSemantics:1.+') {changing = true
         exclude group: 'org.slf4j'
     }
 
-    compile('org.springframework.cloud:spring-cloud-starter')
     compile('org.springframework.cloud:spring-cloud-starter-config')
     compile('org.springframework.cloud:spring-cloud-starter-eureka')
     compile('org.springframework.cloud:spring-cloud-starter-zipkin') // Causes the java.net.ConnectException
@@ -100,12 +99,9 @@ dependencies {
         exclude group: 'org.slf4j' , module: 'slf4j-log4j12'
     }
 
-    compile('eu.symbiote-h2020:MediationFramework:1.0')
-
 
     // Use JUnit4
     testCompile('org.springframework.boot:spring-boot-starter-test')
-
     testCompile 'junit:junit:4.12'
 }
 
