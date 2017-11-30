@@ -21,13 +21,15 @@ public class SecurityHandlerComponent {
                            @Value("${aam.environment.aamAddress}") String aamAddress,
                            @Value("${aam.environment.clientId}") String clientId,
                            @Value("${aam.environment.keystoreName}") String keystoreName,
-                           @Value("${aam.environment.keystorePass}") String keystorePass) throws SecurityHandlerException {
+                           @Value("${aam.environment.keystorePass}") String keystorePass,
+                           @Value("${symbIoTe.validation.localaam}") Boolean alwaysUseLocalAAMForValidation)
+            throws SecurityHandlerException {
             handler = ComponentSecurityHandlerFactory.getComponentSecurityHandler(aamAddress,
                     keystoreName,
                     keystorePass,
                     clientId,
                     aamAddress,
-                    false,
+                    alwaysUseLocalAAMForValidation,
                     componentOwnerName,
                     componentOwnerPassword);
         }
