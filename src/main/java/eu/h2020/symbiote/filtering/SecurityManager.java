@@ -2,7 +2,9 @@ package eu.h2020.symbiote.filtering;
 
 import eu.h2020.symbiote.security.ComponentSecurityHandlerFactory;
 import eu.h2020.symbiote.security.accesspolicies.IAccessPolicy;
+import eu.h2020.symbiote.security.commons.enums.ValidationStatus;
 import eu.h2020.symbiote.security.commons.exceptions.custom.SecurityHandlerException;
+import eu.h2020.symbiote.security.communication.payloads.SecurityCredentials;
 import eu.h2020.symbiote.security.communication.payloads.SecurityRequest;
 import eu.h2020.symbiote.security.handler.IComponentSecurityHandler;
 import org.apache.commons.logging.Log;
@@ -43,16 +45,16 @@ public class SecurityManager implements IFilteringManager {
     }
 
     @Override
-    public boolean checkPolicyByResourceId(String resourceId, SecurityRequest request) {
-        return checkPolicy(accessPolicyRepo.findById(resourceId), request);
+    public boolean checkPolicyByResourceId(String resourceId, SecurityRequest request, Map<SecurityCredentials, ValidationStatus> validatedCredentials) {
+        return checkPolicy(accessPolicyRepo.findById(resourceId), request, validatedCredentials);
     }
 
     @Override
-    public boolean checkPolicyByResourceIri(String resourceIri, SecurityRequest request) {
-        return checkPolicy(accessPolicyRepo.findByIri(resourceIri), request);
+    public boolean checkPolicyByResourceIri(String resourceIri, SecurityRequest request, Map<SecurityCredentials, ValidationStatus> validatedCredentials) {
+        return checkPolicy(accessPolicyRepo.findByIri(resourceIri), request, validatedCredentials);
     }
 
-    private boolean checkPolicy(Optional<AccessPolicy> policy, SecurityRequest request) {
+    private boolean checkPolicy(Optional<AccessPolicy> policy, SecurityRequest request, Map<SecurityCredentials, ValidationStatus> validatedCredentials) {
         boolean result = true;
         if (request == null) {
             log.info("Security Request is null");
@@ -69,7 +71,7 @@ public class SecurityManager implements IFilteringManager {
                     if (resourceId != null) {
                         if (policy.get().getPolicy() != null) {
                             accessPolicyMap.put(resourceId, policy.get().getPolicy());
-                            Set<String> ids = componentSecurityHandler.getSatisfiedPoliciesIdentifiers(accessPolicyMap, request);
+                            Set<String> ids = componentSecurityHandler.getSatisfiedPoliciesIdentifiers(accessPolicyMap, request, validatedCredentials);
                             if( ids != null ) {
                                 if (!ids.contains(resourceId)) {
                                     log.debug("Security Policy is not valid for res: " + resourceId);

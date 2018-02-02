@@ -38,8 +38,8 @@ public class SearchApplicationTests {
 
     @Test
     public void simplePlatformTest() throws Exception {
-        when(securityManager.checkPolicyByResourceId(anyString(),any())).thenReturn(Boolean.TRUE);
-        when(securityManager.checkPolicyByResourceIri(anyString(),any())).thenReturn(Boolean.TRUE);
+        when(securityManager.checkPolicyByResourceId(anyString(),any(),any())).thenReturn(Boolean.TRUE);
+        when(securityManager.checkPolicyByResourceIri(anyString(),any(),any())).thenReturn(Boolean.TRUE);
         //In memory
         TripleStore triplestore = new TripleStore(securityManager,false);
         Registry registry = new Registry(triplestore);

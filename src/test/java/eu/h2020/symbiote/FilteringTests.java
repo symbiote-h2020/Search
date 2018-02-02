@@ -82,9 +82,9 @@ public class FilteringTests {
             List<String> resources = platformResourcesMap.get(platformId);
             for (String resIri : resources) {
                 i++;
-                when(securityManager.checkPolicyByResourceIri(eq(resIri), eq(reqUser1))).thenReturn((i % 3) == 1 ? Boolean.FALSE : Boolean.TRUE);
-                when(securityManager.checkPolicyByResourceIri(eq(resIri), eq(reqUser2))).thenReturn((i % 3) == 2 ? Boolean.FALSE : Boolean.TRUE);
-                when(securityManager.checkPolicyByResourceIri(eq(resIri), eq(reqUser3))).thenReturn((i % 3) == 0 ? Boolean.FALSE : Boolean.TRUE);
+                when(securityManager.checkPolicyByResourceIri(eq(resIri), eq(reqUser1),any())).thenReturn((i % 3) == 1 ? Boolean.FALSE : Boolean.TRUE);
+                when(securityManager.checkPolicyByResourceIri(eq(resIri), eq(reqUser2),any())).thenReturn((i % 3) == 2 ? Boolean.FALSE : Boolean.TRUE);
+                when(securityManager.checkPolicyByResourceIri(eq(resIri), eq(reqUser3),any())).thenReturn((i % 3) == 0 ? Boolean.FALSE : Boolean.TRUE);
             }
         }
 
@@ -113,11 +113,11 @@ public class FilteringTests {
         reqUser1 = new SecurityRequest("test1");
         reqUser2 = new SecurityRequest("test2");
 //        when(securityManager.checkPolicyByResourceId(eq(RESOURCE_STATIONARY_ID),reqUser1)).thenReturn(Boolean.TRUE);
-        when(securityManager.checkPolicyByResourceIri(eq(RESOURCE_STATIONARY_URI), eq(reqUser1))).thenReturn(Boolean.TRUE);
-        when(securityManager.checkPolicyByResourceIri(eq(RESOURCE_STATIONARY_URI), eq(reqUser2))).thenReturn(Boolean.FALSE);
+        when(securityManager.checkPolicyByResourceIri(eq(RESOURCE_STATIONARY_URI), eq(reqUser1),any())).thenReturn(Boolean.TRUE);
+        when(securityManager.checkPolicyByResourceIri(eq(RESOURCE_STATIONARY_URI), eq(reqUser2),any())).thenReturn(Boolean.FALSE);
 //        when(securityManager.checkPolicyByResourceId(eq(RESOURCE_MOBILE_ID),reqUser2)).thenReturn(Boolean.FALSE);
-        when(securityManager.checkPolicyByResourceIri(eq(RESOURCE_MOBILE_URI), eq(reqUser1))).thenReturn(Boolean.TRUE);
-        when(securityManager.checkPolicyByResourceIri(eq(RESOURCE_MOBILE_URI), eq(reqUser2))).thenReturn(Boolean.TRUE);
+        when(securityManager.checkPolicyByResourceIri(eq(RESOURCE_MOBILE_URI), eq(reqUser1),any())).thenReturn(Boolean.TRUE);
+        when(securityManager.checkPolicyByResourceIri(eq(RESOURCE_MOBILE_URI), eq(reqUser2),any())).thenReturn(Boolean.TRUE);
     }
 
 

@@ -1,5 +1,7 @@
 package eu.h2020.symbiote.filtering;
 
+import eu.h2020.symbiote.security.commons.enums.ValidationStatus;
+import eu.h2020.symbiote.security.communication.payloads.SecurityCredentials;
 import eu.h2020.symbiote.security.communication.payloads.SecurityRequest;
 import eu.h2020.symbiote.semantics.ontology.CIM;
 import org.apache.commons.logging.Log;
@@ -13,6 +15,8 @@ import org.apache.jena.shared.AuthenticationRequiredException;
 import org.apache.jena.vocabulary.RDF;
 
 import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -26,6 +30,8 @@ public class FilteringEvaluator implements SecurityEvaluator {
     private Principal principal;
     private Model model;
     private SecurityRequest securityRequest;
+    private Map<SecurityCredentials, ValidationStatus> validatedCredentials;
+
 //    private Property pTo = ResourceFactory.createProperty("http://example.com/to");
 //    private Property pFrom = ResourceFactory.createProperty("http://example.com/from");
 
@@ -74,7 +80,7 @@ public class FilteringEvaluator implements SecurityEvaluator {
 //                System.out.println(" {S,P,O} = { " + stmt.getSubject().toString() + ", " + stmt.getPredicate().toString() + ", " + stmt.getObject().toString());
 //            }
             try {
-                boolean b = securityManager.checkPolicyByResourceIri(r.getURI(), securityRequest);
+                boolean b = securityManager.checkPolicyByResourceIri(r.getURI(), securityRequest, this.validatedCredentials);
                 if( !b) {
                     log.debug("Policy not fulfilled for " + r.getURI());
                 }
@@ -165,6 +171,7 @@ public class FilteringEvaluator implements SecurityEvaluator {
 
     public void setSecurityRequest( SecurityRequest securityRequest ) {
         this.securityRequest = securityRequest;
+        this.validatedCredentials = new HashMap<SecurityCredentials, ValidationStatus>();
     }
 
     @Override

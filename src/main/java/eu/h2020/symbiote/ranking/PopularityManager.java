@@ -30,10 +30,10 @@ public class PopularityManager {
 
     public void savePopularityMessage( PopularityUpdatesMessage message ) {
         if( message != null && message.getPopularityUpdateList() != null ) {
-            log.debug("Saving " + message.getPopularityUpdateList().size() + " popularity updates" );
-            int i = 0;
+//            log.debug("Saving " + message.getPopularityUpdateList().size() + " popularity updates" );
+//            int i = 0;
             for( PopularityUpdate update: message.getPopularityUpdateList() ) {
-                log.debug("["+i+++"] " + update.getId()  + " : " + update.getViewsInDefinedInterval() );
+//                log.debug("["+i+++"] " + update.getId()  + " : " + update.getViewsInDefinedInterval() );
 //                PopularityObject popularityObject = new PopularityObject();
 //                popularityObject.setUpdate(update);
                 popularityRepository.save( update );

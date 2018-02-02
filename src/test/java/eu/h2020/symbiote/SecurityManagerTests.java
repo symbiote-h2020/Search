@@ -58,13 +58,14 @@ public class SecurityManagerTests {
     @Test
     public void getPolicyForId() throws InvalidArgumentsException {
 
+
         AccessPolicy accessPolicy = generatePolicy(RES_ID,RES_IRI);
         when(accessPolicyRepo.findByIri(RES_IRI)).thenReturn(Optional.of(accessPolicy));
 
         SecurityRequest request = new SecurityRequest("test");
 
         when(componentSecurityHandler.getSatisfiedPoliciesIdentifiers(anyMap(), any(SecurityRequest.class))).thenAnswer( new SecurityAnswer(accessPolicy,request));
-        boolean b = securityManager.checkPolicyByResourceIri(RES_IRI, request);
+        boolean b = securityManager.checkPolicyByResourceIri(RES_IRI, request,new HashMap<>());
         assertTrue(b);
     }
 
@@ -77,7 +78,7 @@ public class SecurityManagerTests {
         SecurityRequest request = new SecurityRequest("test");
 
         when(componentSecurityHandler.getSatisfiedPoliciesIdentifiers(anyMap(), any(SecurityRequest.class))).thenAnswer( new SecurityAnswer(accessPolicy,request));
-        boolean b = securityManager.checkPolicyByResourceId(RES_ID, request);
+        boolean b = securityManager.checkPolicyByResourceId(RES_ID, request,new HashMap<>());
         assertTrue(b);
     }
 
@@ -89,7 +90,7 @@ public class SecurityManagerTests {
         SecurityRequest request = null;
 
         when(componentSecurityHandler.getSatisfiedPoliciesIdentifiers(anyMap(), any(SecurityRequest.class))).thenAnswer( new SecurityAnswer(accessPolicy,request));
-        boolean b = securityManager.checkPolicyByResourceId(RES_ID, request);
+        boolean b = securityManager.checkPolicyByResourceId(RES_ID, request,new HashMap<>());
         assertFalse(b);
     }
 
@@ -101,7 +102,7 @@ public class SecurityManagerTests {
         SecurityRequest request = new SecurityRequest("test");
 
         when(componentSecurityHandler.getSatisfiedPoliciesIdentifiers(anyMap(), any(SecurityRequest.class))).thenAnswer( new SecurityAnswer(accessPolicy,request));
-        boolean b = securityManager.checkPolicyByResourceId(RES2_ID, request);
+        boolean b = securityManager.checkPolicyByResourceId(RES2_ID, request,new HashMap<>());
         assertFalse(b);
     }
 

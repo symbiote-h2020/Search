@@ -12,7 +12,9 @@ import eu.h2020.symbiote.query.QueryVarName;
 import eu.h2020.symbiote.query.ResourceAndObservedPropertyQueryGenerator;
 import eu.h2020.symbiote.ranking.RankingHandler;
 import eu.h2020.symbiote.ranking.RankingQuery;
+import eu.h2020.symbiote.security.commons.enums.ValidationStatus;
 import eu.h2020.symbiote.security.commons.exceptions.custom.SecurityHandlerException;
+import eu.h2020.symbiote.security.communication.payloads.SecurityCredentials;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
@@ -25,7 +27,9 @@ import org.apache.jena.sparql.resultset.ResultsFormat;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -64,6 +68,7 @@ public class SearchHandler implements ISearchEvents {
         QueryResponse response = new QueryResponse();
         try {
 
+            Map<SecurityCredentials, ValidationStatus> validatedCredentials = new HashMap<>();
             QueryGenerator q = HandlerUtils.generateQueryFromSearchRequest(request);
 
             ResultSet results = this.triplestore.executeQuery(q.toString(),request.getSecurityRequest(),false);
@@ -81,7 +86,7 @@ public class SearchHandler implements ISearchEvents {
 
             List<QueryResourceResult> filteredResults = response.getBody().stream().filter(res -> {
                     log.debug("Checking policies for for res: " + res.getId());
-                    return securityManager.checkPolicyByResourceId(res.getId(), request.getSecurityRequest());
+                    return securityManager.checkPolicyByResourceId(res.getId(), request.getSecurityRequest(),validatedCredentials);
             }).collect(Collectors.toList());
 
             log.debug("After filtering got " + filteredResults.size() + " results");

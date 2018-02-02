@@ -43,8 +43,8 @@ public class QueryGenerationTests {
 
     @Before
     public void setUp() throws Exception {
-        when(securityManager.checkPolicyByResourceId(anyString(),any())).thenReturn(Boolean.TRUE);
-        when(securityManager.checkPolicyByResourceIri(anyString(),any())).thenReturn(Boolean.TRUE);
+        when(securityManager.checkPolicyByResourceId(anyString(),any(),any())).thenReturn(Boolean.TRUE);
+        when(securityManager.checkPolicyByResourceIri(anyString(),any(),any())).thenReturn(Boolean.TRUE);
 
         triplestore = new TripleStore( securityManager, false);
         registry = new Registry(triplestore);

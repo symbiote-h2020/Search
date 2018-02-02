@@ -49,8 +49,8 @@ public class SearchHandlerTests {
 
     @Before
     public void setUp() throws Exception {
-        when(securityManager.checkPolicyByResourceId(anyString(),any())).thenReturn(Boolean.TRUE);
-        when(securityManager.checkPolicyByResourceIri(anyString(),any())).thenReturn(Boolean.TRUE);
+        when(securityManager.checkPolicyByResourceId(anyString(),any(),any())).thenReturn(Boolean.TRUE);
+        when(securityManager.checkPolicyByResourceIri(anyString(),any(),any())).thenReturn(Boolean.TRUE);
 
 
 //        storage = SearchStorage.getInstance(SearchStorage.TESTCASE_STORAGE_NAME);
