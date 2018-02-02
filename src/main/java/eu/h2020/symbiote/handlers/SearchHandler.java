@@ -154,7 +154,7 @@ public class SearchHandler implements ISearchEvents {
 
     private void searchForPropertiesOfResource(QueryResourceResult resource) {
         ResourceAndObservedPropertyQueryGenerator q = new ResourceAndObservedPropertyQueryGenerator(resource.getId());
-        ResultSet resultSet = this.triplestore.executeQuery(q.toString(),null,false);
+        ResultSet resultSet = this.triplestore.executeQuery(q.toString(),null,true);
 
         List<String> allProperties = new ArrayList<>();
         while (resultSet.hasNext()) {

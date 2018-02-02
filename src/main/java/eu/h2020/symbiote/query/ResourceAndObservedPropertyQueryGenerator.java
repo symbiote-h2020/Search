@@ -26,7 +26,7 @@ public class ResourceAndObservedPropertyQueryGenerator {
         query.append("SELECT ?sensor ?propName WHERE {\n");
         query.append("\t?sensor a cim:Sensor ;\n");
         query.append("\t\tcim:id \""+resId+"\" ;\n");
-        query.append("\t\tcim:observes ?property .\n");
+        query.append("\t\tcim:observesProperty ?property .\n");
         query.append("\t?property cim:name ?propName .\n");
     }
 
