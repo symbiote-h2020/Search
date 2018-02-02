@@ -67,7 +67,7 @@ public class SearchHandler implements ISearchEvents {
     public QueryResponse search(CoreQueryRequest request) {
         QueryResponse response = new QueryResponse();
         try {
-
+            long beforeSparql = System.currentTimeMillis();
             Map<SecurityCredentials, ValidationStatus> validatedCredentials = new HashMap<>();
             QueryGenerator q = HandlerUtils.generateQueryFromSearchRequest(request);
 
@@ -78,18 +78,22 @@ public class SearchHandler implements ISearchEvents {
             if (q.isMultivaluequery()) {
                 response.getBody().forEach(this::searchForPropertiesOfResource);
             }
+            long afterSparql = System.currentTimeMillis();
 
             //Filtering of the results
             log.debug("Initially found " + response.getBody().size() + " resources, performing filtering" );
 
-
+            long beforeCheckPolicy = System.currentTimeMillis();
 
             List<QueryResourceResult> filteredResults = response.getBody().stream().filter(res -> {
                     log.debug("Checking policies for for res: " + res.getId());
                     return securityManager.checkPolicyByResourceId(res.getId(), request.getSecurityRequest(),validatedCredentials);
             }).collect(Collectors.toList());
 
+            long afterCheckPolicy = System.currentTimeMillis();
+
             log.debug("After filtering got " + filteredResults.size() + " results");
+            log.debug("[Timers] Sparql: " + (afterSparql - beforeSparql ) + " ms | Checking policy: " + (afterCheckPolicy - beforeCheckPolicy ) + " ms." );
 
             response.setBody(filteredResults);
             response.setStatus(HttpStatus.SC_OK);
