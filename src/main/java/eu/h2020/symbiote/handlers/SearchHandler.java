@@ -77,9 +77,7 @@ public class SearchHandler implements ISearchEvents {
             response = HandlerUtils.generateSearchResponseFromResultSet(results);
 
             if (q.isMultivaluequery()) {
-                for( QueryResourceResult res: response.getBody() ) {
-                    searchForPropertiesOfResource(res, request.getSecurityRequest());
-                }
+                    searchForPropertiesOfResources(response.getBody(), request.getSecurityRequest());
             }
             long afterSparql = System.currentTimeMillis();
 
@@ -164,25 +162,28 @@ public class SearchHandler implements ISearchEvents {
         return response;
     }
 
-    private void searchForPropertiesOfResource(QueryResourceResult resource, SecurityRequest request) {
-        ResourceAndObservedPropertyQueryGenerator q = new ResourceAndObservedPropertyQueryGenerator(resource.getId());
+    private void searchForPropertiesOfResources(List<QueryResourceResult> resources, SecurityRequest request) {
+
+        List<String> resourceIds = resources.stream().map(q -> q.getId()).collect(Collectors.toList());
+
+        ResourceAndObservedPropertyQueryGenerator q = new ResourceAndObservedPropertyQueryGenerator(resourceIds);
         ResultSet resultSet = this.triplestore.executeQuery(q.toString(),request,true);
 
-        log.debug("Loading properties for resource: " + resource.getId());
-        if( resultSet.hasNext() ) {
-            log.debug("has at least one result");
-        } else {
-            log.debug("no results");
-        }
+        Map<String,List<String>> resourcesPropertiesMap = new HashMap<>();
 
-        List<String> allProperties = new ArrayList<>();
         while (resultSet.hasNext()) {
             QuerySolution qs = resultSet.next();
-            allProperties.add(qs.get(QueryVarName.PROPERTY_NAME).toString());
+            String resourceId = qs.get(QueryVarName.VALUE).toString();
+            if( !resourcesPropertiesMap.containsKey(resourceId) ) {
+                resourcesPropertiesMap.put(resourceId,new ArrayList<>());
+            }
+            log.debug("Adding property " + qs.get(QueryVarName.PROPERTY_NAME).toString() + " for res " + resourceId );
+            List<String> propertiesList = resourcesPropertiesMap.get(resourceId);
+            propertiesList.add(qs.get(QueryVarName.PROPERTY_NAME).toString());
         }
 
-
-        resource.setObservedProperties(allProperties);
+        //Setting properties
+        resources.stream().filter( rs -> resourcesPropertiesMap.containsKey(rs.getId())).forEach(rs -> rs.setObservedProperties(resourcesPropertiesMap.get(rs.getId())));
     }
 
 }

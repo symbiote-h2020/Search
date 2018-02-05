@@ -18,5 +18,6 @@ public interface QueryVarName {
     String LOCATION_ALT ="locationAlt";
     String PROPERTY_NAME = "propName";
     String TYPE = "type";
+    String VALUE = "value";
 
 }
