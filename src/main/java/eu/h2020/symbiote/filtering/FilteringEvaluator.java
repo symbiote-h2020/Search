@@ -170,7 +170,7 @@ public class FilteringEvaluator implements SecurityEvaluator {
     }
 
     public void setSecurityRequest( SecurityRequest securityRequest ) {
-        if( !this.securityRequest.equals(securityRequest)) {
+        if( this.securityRequest==null || !this.securityRequest.equals(securityRequest)) {
             this.securityRequest = securityRequest;
             this.validatedCredentials = new HashMap<SecurityCredentials, ValidationStatus>();
         }
