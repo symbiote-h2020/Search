@@ -282,8 +282,8 @@ public class TripleStore {
                 }
             } else {
 //            Model mm = ModelFactory.createRDFSModel(dataset.getDefaultModel());
-                try (QueryExecution qe = QueryExecutionFactory.create(query, dataset)) {
-//                qe.setTimeout(30000);
+                try (QueryExecution qe = QueryExecutionFactory.create(query,dataset)) {
+                qe.setTimeout(sparqlQueryTimeout);
                     result = ResultSetFactory.copyResults(qe.execSelect());
                     dataset.end();
                 }

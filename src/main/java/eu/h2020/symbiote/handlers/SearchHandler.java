@@ -15,6 +15,7 @@ import eu.h2020.symbiote.ranking.RankingQuery;
 import eu.h2020.symbiote.security.commons.enums.ValidationStatus;
 import eu.h2020.symbiote.security.commons.exceptions.custom.SecurityHandlerException;
 import eu.h2020.symbiote.security.communication.payloads.SecurityCredentials;
+import eu.h2020.symbiote.security.communication.payloads.SecurityRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
@@ -76,7 +77,9 @@ public class SearchHandler implements ISearchEvents {
             response = HandlerUtils.generateSearchResponseFromResultSet(results);
 
             if (q.isMultivaluequery()) {
-                response.getBody().forEach(this::searchForPropertiesOfResource);
+                for( QueryResourceResult res: response.getBody() ) {
+                    searchForPropertiesOfResource(res, request.getSecurityRequest());
+                }
             }
             long afterSparql = System.currentTimeMillis();
 
@@ -86,7 +89,7 @@ public class SearchHandler implements ISearchEvents {
             long beforeCheckPolicy = System.currentTimeMillis();
 
             List<QueryResourceResult> filteredResults = response.getBody().stream().filter(res -> {
-                    log.debug("Checking policies for for res: " + res.getId());
+                    log.debug("Checking policies for for res: " + res.getId() );
                     return securityManager.checkPolicyByResourceId(res.getId(), request.getSecurityRequest(),validatedCredentials);
             }).collect(Collectors.toList());
 
@@ -161,15 +164,24 @@ public class SearchHandler implements ISearchEvents {
         return response;
     }
 
-    private void searchForPropertiesOfResource(QueryResourceResult resource) {
+    private void searchForPropertiesOfResource(QueryResourceResult resource, SecurityRequest request) {
         ResourceAndObservedPropertyQueryGenerator q = new ResourceAndObservedPropertyQueryGenerator(resource.getId());
-        ResultSet resultSet = this.triplestore.executeQuery(q.toString(),null,true);
+        ResultSet resultSet = this.triplestore.executeQuery(q.toString(),request,true);
+
+        log.debug("Loading properties for resource: " + resource.getId());
+        if( resultSet.hasNext() ) {
+            log.debug("has at least one result");
+        } else {
+            log.debug("no results");
+        }
 
         List<String> allProperties = new ArrayList<>();
         while (resultSet.hasNext()) {
             QuerySolution qs = resultSet.next();
             allProperties.add(qs.get(QueryVarName.PROPERTY_NAME).toString());
         }
+
+
         resource.setObservedProperties(allProperties);
     }
 
