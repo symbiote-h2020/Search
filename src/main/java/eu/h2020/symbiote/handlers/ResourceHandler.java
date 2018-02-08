@@ -7,7 +7,7 @@ import eu.h2020.symbiote.filtering.AccessPolicyRepo;
 import eu.h2020.symbiote.query.DeleteResourceRequestGenerator;
 import eu.h2020.symbiote.search.SearchStorage;
 import eu.h2020.symbiote.security.accesspolicies.IAccessPolicy;
-import eu.h2020.symbiote.security.accesspolicies.common.SingleTokenAccessPolicyFactory;
+import eu.h2020.symbiote.security.accesspolicies.common.AccessPolicyFactory;
 import eu.h2020.symbiote.security.commons.exceptions.custom.InvalidArgumentsException;
 import eu.h2020.symbiote.semantics.ModelHelper;
 import org.apache.commons.logging.Log;
@@ -75,7 +75,7 @@ public class ResourceHandler implements IResourceEvents {
                 this.storage.registerResource(ModelHelper.getPlatformURI(platformId), registeredServiceURI, ModelHelper.getResourceURI(coreResource.getId()), model);
                 if( coreResource.getPolicySpecifier() != null ) {
                     try {
-                        IAccessPolicy singleTokenAccessPolicy = SingleTokenAccessPolicyFactory.getSingleTokenAccessPolicy(coreResource.getPolicySpecifier());
+                        IAccessPolicy singleTokenAccessPolicy = AccessPolicyFactory.getAccessPolicy(coreResource.getPolicySpecifier());
                         AccessPolicy policy = new AccessPolicy(coreResource.getId(), ModelHelper.getResourceURI(coreResource.getId()), singleTokenAccessPolicy);
                         this.accessPolicyRepo.save(policy);
                     } catch (InvalidArgumentsException e) {
