@@ -31,9 +31,9 @@ public class AvailabilityManager {
 
     public void saveAvailabilityMessage( CloudMonitoringPlatformRequest message ) {
         if( message != null && message.getBody() != null ) {
-            if( message.getBody().getDevices() !=null ) {
-                log.debug("Saving availability update, size " + message.getBody().getDevices().length);
-                for( CloudMonitoringDevice device: Arrays.asList(message.getBody().getDevices()) ) {
+            if( message.getBody().getMetrics() !=null ) {
+                log.debug("Saving availability update, size " + message.getBody().getMetrics().size());
+                for( CloudMonitoringDevice device: message.getBody().getMetrics() ) {
                     this.availabilityRepository.save(new MonitoringInfo(device.getId(),device));
                 }
             }
@@ -48,12 +48,14 @@ public class AvailabilityManager {
         if( !monitoringInfo.isPresent() ) {
             log.debug("Could not find availability for resource " + resourceId + ", setting " + result);
         } else {
-            if( monitoringInfo.get().getMonitoringDeviceInfo().getAvailability() == 1 ) {
-                log.debug("Resource " + resourceId + " available");
-                result = 1.0f;
-            } else {
-                log.warn("Resource " + resourceId + " has different availability value: " + monitoringInfo.get().getMonitoringDeviceInfo().getAvailability()  + ". Returning availability rank as a " + result);
-            }
+            //TODO to be changed when new metrics system arrives
+            log.warn("TODO to be changed when new metrics system arrives");
+//            if( monitoringInfo.get().getMonitoringDeviceInfo().getMetrics()== 1 ) {
+//                log.debug("Resource " + resourceId + " available");
+//                result = 1.0f;
+//            } else {
+//                log.warn("Resource " + resourceId + " has different availability value: " + monitoringInfo.get().getMonitoringDeviceInfo().getAvailability()  + ". Returning availability rank as a " + result);
+//            }
         }
 
         return result;

@@ -202,6 +202,22 @@ public class QueryGenerator {
         return this;
     }
 
+    public QueryGenerator addResourceObservedPropertyIri(String propIri) {
+        multivaluequery = true;
+        propertyquery = true;
+        extension.append("\t?sensor cim:observesProperty <"+propIri+"> .\n");
+        return this;
+    }
+
+    public QueryGenerator addResourceObservedPropertyIris(List<String> propIris) {
+        multivaluequery = true;
+        propertyquery = true;
+        for( String propertyIri: propIris ) {
+            extension.append("\t?sensor cim:observesProperty <"+propertyIri+"> .\n");
+        }
+        return this;
+    }
+
     public QueryGenerator addResourceType( String type ) {
         extension.append("\t?sensor a <" + type + "> .\n" );
         return this;

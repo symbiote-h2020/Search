@@ -204,6 +204,13 @@ public class HandlerUtils {
                 q.addResourceObservedPropertyNames(request.getObserved_property());
             }
         }
+        if( request.getObserved_property_iri() != null && !request.getObserved_property_iri().isEmpty() ) {
+            if( request.getObserved_property_iri().size() == 1 ) {
+                q.addResourceObservedPropertyIri(request.getObserved_property_iri().get(0));
+            } else {
+                q.addResourceObservedPropertyIris(request.getObserved_property_iri());
+            }
+        }
         if( request.getResource_type() != null && !request.getResource_type().isEmpty() ) {
             try {
                 ResourceType type = ResourceType.getTypeForName(request.getResource_type());
