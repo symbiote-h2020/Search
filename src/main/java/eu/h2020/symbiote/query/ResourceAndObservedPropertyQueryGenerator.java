@@ -29,12 +29,14 @@ public class ResourceAndObservedPropertyQueryGenerator {
         query.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n");
         query.append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
 
-        query.append("SELECT ?sensor ?propName ?value WHERE {\n");
+        query.append("SELECT ?sensor ?propName ?property ?propDesc ?value WHERE {\n");
         query.append("VALUES (?value) {" + sb.toString() + "}");
         query.append("\t?sensor a cim:Sensor ;\n");
         query.append("\t\tcim:id ?value ;\n");
         query.append("\t\tcim:observesProperty ?property .\n");
         query.append("\t?property cim:name ?propName .\n");
+        query.append("\t?property cim:description ?propDesc .\n");
+
     }
 
     @Override

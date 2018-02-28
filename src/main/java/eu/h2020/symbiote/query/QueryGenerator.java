@@ -41,7 +41,7 @@ public class QueryGenerator {
         query.append("PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> \n\n");
 
         //Location test //dziala ok
-        query.append("SELECT ?resId ?resName ?resDescription ?locationName ?locationLat ?locationLong ?locationAlt ?platformId ?platformName ?property ?propName ?type WHERE {\n" );
+        query.append("SELECT ?resId ?resName ?resDescription ?locationName ?locationLat ?locationLong ?locationAlt ?platformId ?platformName ?property ?propName ?propDesc ?type WHERE {\n" );
 //        query.append("\t?sensor a cim:Resource ;\n"); \\TODO r3 dereference
         query.append("\t?sensor a ?type ;\n");
         query.append("\t\tcim:id ?resId ;\n");
@@ -78,6 +78,7 @@ public class QueryGenerator {
                 query.append("OPTIONAL { ");
                 query.append("\t?sensor cim:observesProperty ?property.\n");
                 query.append("\t?property cim:name ?propName.\n");
+                query.append("\t?property cim:description ?propDesc.\n");
                 query.append("} \n");
             }
 

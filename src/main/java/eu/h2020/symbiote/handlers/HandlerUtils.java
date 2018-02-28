@@ -4,6 +4,7 @@ import eu.h2020.symbiote.core.ci.QueryResourceResult;
 import eu.h2020.symbiote.core.ci.QueryResponse;
 import eu.h2020.symbiote.core.ci.ResourceType;
 import eu.h2020.symbiote.core.internal.CoreQueryRequest;
+import eu.h2020.symbiote.model.cim.Property;
 import eu.h2020.symbiote.model.mim.InterworkingService;
 import eu.h2020.symbiote.model.mim.Platform;
 import eu.h2020.symbiote.query.QueryGenerator;
@@ -20,10 +21,7 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static eu.h2020.symbiote.query.QueryVarName.*;
@@ -255,15 +253,24 @@ public class HandlerUtils {
                 log.error("Number format exception occurred when reading location values: " + e.getMessage(), e);
             }
 
-            RDFNode propertyNode = solution.get(PROPERTY_NAME);
-            String propertyName = propertyNode!=null?propertyNode.toString():"";
+            RDFNode propertyNameNode = solution.get(PROPERTY_NAME);
+            String propertyName = propertyNameNode!=null?propertyNameNode.toString():"";
+
+            RDFNode propertyIriNode = solution.get(PROPERTY_IRI);
+            String propertyIri = propertyIriNode!=null?propertyIriNode.toString():"";
+
+            RDFNode propertyDescNode = solution.get(PROPERTY_DESC);
+            String propertyDesc = propertyDescNode!=null?propertyDescNode.toString():"";
+
             String type = solution.get(TYPE).toString();
             //TODO potential change with inference
             if( !type.equals(CIM.Resource.toString()) ) {
 
                 if (!responses.containsKey(resId)) {
-                    List<String> properties = new ArrayList<>();
-                    properties.add(propertyName);
+                    List<Property> properties = new ArrayList<>();
+                    if( !propertyName.isEmpty() && !propertyIri.isEmpty() ){
+                        properties.add(new Property(propertyName,propertyIri, Arrays.asList(propertyDesc)));
+                    }
 
                     List<String> types = new ArrayList<>();
                     types.add(type);
@@ -285,8 +292,9 @@ public class HandlerUtils {
                     QueryResourceResult existingResource = responses.get(resId);
 //                //Do equals
                     if( propertyName != null && !propertyName.isEmpty() ) {
-                        if( !existingResource.getObservedProperties().contains(propertyName)) {
-                            existingResource.getObservedProperties().add(propertyName);
+                        Property newProp = new Property(propertyName,propertyIri, Arrays.asList(propertyDesc));
+                        if( !existingResource.getObservedProperties().contains(newProp)) {
+                            existingResource.getObservedProperties().add(newProp);
                         }
                     }
                     if( type != null && !type.isEmpty() ) {

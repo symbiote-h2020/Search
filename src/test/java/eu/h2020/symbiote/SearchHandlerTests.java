@@ -64,7 +64,7 @@ public class SearchHandlerTests {
             Model stationaryModel = loadFileAsModel(RESOURCE_STATIONARY_FILENAME, "JSONLD" );
 
             registry.registerResource(PLATFORM_A_URI,PLATFORM_A_SERVICE_URI,RESOURCE_STATIONARY_URI,stationaryModel);
-            searchHandler = new SearchHandler(triplestore, securityManager, rankingHandler, false);
+            searchHandler = new SearchHandler(triplestore, true, securityManager, rankingHandler, false);
 
             triplestore.printDataset();
         } catch (IOException e) {

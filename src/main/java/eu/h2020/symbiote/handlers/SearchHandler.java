@@ -6,6 +6,7 @@ import eu.h2020.symbiote.core.ci.SparqlQueryResponse;
 import eu.h2020.symbiote.core.internal.CoreQueryRequest;
 import eu.h2020.symbiote.core.internal.CoreSparqlQueryRequest;
 import eu.h2020.symbiote.filtering.SecurityManager;
+import eu.h2020.symbiote.model.cim.Property;
 import eu.h2020.symbiote.ontology.model.TripleStore;
 import eu.h2020.symbiote.query.QueryGenerator;
 import eu.h2020.symbiote.query.QueryVarName;
@@ -27,10 +28,7 @@ import org.apache.jena.sparql.resultset.ResultsFormat;
 
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -50,14 +48,16 @@ public class SearchHandler implements ISearchEvents {
     private final RankingHandler rankingHandler;
 
     private final boolean shouldRank;
+    private final boolean securityEnabled;
 
     /**
      * Create a handler of the platform events for specified storage.
      *
      * @param triplestore Triplestore on which the events should be executed.
      */
-    public SearchHandler(TripleStore triplestore, SecurityManager securityManager, RankingHandler rankingHandler, boolean shouldRank) {
+    public SearchHandler(TripleStore triplestore, boolean securityEnabled, SecurityManager securityManager, RankingHandler rankingHandler, boolean shouldRank) {
         this.triplestore = triplestore;
+        this.securityEnabled = securityEnabled;
         this.securityManager = securityManager;
         this.rankingHandler = rankingHandler;
         this.shouldRank = shouldRank;
@@ -87,7 +87,7 @@ public class SearchHandler implements ISearchEvents {
             long beforeCheckPolicy = System.currentTimeMillis();
 
             List<QueryResourceResult> filteredResults = response.getBody().stream().filter(res -> {
-                    log.debug("Checking policies for for res: " + res.getId() );
+//                    log.debug("Checking policies for for res: " + res.getId() );
                     return securityManager.checkPolicyByResourceId(res.getId(), request.getSecurityRequest(),validatedCredentials);
             }).collect(Collectors.toList());
 
@@ -113,7 +113,9 @@ public class SearchHandler implements ISearchEvents {
             response.setMessage("Internal server error occurred during search : " + e.getMessage());
         }
         try {
-            response.setServiceResponse(securityManager.generateSecurityResponse());
+            if( securityEnabled ) {
+                response.setServiceResponse(securityEnabled?securityManager.generateSecurityResponse():"");
+            }
         } catch (SecurityHandlerException e) {
             log.error("Error occurred when generating security response. Setting response to empty string. Message of error: " + e.getMessage(), e);
             response.setServiceResponse("");
@@ -169,7 +171,7 @@ public class SearchHandler implements ISearchEvents {
         ResourceAndObservedPropertyQueryGenerator q = new ResourceAndObservedPropertyQueryGenerator(resourceIds);
         ResultSet resultSet = this.triplestore.executeQuery(q.toString(),request,true);
 
-        Map<String,List<String>> resourcesPropertiesMap = new HashMap<>();
+        Map<String,List<Property>> resourcesPropertiesMap = new HashMap<>();
 
         while (resultSet.hasNext()) {
             QuerySolution qs = resultSet.next();
@@ -178,8 +180,9 @@ public class SearchHandler implements ISearchEvents {
                 resourcesPropertiesMap.put(resourceId,new ArrayList<>());
             }
             log.debug("Adding property " + qs.get(QueryVarName.PROPERTY_NAME).toString() + " for res " + resourceId );
-            List<String> propertiesList = resourcesPropertiesMap.get(resourceId);
-            propertiesList.add(qs.get(QueryVarName.PROPERTY_NAME).toString());
+            List<Property> propertiesList = resourcesPropertiesMap.get(resourceId);
+            Property prop = new Property(qs.get(QueryVarName.PROPERTY_NAME).toString(),qs.get(QueryVarName.PROPERTY_IRI).toString(), Arrays.asList(qs.get(QueryVarName.PROPERTY_DESC).toString()));
+            propertiesList.add(prop);
         }
 
         //Setting properties

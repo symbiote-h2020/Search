@@ -88,7 +88,7 @@ public class DeleteAndUpdateHandlerTests {
         System.out.println(" ===== PRE ==== ");
         printDataset();
         System.out.println(" ===== PRE ==== ");
-        SearchHandler searchHandler = new SearchHandler(triplestore,securityManager,rankingHandler, false);
+        SearchHandler searchHandler = new SearchHandler(triplestore,true,securityManager,rankingHandler, false);
 
         CoreQueryRequest searchReq = new CoreQueryRequest();
         searchReq.setId("stationary1");
@@ -158,7 +158,7 @@ public class DeleteAndUpdateHandlerTests {
         boolean hasAtLeastOne = graph.listStatements().hasNext();
         assertTrue("Initial graph should have at least some statements", hasAtLeastOne);
 
-        SearchHandler searchHandler = new SearchHandler(triplestore,securityManager, rankingHandler,false);
+        SearchHandler searchHandler = new SearchHandler(triplestore,true, securityManager, rankingHandler,false);
         CoreQueryRequest searchReq = new CoreQueryRequest();
         searchReq.setName("*stationary*");
         QueryResponse searchResponse = searchHandler.search(searchReq);

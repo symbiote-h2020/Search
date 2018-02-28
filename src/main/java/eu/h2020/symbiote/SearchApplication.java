@@ -85,7 +85,7 @@ public class SearchApplication {
 
             manager.registerResourceUpdatedConsumer(resourceHandler);
 
-            SearchHandler searchHandler = new SearchHandler(searchStorage.getTripleStore(), securityManager, rankingHandler, rankingEnabled );
+            SearchHandler searchHandler = new SearchHandler(searchStorage.getTripleStore(), securityEnabled, securityManager, rankingHandler, rankingEnabled );
             manager.registerResourceSearchConsumer(searchHandler);
             manager.registerResourceSparqlSearchConsumer(searchHandler);
 
