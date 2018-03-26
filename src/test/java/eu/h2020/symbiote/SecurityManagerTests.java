@@ -64,7 +64,7 @@ public class SecurityManagerTests {
 
         SecurityRequest request = new SecurityRequest("test");
 
-        when(componentSecurityHandler.getSatisfiedPoliciesIdentifiers(anyMap(), any(SecurityRequest.class))).thenAnswer( new SecurityAnswer(accessPolicy,request));
+        when(componentSecurityHandler.getSatisfiedPoliciesIdentifiers(anyMap(), any(SecurityRequest.class),anyMap())).thenAnswer( new SecurityAnswer(accessPolicy,request));
         boolean b = securityManager.checkPolicyByResourceIri(RES_IRI, request,new HashMap<>());
         assertTrue(b);
     }
@@ -77,7 +77,8 @@ public class SecurityManagerTests {
 
         SecurityRequest request = new SecurityRequest("test");
 
-        when(componentSecurityHandler.getSatisfiedPoliciesIdentifiers(anyMap(), any(SecurityRequest.class))).thenAnswer( new SecurityAnswer(accessPolicy,request));
+        when(componentSecurityHandler.getSatisfiedPoliciesIdentifiers(anyMap(), any(SecurityRequest.class),anyMap())).thenAnswer( new SecurityAnswer(accessPolicy,request));
+//        when(componentSecurityHandler.getSatisfiedPoliciesIdentifiers(anyMap(), any(SecurityRequest.class),anyMap())).thenAnswer( Arrays.asList(RES_ID));
         boolean b = securityManager.checkPolicyByResourceId(RES_ID, request,new HashMap<>());
         assertTrue(b);
     }
@@ -89,7 +90,7 @@ public class SecurityManagerTests {
 
         SecurityRequest request = null;
 
-        when(componentSecurityHandler.getSatisfiedPoliciesIdentifiers(anyMap(), any(SecurityRequest.class))).thenAnswer( new SecurityAnswer(accessPolicy,request));
+        when(componentSecurityHandler.getSatisfiedPoliciesIdentifiers(anyMap(), any(SecurityRequest.class),anyMap())).thenAnswer( new SecurityAnswer(accessPolicy,request));
         boolean b = securityManager.checkPolicyByResourceId(RES_ID, request,new HashMap<>());
         assertFalse(b);
     }
@@ -101,7 +102,7 @@ public class SecurityManagerTests {
 
         SecurityRequest request = new SecurityRequest("test");
 
-        when(componentSecurityHandler.getSatisfiedPoliciesIdentifiers(anyMap(), any(SecurityRequest.class))).thenAnswer( new SecurityAnswer(accessPolicy,request));
+        when(componentSecurityHandler.getSatisfiedPoliciesIdentifiers(anyMap(), any(SecurityRequest.class),anyMap())).thenAnswer( new SecurityAnswer(accessPolicy,request));
         boolean b = securityManager.checkPolicyByResourceId(RES2_ID, request,new HashMap<>());
         assertFalse(b);
     }
@@ -182,7 +183,7 @@ public class SecurityManagerTests {
         @Override
         public Set<String> answer(InvocationOnMock invocation) throws Throwable {
             Object[] arguments = invocation.getArguments();
-            if( arguments !=null && arguments.length == 2 && arguments[0] != null && arguments[1] != null ){
+            if( arguments !=null && arguments.length == 3 && arguments[0] != null && arguments[1] != null ){
                 Map<String,IAccessPolicy> argMap = (Map<String, IAccessPolicy>) arguments[0];
                 SecurityRequest argRequest = (SecurityRequest) arguments[1];
 
@@ -197,6 +198,16 @@ public class SecurityManagerTests {
                 }
 
             }
+//            if(arguments !=null && arguments.length == 3 && arguments[0] != null && arguments[1] != null && ar ) {
+//                System.out.println("Mockito arguments 1");
+//                if( arguments[0].equals(RES_ID )) {
+//                    return new HashSet<>(Arrays.asList(RES_ID));
+//                }
+//            } else {
+//                System.out.println("Mockito wrong arguments ");
+//                System.out.println(arguments==null?"Mockito args null ": "length " + arguments.length);
+//            }
+
             return null;
         }
     }

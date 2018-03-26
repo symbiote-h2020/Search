@@ -22,6 +22,7 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.sparql.util.QueryExecUtils;
 import org.apache.jena.tdb.TDBFactory;
 import org.apache.jena.update.UpdateAction;
+import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -30,6 +31,7 @@ import org.apache.lucene.store.RAMDirectory;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 
 /**
  * Class representing a triplestore - connected to in-memory or disk (TDB) jena repository. Creates a spatial index
@@ -156,6 +158,16 @@ public class TripleStore {
 //            }
             loadModels();
         }
+
+        //TODO DELTETE
+        //TODO Just once
+//        String insertCapNames = "PREFIX cim: <http://www.symbiote-h2020.eu/ontology/core#> PREFIX mim: <http://www.symbiote-h2020.eu/ontology/meta#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX owl: <http://www.w3.org/2002/07/owl#> PREFIX spatial: <http://jena.apache.org/spatial#> PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> INSERT { ?cap cim:name \"cap1\" } WHERE { ?owner cim:hasCapability ?cap . ?cap a cim:Capability. }";
+//        System.out.println("GONNA UPDATE ...");
+//        UpdateRequest request = UpdateFactory.create();
+//        request.add(insertCapNames);
+//        executeUpdate(request);
+//        System.out.println( " AFTER UPDATE !");
+
         model = ModelFactory.createRDFSModel(dataset.getDefaultModel());
         if( filteringEnabled ) {
             evaluator = new FilteringEvaluator(model,securityManager);
@@ -172,6 +184,9 @@ public class TripleStore {
 
     private void loadModels() {
 //        try {
+
+
+
 //
             loadBaseModel(CIM.getURI(), ModelHelper.getInformationModelURI(CIM_ID), dataset);
             loadBaseModel(MIM.getURI(), ModelHelper.getInformationModelURI(MIM_ID), dataset);
@@ -284,7 +299,27 @@ public class TripleStore {
 //            Model mm = ModelFactory.createRDFSModel(dataset.getDefaultModel());
                 try (QueryExecution qe = QueryExecutionFactory.create(query,dataset)) {
                 qe.setTimeout(sparqlQueryTimeout);
-                    result = ResultSetFactory.copyResults(qe.execSelect());
+                    ResultSet resultSet = qe.execSelect();
+                    //PRINTING INSTEAD OF RETURNING - comment
+//                    log.debug("Copying resultSet, hasNext: " + resultSet.hasNext());
+//                    while( resultSet.hasNext() ) {
+//                        QuerySolution next = resultSet.next();
+//                        Iterator<String> varIterator = next.varNames();
+//
+//                            System.out.print( "||||" );
+//                            while( varIterator.hasNext() ) {
+//                                System.out.print( "  " + varIterator.next() + "  |");
+//                            }
+//                            System.out.println( "|||" );
+//                            varIterator = next.varNames();
+//
+//                        while( varIterator.hasNext() ) {
+//                            System.out.print("  " + next.get(varIterator.next()).toString() + "  " );
+//                        }
+//                        System.out.println("");
+//                    }
+
+                    result = ResultSetFactory.copyResults(resultSet);
                     dataset.end();
                 }
             }

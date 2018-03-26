@@ -24,6 +24,7 @@ public class SecurityHandlerComponent {
                            @Value("${aam.environment.keystorePass}") String keystorePass,
                            @Value("${symbIoTe.validation.localaam}") Boolean alwaysUseLocalAAMForValidation)
             throws SecurityHandlerException {
+        //TODO uncommented for deployment
             handler = ComponentSecurityHandlerFactory.getComponentSecurityHandler(aamAddress,
                     keystoreName,
                     keystorePass,

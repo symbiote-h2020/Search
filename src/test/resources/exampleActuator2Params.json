@@ -4,7 +4,7 @@
     "@type" : "core:Capability",
     "name" : "cap1",
     "hasEffect" : "_:b1",
-    "hasParameter" : "_:b2"
+    "hasParameter" : [ "_:b2", "_:b5" ]
   }, {
     "@id" : "_:b1",
     "@type" : "core:Effect",
@@ -18,6 +18,13 @@
     "mandatory" : "true",
     "name" : "inputParam1"
   }, {
+    "@id" : "_:b5",
+    "@type" : "core:Parameter",
+    "hasDatatype" : "xsd:string",
+    "hasRestriction" : "_:b6",
+    "mandatory" : "false",
+    "name" : "inputParam2"
+  }, {
     "@id" : "_:b3",
     "@type" : "core:FeatureOfInterest",
     "hasProperty" : "qu:temperature",
@@ -28,6 +35,11 @@
     "@type" : "core:RangeRestriction",
     "max" : "10.0",
     "min" : "2.0"
+  }, {
+    "@id" : "_:b6",
+    "@type" : "core:RangeRestriction",
+    "max" : "14.0",
+    "min" : "4.0"
   }, {
     "@id" : "http://www.symbiote-h2020.eu/ontology/internal/platforms/Platform1/location/59ad0b5f8d116620906557f2",
     "@type" : "core:WGS84Location",

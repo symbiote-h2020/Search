@@ -106,7 +106,7 @@ public class TestSetupConfig {
     public static final String RESOURCE_MOBILE_URI = RESOURCE_PREDICATE + "mobile1";
     public static final String RESOURCE_MOBILE_ID = "mobile1";
 
-    public static final String RESOURCE_SERVICE_FILENAME = "/exampleService.json";
+    public static final String RESOURCE_SERVICE_FILENAME = "/exampleService2Params.json";
     public static final String RESOURCE_SERVICE_LABEL = "Service 1";
     public static final String RESOURCE_SERVICE_URI = RESOURCE_PREDICATE + "service1";
 //    public static final String RESOURCE_SERVICE_ID = "service1";
@@ -115,9 +115,10 @@ public class TestSetupConfig {
 //    public static final String RESOURCE_ACTUATING_SERVICE_LABEL = "Actuating Service 1";
 //    public static final String RESOURCE_ACTUATING_SERVICE_URI = RESOURCE_PREDICATE + "actuatingService1";
 
-    public static final String RESOURCE_ACTUATOR_FILENAME = "/exampleActuator.json";
+    public static final String RESOURCE_ACTUATOR_FILENAME = "/exampleActuator2Params.json";
     public static final String RESOURCE_ACTUATOR_LABEL = "Actuator 1";
     public static final String RESOURCE_ACTUATOR_URI = RESOURCE_PREDICATE + "actuator1";
+
 
 
     public static Model loadFileAsModel(String fileLocation, String format ) {

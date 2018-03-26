@@ -1,0 +1,128 @@
+{
+  "@graph" : [ {
+    "@id" : "_:b0",
+    "@type" : "core:FeatureOfInterest",
+    "description" : "This is room 1",
+    "hasProperty" : "qu:temperature",
+    "name" : "Room1"
+  }, {
+    "@id" : "_:b1",
+    "@type" : "core:Effect",
+    "affects" : [ "qu:humidity", "qu:temperature" ],
+    "hasFeatureOfInterest" : "_:b0"
+  }, {
+    "@id" : "_:b2",
+    "@type" : "core:Capability",
+    "hasEffect" : "_:b1",
+    "hasParameter" : "_:b3"
+  }, {
+    "@id" : "_:b3",
+    "@type" : "core:Parameter",
+    "hasDatatype" : "xsd:string",
+    "hasRestriction" : "_:b4",
+    "mandatory" : "true",
+    "name" : "inputParam1"
+  }, {
+    "@id" : "_:b4",
+    "@type" : "core:RangeRestriction",
+    "max" : "10.0",
+    "min" : "2.0"
+  }, {
+    "@id" : "http://www.nextworks.it/location/dev1location",
+    "@type" : "core:WGS84Location",
+    "description" : "Location of device 1",
+    "name" : "Dev1Location",
+    "alt" : "15.0",
+    "lat" : "48.864716",
+    "long" : "2.349014"
+  }, {
+    "@id" : "http://www.nextworks.it/sensors/device1",
+    "@type" : [ "core:Actuator", "core:StationarySensor" ],
+    "description" : "This is device 1",
+    "id" : "device1",
+    "hasCapability" : "_:b2",
+    "locatedAt" : "http://www.nextworks.it/location/dev1location",
+    "observesProperty" : "qu:temperature",
+    "name" : "Device1"
+  }, {
+    "@id" : "xsd:string",
+    "@type" : "rdfs:Datatype"
+  } ],
+  "@context" : {
+    "alt" : {
+      "@id" : "http://www.w3.org/2003/01/geo/wgs84_pos#alt"
+    },
+    "long" : {
+      "@id" : "http://www.w3.org/2003/01/geo/wgs84_pos#long"
+    },
+    "lat" : {
+      "@id" : "http://www.w3.org/2003/01/geo/wgs84_pos#lat"
+    },
+    "description" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#description"
+    },
+    "name" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#name"
+    },
+    "hasProperty" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasProperty",
+      "@type" : "@id"
+    },
+    "affects" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#affects",
+      "@type" : "@id"
+    },
+    "hasFeatureOfInterest" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasFeatureOfInterest",
+      "@type" : "@id"
+    },
+    "hasEffect" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasEffect",
+      "@type" : "@id"
+    },
+    "hasParameter" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasParameter",
+      "@type" : "@id"
+    },
+    "hasCapability" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasCapability",
+      "@type" : "@id"
+    },
+    "locatedAt" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#locatedAt",
+      "@type" : "@id"
+    },
+    "id" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#id"
+    },
+    "hasRestriction" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasRestriction",
+      "@type" : "@id"
+    },
+    "observesProperty" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#observesProperty",
+      "@type" : "@id"
+    },
+    "mandatory" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#mandatory"
+    },
+    "hasDatatype" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasDatatype",
+      "@type" : "@id"
+    },
+    "max" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#max"
+    },
+    "min" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#min"
+    },
+    "geo" : "http://www.w3.org/2003/01/geo/wgs84_pos#",
+    "core" : "http://www.symbiote-h2020.eu/ontology/core#",
+    "qu" : "http://purl.oclc.org/NET/ssnx/qu/quantity#",
+    "rdf" : "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "owl" : "http://www.w3.org/2002/07/owl#",
+    "meta" : "http://www.symbiote-h2020.eu/ontology/meta#",
+    "xsd" : "http://www.w3.org/2001/XMLSchema#",
+    "rdfs" : "http://www.w3.org/2000/01/rdf-schema#"
+  }
+}

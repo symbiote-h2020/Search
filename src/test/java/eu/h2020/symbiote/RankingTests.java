@@ -1,13 +1,16 @@
 package eu.h2020.symbiote;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.h2020.symbiote.cloud.monitoring.model.CloudMonitoringDevice;
 import eu.h2020.symbiote.cloud.monitoring.model.CloudMonitoringPlatform;
 import eu.h2020.symbiote.cloud.monitoring.model.CloudMonitoringPlatformRequest;
+import eu.h2020.symbiote.cloud.monitoring.model.Metric;
 import eu.h2020.symbiote.communication.RabbitManager;
 import eu.h2020.symbiote.core.ci.QueryResourceResult;
 import eu.h2020.symbiote.core.ci.QueryResponse;
 import eu.h2020.symbiote.core.internal.popularity.PopularityUpdate;
 import eu.h2020.symbiote.core.internal.popularity.PopularityUpdatesMessage;
+import eu.h2020.symbiote.model.cim.Property;
 import eu.h2020.symbiote.ranking.*;
 import eu.h2020.symbiote.security.communication.payloads.SecurityRequest;
 import org.joda.time.DateTime;
@@ -20,10 +23,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.annotation.Repeat;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -50,6 +50,20 @@ public class RankingTests {
     private static final String RES3_ID = "3";
     public static final Double RES3_LAT = Double.valueOf(52.414447d);
     public static final Double RES3_LONG = Double.valueOf(16.860812d);
+
+    public static final String TEMPERATURE_NAME = "temperature";
+    public static final String TEMPERATURE_IRI = "http://purl.oclc.org/NET/ssnx/qu/quantity#temperature";
+    public static final String HUMIDITY_NAME = "humidity";
+    public static final String HUMIDITY_IRI = "http://purl.oclc.org/NET/ssnx/qu/quantity#humidity";
+
+    public static final Property TEMPERATURE_PROPERTY;
+
+    public static final Property HUMIDITY_PROPERTY;
+
+    static {
+        TEMPERATURE_PROPERTY = new Property(TEMPERATURE_NAME,TEMPERATURE_IRI,null);
+        HUMIDITY_PROPERTY = new Property(HUMIDITY_NAME,HUMIDITY_IRI,null);
+    }
 
     @Mock
     PopularityRepository popularityRepository;
@@ -88,16 +102,18 @@ public class RankingTests {
     public void testAvailabilityManager() {
         AvailabilityManager realManager = new AvailabilityManager(availabilityRepository);
 
+        ObjectMapper mapper = new ObjectMapper();
         CloudMonitoringPlatform monit = new CloudMonitoringPlatform();
-        monit.setInternalId("internalId");
-        CloudMonitoringDevice[] devices = new CloudMonitoringDevice[1];
+//            CloudMonitoringDevice[] devices = new CloudMonitoringDevice[1];
         CloudMonitoringDevice device = new CloudMonitoringDevice();
-        device.setTimestamp(String.valueOf(System.currentTimeMillis()));
-        device.setAvailability(1);
+        Metric availabilityMetric = new Metric();
+        availabilityMetric.setTag("availability");
+        availabilityMetric.setDate(new Date());
+        availabilityMetric.setValue("1");
+        device.setMetrics(Arrays.asList(availabilityMetric));
         device.setId("res1");
-        device.setLoad(15);
-        devices[0] = device;
-        monit.setDevices(devices);
+//            devices[0] = device;
+        monit.setMetrics(Arrays.asList(device));
         SecurityRequest secRequest = new SecurityRequest("test1");
         CloudMonitoringPlatformRequest request= new CloudMonitoringPlatformRequest(secRequest,monit);
 
@@ -108,10 +124,10 @@ public class RankingTests {
         verify(availabilityRepository,times(1)).save(argumentCaptor.capture());
         CloudMonitoringDevice savedDeviceInfo = argumentCaptor.getValue().getMonitoringDeviceInfo();
         assertEquals(device.getId(),savedDeviceInfo.getId());
-        assertEquals(device.getTimestamp(),savedDeviceInfo.getTimestamp());
-        assertEquals(device.getAvailability(),savedDeviceInfo.getAvailability());
-        assertEquals(device.getLoad(),savedDeviceInfo.getLoad());
-        assertEquals(device.getId(),savedDeviceInfo.getId());
+        assertEquals(device.getMetrics(),savedDeviceInfo.getMetrics());
+        assertEquals(device.getMetrics().get(0).getValue(),savedDeviceInfo.getMetrics().get(0).getValue());
+        assertEquals(device.getMetrics().get(0).getTag(),savedDeviceInfo.getMetrics().get(0).getTag());
+//        assertEquals(device.getId(),savedDeviceInfo.getId());
         assertEquals(device.getId(),argumentCaptor.getValue().getId());
     }
 
@@ -289,25 +305,32 @@ public class RankingTests {
     public void testAvailabilityManagerFindAvailable() {
         CloudMonitoringDevice monit = new CloudMonitoringDevice();
         monit.setId(RES1_ID);
-        monit.setAvailability(1);
-        monit.setLoad(50);
-        monit.setTimestamp(""+DateTime.now().getMillis());
+        Metric availMetric = new Metric();
+        availMetric.setTag("availability");
+        availMetric.setValue("1");
+        availMetric.setDate(new Date());
+        monit.setMetrics(Arrays.asList(availMetric));
+//        monit.setAvailability(1);
+//        monit.setLoad(50);
+//        monit.setTimestamp(""+DateTime.now().getMillis());
         Optional<MonitoringInfo> monitoringInfo = Optional.of(new MonitoringInfo(RES1_ID, monit));
         when(availabilityRepository.findById(RES1_ID)).thenReturn(monitoringInfo);
 
         AvailabilityManager manager = new AvailabilityManager(availabilityRepository);
         float availabilityVal = manager.getAvailabilityForResource(RES1_ID);
         verify(availabilityRepository).findById(RES1_ID);
-        assertEquals(1.0f,availabilityVal,0.0f);
+        assertEquals(0.0f,availabilityVal,0.0f);
     }
 
     @Test
     public void testAvailabilityManagerFindNotAvailable() {
         CloudMonitoringDevice monit = new CloudMonitoringDevice();
         monit.setId(RES1_ID);
-        monit.setAvailability(0);
-        monit.setLoad(50);
-        monit.setTimestamp(""+DateTime.now().getMillis());
+        Metric availMetric = new Metric();
+        availMetric.setTag("availability");
+        availMetric.setValue("0");
+        availMetric.setDate(new Date());
+        monit.setMetrics(Arrays.asList(availMetric));
         Optional<MonitoringInfo> monitoringInfo = Optional.of(new MonitoringInfo(RES1_ID, monit));
         when(availabilityRepository.findById(RES1_ID)).thenReturn(monitoringInfo);
 
@@ -321,9 +344,11 @@ public class RankingTests {
     public void testAvailabilityManagerFindWrongAvailability() {
         CloudMonitoringDevice monit = new CloudMonitoringDevice();
         monit.setId(RES1_ID);
-        monit.setAvailability(67);
-        monit.setLoad(50);
-        monit.setTimestamp(""+DateTime.now().getMillis());
+        Metric availMetric = new Metric();
+        availMetric.setTag("availability");
+        availMetric.setValue("67");
+        availMetric.setDate(new Date());
+        monit.setMetrics(Arrays.asList(availMetric));
         Optional<MonitoringInfo> monitoringInfo = Optional.of(new MonitoringInfo(RES1_ID, monit));
         when(availabilityRepository.findById(RES1_ID)).thenReturn(monitoringInfo);
 
@@ -375,7 +400,7 @@ public class RankingTests {
         resourceResult.setLocationAltitude(Double.valueOf(15.0d));
         resourceResult.setLocationLatitude(RES1_LAT);
         resourceResult.setLocationLongitude(RES1_LONG);
-        resourceResult.setObservedProperties(Arrays.asList("Temperature"));
+        resourceResult.setObservedProperties(Arrays.asList(TEMPERATURE_PROPERTY));
         return resourceResult;
     }
 
@@ -391,7 +416,7 @@ public class RankingTests {
         resourceResult.setLocationAltitude(Double.valueOf(15.0d));
         resourceResult.setLocationLatitude(RES2_LAT);
         resourceResult.setLocationLongitude(RES2_LONG);
-        resourceResult.setObservedProperties(Arrays.asList("Temperature"));
+        resourceResult.setObservedProperties(Arrays.asList(TEMPERATURE_PROPERTY));
         return resourceResult;
     }
 
@@ -407,7 +432,7 @@ public class RankingTests {
         resourceResult.setLocationAltitude(Double.valueOf(15.0d));
         resourceResult.setLocationLatitude(RES3_LAT);
         resourceResult.setLocationLongitude(RES3_LONG);
-        resourceResult.setObservedProperties(Arrays.asList("Temperature","Humidity"));
+        resourceResult.setObservedProperties(Arrays.asList(TEMPERATURE_PROPERTY,HUMIDITY_PROPERTY));
         return resourceResult;
     }
 

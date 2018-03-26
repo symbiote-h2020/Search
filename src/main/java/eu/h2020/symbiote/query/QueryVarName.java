@@ -22,4 +22,22 @@ public interface QueryVarName {
     String TYPE = "type";
     String VALUE = "value";
 
+    //service inputs
+    String PARAMETER = "parameter";
+    String PARAMETER_NAME = "parameterName";
+    String PARAMETER_MANDATORY = "parameterMandatory";
+    String PARAMETER_DATATYPE = "parameterDatatype";
+    String PARAMETER_DATATYPE_PRED = "dataPred";
+    String PARAMETER_DATATYPE_OBJ = "dataObj";
+
+    //Actuator capabilities inputs
+    String CAPABILITY = "capability";
+    String CAPABILITY_NAME = "capName";
+    String CAP_PARAMETER = "capParameter";
+    String CAP_PARAMETER_NAME = "capParameterName";
+    String CAP_PARAMETER_MANDATORY = "capParameterMandatory";
+    String CAP_PARAMETER_DATATYPE = "capParameterDatatype";
+    String CAP_PARAMETER_DATATYPE_PRED = "capDataPred";
+    String CAP_PARAMETER_DATATYPE_OBJ = "capDataObj";
+
 }

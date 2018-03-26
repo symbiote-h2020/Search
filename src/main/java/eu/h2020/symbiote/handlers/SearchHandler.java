@@ -128,8 +128,9 @@ public class SearchHandler implements ISearchEvents {
         String resultOfSearch = "";
         SparqlQueryResponse response = new SparqlQueryResponse();
 
-        ResultSet resultSet = this.triplestore.executeQuery(request.getBody(),request.getSecurityRequest(),true);
 
+        //TODO change to true for deployment
+        ResultSet resultSet = this.triplestore.executeQuery(request.getBody(),request.getSecurityRequest(),true);
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
@@ -144,6 +145,7 @@ public class SearchHandler implements ISearchEvents {
         }
         try {
             resultOfSearch = stream.toString("UTF-8");
+//            System.out.println(resultOfSearch);
         } catch (UnsupportedEncodingException e) {
             log.error("Error occurred when doing sparqlSearch formatting: " + e.getMessage(), e);
             response.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);

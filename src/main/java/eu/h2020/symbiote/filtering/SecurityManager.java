@@ -36,11 +36,14 @@ public class SecurityManager implements IFilteringManager {
     public SecurityManager(AccessPolicyRepo accessPolicyRepo,
                            SecurityHandlerComponent securityHandlerComponent) throws SecurityHandlerException {
         this.accessPolicyRepo = accessPolicyRepo;
+        //TODO deployment uncommented
         this.componentSecurityHandler = securityHandlerComponent.getHandler();
 
     }
 
     public String generateSecurityResponse() throws SecurityHandlerException {
+//        return "";
+        //TODO deployment true sec resoonse
             return componentSecurityHandler.generateServiceResponse();
     }
 
@@ -58,7 +61,9 @@ public class SecurityManager implements IFilteringManager {
         boolean result = true;
         if (request == null) {
             log.info("Security Request is null");
+            //TODO deployment return false for null requests
             result = false;
+//            result = true;
         } else {
             if (policy.isPresent()) {
                 //Check in cache
@@ -75,12 +80,17 @@ public class SecurityManager implements IFilteringManager {
                             if( ids != null ) {
                                 if (!ids.contains(resourceId)) {
                                     log.debug("Security Policy is not valid for res: " + resourceId);
+                                    System.out.println("Security Policy is not valid for res: " + resourceId);
                                     result = false;
                                 } else {
                                     log.debug("Security Policy is valid " + resourceId);
+                                    System.out.println("Security Policy is valid " + resourceId);
                                     result = true;
                                 }
                                 cache.put(securityCacheKey, Boolean.valueOf(result));
+                            } else {
+                                System.out.println("satisfied ids are null");
+                                result = false;
                             }
                         } else {
                             log.debug("Policy is null");

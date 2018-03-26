@@ -63,6 +63,8 @@ public class QueryGenerationTests {
 //            Model actuatingServiceModel = loadFileAsModel(RESOURCE_ACTUATING_SERVICE_FILENAME, "JSONLD");
             Model actuatorModel = loadFileAsModel(RESOURCE_ACTUATOR_FILENAME, "JSONLD");
 //            Model stationaryDeviceModel = loadFileAsModel(RESOURCE_STATIONARYDEVICE_FILENAME, "JSONLD");
+            Model deviceModel = loadFileAsModel("/exampleDevice.json", "JSONLD");
+//            registry.registerResource(PLATFORM_A_URI, PLATFORM_A_SERVICE_URI, "http://www.nextworks.it/sensors/device1", deviceModel);
 
             registry.registerResource(PLATFORM_A_URI, PLATFORM_A_SERVICE_URI, RESOURCE_STATIONARY_URI, stationaryModel);
             registry.registerResource(PLATFORM_B_URI, PLATFORM_B_SERVICE_URI, RESOURCE_MOBILE_URI, mobileModel);
