@@ -2,7 +2,8 @@
 // initial extensions to gradle
 buildscript {
     ext {
-        springBootVersion = '1.5.8.RELEASE'
+        springBootVersion = '1.5.10.RELEASE'
+        springCloudVersion = 'Dalston.SR5'
     }
     repositories {
         mavenCentral()
@@ -105,12 +106,12 @@ dependencies {
     testCompile 'junit:junit:4.12'
 }
 
-test {
-    testLogging {
-        exceptionFormat = 'full'
-        showStandardStreams = true
-    }
-}
+//test {
+//    testLogging {
+//        exceptionFormat = 'full'
+//        showStandardStreams = true
+//    }
+//}
 
 // code quality below
 task generateJavaDocs(type: Javadoc) {
