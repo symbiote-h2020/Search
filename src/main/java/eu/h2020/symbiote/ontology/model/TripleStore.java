@@ -191,6 +191,8 @@ public class TripleStore {
             loadBaseModel(CIM.getURI(), ModelHelper.getInformationModelURI(CIM_ID), dataset);
             loadBaseModel(MIM.getURI(), ModelHelper.getInformationModelURI(MIM_ID), dataset);
             loadBaseModel(BIM.getURI(), ModelHelper.getInformationModelURI(BIM_ID), dataset);
+            loadBaseModel(BIM_PROPERTY.getURI(), ModelHelper.getInformationModelURI("BIM_PROPERTY"),dataset);
+
             // should not be neccesarry if BIM is loaded with imports
             loadBaseModel(QU.getURI(), ModelHelper.getInformationModelURI(QU_ID), dataset);
             loadBaseModel(BIM_QU_ALIGN.getURI(), ModelHelper.getInformationModelURI("BIM_QU"), dataset);
