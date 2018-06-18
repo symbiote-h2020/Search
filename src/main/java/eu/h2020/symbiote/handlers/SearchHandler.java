@@ -181,7 +181,7 @@ public class SearchHandler implements ISearchEvents {
             if( !resourcesPropertiesMap.containsKey(resourceId) ) {
                 resourcesPropertiesMap.put(resourceId,new ArrayList<>());
             }
-            log.debug("Adding property " + qs.get(QueryVarName.PROPERTY_NAME).toString() + " for res " + resourceId );
+//            log.debug("Adding property " + qs.get(QueryVarName.PROPERTY_NAME).toString() + " for res " + resourceId );
             List<Property> propertiesList = resourcesPropertiesMap.get(resourceId);
             Property prop = new Property(qs.get(QueryVarName.PROPERTY_NAME).toString(),qs.get(QueryVarName.PROPERTY_IRI).toString(), Arrays.asList(qs.get(QueryVarName.PROPERTY_DESC).toString()));
             propertiesList.add(prop);

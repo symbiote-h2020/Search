@@ -48,7 +48,7 @@ public class TripleStore {
     private static final String MIM_ID = "MIM";
     private static final String QU_ID = "QU";
 
-    private final static boolean SHOULD_PRINT_DATASET = true;
+    private final static boolean SHOULD_PRINT_DATASET = false;
 
     private SecurityManager securityManager;
     private boolean filteringEnabled;

@@ -93,7 +93,7 @@ public class RankingQuery {
         qr.setBody(this.resourcesMap.values().stream().sorted(Comparator.comparing(QueryResourceResult::getRanking).reversed())
                 .collect(Collectors.toList()));
 
-        qr.getBody().stream().forEach(res-> System.out.println(res.getId() + " : " + this.resourcesMap.get(res.getId()).getRanking() ));
+//        qr.getBody().stream().forEach(res-> System.out.println(res.getId() + " : " + this.resourcesMap.get(res.getId()).getRanking() ));
         return qr;
     }
 }

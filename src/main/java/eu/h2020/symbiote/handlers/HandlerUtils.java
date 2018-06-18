@@ -260,7 +260,7 @@ public class HandlerUtils {
 //        System.out.println("Found vars: " + resultSet.getResultVars());
         while (resultSet.hasNext()) {
             QuerySolution solution = resultSet.next();
-            printSolution(solution);
+//            printSolution(solution);
 
             String resId = solution.get(RESOURCE_ID).toString();
             String resName = solution.get(RESOURCE_NAME).toString();
@@ -536,11 +536,11 @@ public class HandlerUtils {
             }
 
         }
-        if( param.getDatatype() == null ) {
-            System.out.println("Create param - datatype null");
-        } else {
-            System.out.println("Create param - datatype not null - " + param.getDatatype());
-        }
+//        if( param.getDatatype() == null ) {
+//            System.out.println("Create param - datatype null");
+//        } else {
+//            System.out.println("Create param - datatype not null - " + param.getDatatype());
+//        }
 
         return param;
     }
