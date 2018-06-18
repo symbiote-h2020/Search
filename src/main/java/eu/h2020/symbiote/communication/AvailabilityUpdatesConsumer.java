@@ -39,7 +39,7 @@ public class AvailabilityUpdatesConsumer extends DefaultConsumer {
     @Override
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
         String msg = new String(body);
-        log.debug( "Consuming popularity : " + msg );
+//        log.debug( "Consuming popularity : " + msg );
 
         //Try to parse the message
 

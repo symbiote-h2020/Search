@@ -53,8 +53,12 @@ public class QueryGenerator {
         query.append("\t?platform cim:id ?platformId ;\n");
         query.append("\t\tcim:name ?platformName .\n");
 
-        query.append("\t?platform a mim:Platform;\n");
-        query.append("\t\tmim:hasService ?service .\n");
+        //PLATFORM CHANGE - can be also SSP
+//        query.append("\t?platform a mim:Platform;\n");
+//        query.append("\t\tmim:hasService ?service .\n");
+
+        query.append("\t?platform mim:hasService ?service .\n");
+
         query.append("\t?service mim:hasResource ?sensor .\n");
 
         if (locationquery) {

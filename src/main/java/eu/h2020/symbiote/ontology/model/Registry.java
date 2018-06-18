@@ -43,6 +43,18 @@ public class Registry {
         log.debug(String.format("platform registered: platformId={}, rdf={}", platformId,rdf));
     }
 
+    public void registerSsp(String sspId, Model rdf) {
+        tripleStore.insertGraph(ModelHelper.getSspURI(sspId), rdf);
+//        tripleStore.insertGraph(Ontology.PLATFORMS_GRAPH, Ontology.getPlatformMetadata(platformId, modelId), RDFFormat.Turtle);
+        log.debug(String.format("ssp registered: sspId={}, rdf={}",sspId,rdf));
+    }
+
+    public void registerSdev(String sdevId, Model rdf) {
+        tripleStore.insertGraph(ModelHelper.getSdevURI(sdevId), rdf);
+//        tripleStore.insertGraph(Ontology.PLATFORMS_GRAPH, Ontology.getPlatformMetadata(platformId, modelId), RDFFormat.Turtle);
+        log.debug(String.format("sdev registered: sspId={}, rdf={}",sdevId,rdf));
+    }
+
     /**
      * Registers resource of the platform described by specified Uri. Model will be stored in the platform's named graph.
      *
@@ -55,9 +67,25 @@ public class Registry {
         log.debug(String.format("Resource={%s} registered for platform: platformUri={%s}", resourceUri, platformUri));
     }
 
+//    /**
+//     * Registers ssp resource of the sdev. Model will be stored in the platform's named graph.
+//     *
+//     * @param sdevUri Uri of the platform for which resource is added.
+//     * @param resourceModel Model describiding the resource.
+//     */
+//    public void registerSspResource(String sdevUri, String resourceUri, Model resourceModel) {
+//        tripleStore.insertGraph("",resourceModel);
+//        tripleStore.insertGraph("",getSspResourceMetadata(sdevUri,resourceUri), RDFFormat.Turtle);
+//        log.debug(String.format("Resource={%s} registered for platform: sdevUri={%s}", resourceUri, sdevUri));
+//    }
+
     private String getResourceMetadata( String serviceURI, String resourceUri ) {
         return "<" + serviceURI + "> <" + MIM.hasResource + "> <" +resourceUri + "> .";
     }
+
+//    private String getSspResourceMetadata( String sdevURI, String resourceUri ) {
+//        return "<" + serviceURI + "> <" + MIM.hasResource + "> <" +resourceUri + "> .";
+//    }
 
 //    public void registerMapping(BigInteger mappingId, BigInteger modelId1, BigInteger modelId2, String mapping) throws UnsupportedEncodingException {
 //        // use library to parse mapping file to RDF, then read RDFXML into store

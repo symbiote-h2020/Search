@@ -2,6 +2,7 @@ package eu.h2020.symbiote.handlers;
 
 import eu.h2020.symbiote.core.internal.CoreResource;
 import eu.h2020.symbiote.core.internal.CoreResourceRegisteredOrModifiedEventPayload;
+import eu.h2020.symbiote.core.internal.CoreSspResourceRegisteredOrModifiedEventPayload;
 import eu.h2020.symbiote.filtering.AccessPolicy;
 import eu.h2020.symbiote.filtering.AccessPolicyRepo;
 import eu.h2020.symbiote.query.DeleteResourceRequestGenerator;
@@ -88,6 +89,8 @@ public class ResourceHandler implements IResourceEvents {
         return true;
     }
 
+
+
     private String getSearchInterworkingServiceSPARQL( String resourceURL, String platformId ) {
         return "PREFIX cim: <http://www.symbiote-h2020.eu/ontology/core#>\n" +
                 "PREFIX mim: <http://www.symbiote-h2020.eu/ontology/meta#>" +
@@ -151,4 +154,5 @@ public class ResourceHandler implements IResourceEvents {
         this.accessPolicyRepo.delete(resourceId);
         return true;
     }
+
 }

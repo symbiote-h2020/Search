@@ -3,6 +3,7 @@ package eu.h2020.symbiote;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
+import eu.h2020.symbiote.cloud.model.ssp.SspRegInfo;
 import eu.h2020.symbiote.cloud.monitoring.model.CloudMonitoringDevice;
 import eu.h2020.symbiote.cloud.monitoring.model.CloudMonitoringPlatform;
 import eu.h2020.symbiote.cloud.monitoring.model.CloudMonitoringPlatformRequest;
@@ -11,15 +12,13 @@ import eu.h2020.symbiote.communication.RabbitManager;
 import eu.h2020.symbiote.core.ci.QueryResourceResult;
 import eu.h2020.symbiote.core.ci.QueryResponse;
 import eu.h2020.symbiote.core.ci.SparqlQueryResponse;
-import eu.h2020.symbiote.core.internal.CoreQueryRequest;
-import eu.h2020.symbiote.core.internal.CoreResource;
-import eu.h2020.symbiote.core.internal.CoreResourceRegisteredOrModifiedEventPayload;
-import eu.h2020.symbiote.core.internal.CoreSparqlQueryRequest;
+import eu.h2020.symbiote.core.internal.*;
 import eu.h2020.symbiote.core.internal.popularity.PopularityUpdatesMessage;
 import eu.h2020.symbiote.handlers.PlatformHandler;
 import eu.h2020.symbiote.handlers.ResourceHandler;
 import eu.h2020.symbiote.handlers.SearchHandler;
 import eu.h2020.symbiote.model.mim.Platform;
+import eu.h2020.symbiote.model.mim.SmartSpace;
 import eu.h2020.symbiote.ranking.AvailabilityManager;
 import eu.h2020.symbiote.ranking.PopularityManager;
 import eu.h2020.symbiote.security.communication.payloads.SecurityRequest;
@@ -50,20 +49,7 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class MessagingTests {
 
-    public static final String PLATFORM_EXCHANGE_NAME = "symbiote.platform";
-    public static final String PLATFORM_CREATED = "platform.created";
-    public static final String PLATFORM_MODIFIED = "platform.modified";
-    public static final String PLATFORM_DELETED = "platform.removed";
-    public static final String RESOURCE_EXCHANGE_NAME = "symbiote.resource";
-    public static final String RESOURCE_CREATED = "resource.created";
-    public static final String RESOURCE_MODIFIED = "resource.modified";
-    public static final String RESOURCE_DELETED = "resource.removed";
-    public static final String SEARCH_REQUESTED = "resource.searchRequested";
-    public static final String SEARCH_PERFORMED = "resource.searchPerformed";
-    public static final String SPARQL_REQUESTED = "resource.sparqlRequested";
-    public static final String SPARQL_PERFORMED = "resource.sparqlPerformed";
-    public static final String EXCHANGE_SEARCH = "symbiote.search";
-    public static final String POPULARITY_RK = "symbiote.popularity.rk";
+
 
     @InjectMocks
     private RabbitManager rabbitManager;
@@ -77,15 +63,34 @@ public class MessagingTests {
 
         ReflectionTestUtils.setField(rabbitManager, "platformExchangeName", PLATFORM_EXCHANGE_NAME);
         ReflectionTestUtils.setField(rabbitManager, "platformExchangeType", "topic");
-        ReflectionTestUtils.setField(rabbitManager, "plaftormExchangeDurable", true);
-        ReflectionTestUtils.setField(rabbitManager, "platformExchangeAutodelete", false);
+        ReflectionTestUtils.setField(rabbitManager, "plaftormExchangeDurable", false);
+        ReflectionTestUtils.setField(rabbitManager, "platformExchangeAutodelete", true);
         ReflectionTestUtils.setField(rabbitManager, "platformExchangeInternal", false);
 
         ReflectionTestUtils.setField(rabbitManager, "resourceExchangeName", RESOURCE_EXCHANGE_NAME);
         ReflectionTestUtils.setField(rabbitManager, "resourceExchangeType", "topic");
-        ReflectionTestUtils.setField(rabbitManager, "resourceExchangeDurable", true);
-        ReflectionTestUtils.setField(rabbitManager, "resourceExchangeAutodelete", false);
+        ReflectionTestUtils.setField(rabbitManager, "resourceExchangeDurable", false);
+        ReflectionTestUtils.setField(rabbitManager, "resourceExchangeAutodelete", true);
         ReflectionTestUtils.setField(rabbitManager, "resourceExchangeInternal", false);
+
+
+        ReflectionTestUtils.setField(rabbitManager, "sspExchangeName", SSP_EXCHANGE );
+
+        ReflectionTestUtils.setField(rabbitManager, "sspExchangeType", "topic" );
+        ReflectionTestUtils.setField(rabbitManager, "sspExchangeDurable", false );
+        ReflectionTestUtils.setField(rabbitManager, "sspExchangeAutodelete", true );
+        ReflectionTestUtils.setField(rabbitManager, "sspExchangeInternal", false );
+        ReflectionTestUtils.setField(rabbitManager, "sspCreatedRoutingKey",SSP_CREATED);
+        ReflectionTestUtils.setField(rabbitManager, "sspRemovedRoutingKey",SSP_DELETED);
+        ReflectionTestUtils.setField(rabbitManager, "sspModifiedRoutingKey",SSP_MODIFIED);
+
+        ReflectionTestUtils.setField(rabbitManager, "sspSdevCreatedRoutingKey",SSP_SDEV_CREATED);
+        ReflectionTestUtils.setField(rabbitManager, "sspSdevRemovedRoutingKey", SSP_SDEV_DELETED);
+        ReflectionTestUtils.setField(rabbitManager, "sspSdevModifiedRoutingKey", SSP_SDEV_MODIFIED);
+
+        ReflectionTestUtils.setField(rabbitManager, "sspSdevResourceCreatedRoutingKey",SSP_RESOURCE_CREATED);
+        ReflectionTestUtils.setField(rabbitManager, "sspSdevResourceRemoveddRoutingKey",SSP_RESOURCE_DELETED);
+        ReflectionTestUtils.setField(rabbitManager, "sspSdevResourceModifiedRoutingKey",SSP_RESOURCE_MODIFIED);
 
         ReflectionTestUtils.setField(rabbitManager, "platformCreatedRoutingKey", PLATFORM_CREATED);
         ReflectionTestUtils.setField(rabbitManager, "platformModifiedRoutingKey", PLATFORM_MODIFIED);
@@ -190,6 +195,154 @@ public class MessagingTests {
     }
 
     @Test
+    public void testSspConsumerForCreateCalled() {
+        PlatformHandler mockHandler = mock(PlatformHandler.class);
+        try {
+            rabbitManager.registerSspCreatedConsumer(mockHandler);
+
+            ObjectMapper mapper = new ObjectMapper();
+            SmartSpace ssp = generateSmartSpace(SSP_NAME,SSP_ID,PLATFORM_A_URL);
+            String jsonSsp = mapper.writeValueAsString(ssp);
+            sendMessage(SSP_EXCHANGE, SSP_CREATED, null, jsonSsp);
+            Thread.sleep(1000);
+            ArgumentCaptor<SmartSpace> sspCaptor = ArgumentCaptor.forClass(SmartSpace.class);
+            verify(mockHandler,times(1)).registerSsp(sspCaptor.capture());
+            assertEquals("ID of the ssps must be the same",ssp.getId(),sspCaptor.getValue().getId());
+            assertEquals("Name of the ssps must be the same",ssp.getName(),sspCaptor.getValue().getName());
+            assertEquals("Description of the ssps must be the same",ssp.getDescription(),sspCaptor.getValue().getDescription());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testSspConsumerForDeleteCalled() {
+        PlatformHandler mockHandler = mock(PlatformHandler.class);
+        try {
+            rabbitManager.registerSspDeletedConsumer(mockHandler);
+
+            ObjectMapper mapper = new ObjectMapper();
+            SmartSpace ssp = generateSmartSpace(SSP_NAME,SSP_ID,PLATFORM_A_URL);
+            String jsonSsp = mapper.writeValueAsString(ssp);
+            sendMessage(SSP_EXCHANGE, SSP_DELETED, null, jsonSsp);
+            Thread.sleep(1000);
+            ArgumentCaptor<String> sspIdCaptor = ArgumentCaptor.forClass(String.class);
+            verify(mockHandler,times(1)).deleteSsp(sspIdCaptor.capture());
+            assertEquals("ID to delete must be the same", ssp.getId(),sspIdCaptor.getValue());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testSspConsumerForModifyCalled() {
+        PlatformHandler mockHandler = mock(PlatformHandler.class);
+        try {
+            rabbitManager.registerSspUpdatedConsumer(mockHandler);
+
+            ObjectMapper mapper = new ObjectMapper();
+            SmartSpace ssp = generateSmartSpace(SSP_NAME,SSP_ID,PLATFORM_A_URL);
+            String jsonSsp = mapper.writeValueAsString(ssp);
+            sendMessage(SSP_EXCHANGE, SSP_MODIFIED, null, jsonSsp);
+            Thread.sleep(1000);
+            ArgumentCaptor<SmartSpace> sspUpdateCaptor = ArgumentCaptor.forClass(SmartSpace.class);
+            verify(mockHandler,times(1)).updateSsp(sspUpdateCaptor.capture());
+
+            assertEquals("ID of the ssps must be the same",ssp.getId(),sspUpdateCaptor.getValue().getId());
+            assertEquals("Name of the ssps must be the same",ssp.getName(),sspUpdateCaptor.getValue().getName());
+            assertEquals("Description of the ssps must be the same",ssp.getDescription(),sspUpdateCaptor.getValue().getDescription());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testSdevConsumerForCreateCalled() {
+        PlatformHandler mockHandler = mock(PlatformHandler.class);
+        try {
+            rabbitManager.registerSdevCreatedConsumer(mockHandler);
+
+            ObjectMapper mapper = new ObjectMapper();
+            SspRegInfo sdev = generateSdev("id_in_ssp",SDEV_ID_1,"sspSymbioteId","https://www.example.com/ssp1/symbiote");
+            String jsonSdev = mapper.writeValueAsString(sdev);
+            sendMessage(SSP_EXCHANGE, SSP_SDEV_CREATED, null, jsonSdev);
+            Thread.sleep(1000);
+            ArgumentCaptor<SspRegInfo> sdevCaptor = ArgumentCaptor.forClass(SspRegInfo.class);
+            verify(mockHandler,times(1)).registerSdev(sdevCaptor.capture());
+            assertEquals("ID of the sdevs must be the same",sdev.getSymId(),sdevCaptor.getValue().getSymId());
+            assertEquals("plugin id of the sdevs must be the same",sdev.getPluginId(),sdevCaptor.getValue().getPluginId());
+            assertEquals("plugin url of the sdevs must be the same",sdev.getPluginURL(),sdevCaptor.getValue().getPluginURL());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testSdevConsumerForDeleteCalled() {
+        PlatformHandler mockHandler = mock(PlatformHandler.class);
+        try {
+            rabbitManager.registerSdevDeletedConsumer(mockHandler);
+
+            ObjectMapper mapper = new ObjectMapper();
+            SspRegInfo sdev = generateSdev("id_in_ssp",SDEV_ID_1,"sspSymbioteId","https://www.example.com/ssp1/symbiote");
+            String jsonSdev = mapper.writeValueAsString(sdev);
+            sendMessage(SSP_EXCHANGE, SSP_SDEV_DELETED, null, jsonSdev);
+            Thread.sleep(1000);
+            ArgumentCaptor<String> sdevIdCaptor = ArgumentCaptor.forClass(String.class);
+            verify(mockHandler,times(1)).deleteSdev(sdevIdCaptor.capture());
+            assertEquals("ID to delete must be the same", sdev.getSymId(),sdevIdCaptor.getValue());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testSdevConsumerForModifyCalled() {
+        PlatformHandler mockHandler = mock(PlatformHandler.class);
+        try {
+            rabbitManager.registerSdevUpdatedConsumer(mockHandler);
+
+            ObjectMapper mapper = new ObjectMapper();
+            SspRegInfo sdev = generateSdev("id_in_ssp",SDEV_ID_1,"sspSymbioteId","https://www.example.com/ssp1/symbiote");
+            String jsonSdev = mapper.writeValueAsString(sdev);
+            sendMessage(SSP_EXCHANGE, SSP_SDEV_MODIFIED, null, jsonSdev);
+            Thread.sleep(1000);
+            ArgumentCaptor<SspRegInfo> sdevUpdateCaptor = ArgumentCaptor.forClass(SspRegInfo.class);
+            verify(mockHandler,times(1)).updateSdev(sdevUpdateCaptor.capture());
+
+            assertEquals("ID of the sdevs must be the same",sdev.getSymId(),sdevUpdateCaptor.getValue().getSymId());
+            assertEquals("plugin id of the sdevs must be the same",sdev.getPluginId(),sdevUpdateCaptor.getValue().getPluginId());
+            assertEquals("plugin url of the sdevs must be the same",sdev.getPluginURL(),sdevUpdateCaptor.getValue().getPluginURL());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
     public void testResourceConsumerForCreateCalled() {
         ResourceHandler mockHandler = mock(ResourceHandler.class);
         try {
@@ -248,6 +401,78 @@ public class MessagingTests {
             List<String> resourcesToDel = Arrays.asList(RESOURCE_101_ID);
             String jsonResource = mapper.writeValueAsString(resourcesToDel);
             sendMessage(RESOURCE_EXCHANGE_NAME, RESOURCE_DELETED, null, jsonResource);
+            Thread.sleep(1000);
+            verify(mockHandler).deleteResource(isA(String.class));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testSspResourceConsumerForCreateCalled() {
+        ResourceHandler mockHandler = mock(ResourceHandler.class);
+        try {
+            rabbitManager.registerSspResourceCreatedConsumer(mockHandler);
+
+            ObjectMapper mapper = new ObjectMapper();
+            CoreSspResourceRegisteredOrModifiedEventPayload payload = new CoreSspResourceRegisteredOrModifiedEventPayload();
+            CoreResource resource = generateResource();
+            payload.setResources(Arrays.asList(resource));
+            payload.setPlatformId(SSP_ID_1);
+            payload.setSdevId(SDEV_ID_1);
+            String jsonResource = mapper.writeValueAsString(payload);
+            sendMessage(RESOURCE_EXCHANGE_NAME, SSP_RESOURCE_CREATED, null, jsonResource);
+            Thread.sleep(1000);
+            verify(mockHandler).registerResource(any());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testSspResourceConsumerForModifyCalled() {
+        ResourceHandler mockHandler = mock(ResourceHandler.class);
+        try {
+            rabbitManager.registerSspResourceUpdatedConsumer(mockHandler);
+
+            ObjectMapper mapper = new ObjectMapper();
+            CoreSspResourceRegisteredOrModifiedEventPayload payload = new CoreSspResourceRegisteredOrModifiedEventPayload();
+            CoreResource resource = generateResource();
+            payload.setResources(Arrays.asList(resource));
+            payload.setPlatformId(SSP_ID_1);
+            payload.setSdevId(SDEV_ID_1);
+            String jsonResource = mapper.writeValueAsString(payload);
+            sendMessage(RESOURCE_EXCHANGE_NAME, SSP_RESOURCE_MODIFIED, null, jsonResource);
+            Thread.sleep(1000);
+            verify(mockHandler).updateResource(any());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testSspResourceConsumerForDeleteCalled() {
+        ResourceHandler mockHandler = mock(ResourceHandler.class);
+        try {
+            rabbitManager.registerSspResourceDeletedConsumer(mockHandler);
+
+            ObjectMapper mapper = new ObjectMapper();
+//            CoreResource resource = generateResource();
+            List<String> resourcesToDel = Arrays.asList(RESOURCE_101_ID);
+            String jsonResource = mapper.writeValueAsString(resourcesToDel);
+            sendMessage(RESOURCE_EXCHANGE_NAME, SSP_RESOURCE_DELETED, null, jsonResource);
             Thread.sleep(1000);
             verify(mockHandler).deleteResource(isA(String.class));
 

@@ -1,7 +1,11 @@
 package eu.h2020.symbiote.handlers;
 
+import eu.h2020.symbiote.cloud.model.ssp.SspRegInfo;
 import eu.h2020.symbiote.model.mim.Platform;
+import eu.h2020.symbiote.model.mim.SmartSpace;
 import eu.h2020.symbiote.query.DeletePlatformRequestGenerator;
+import eu.h2020.symbiote.query.DeleteSdevRequestGenerator;
+import eu.h2020.symbiote.query.DeleteSspRequestGenerator;
 import eu.h2020.symbiote.search.SearchStorage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -13,7 +17,7 @@ import org.apache.jena.update.UpdateRequest;
  * <p>
  * Created by Mael on 11/01/2017.
  */
-public class PlatformHandler implements IPlatformEvents {
+public class PlatformHandler implements IPlatformEvents, ISspEvents {
 
     private static final Log log = LogFactory.getLog(PlatformHandler.class);
 
@@ -66,8 +70,7 @@ public class PlatformHandler implements IPlatformEvents {
     @Override
     public boolean updatePlatform(Platform platform) {
         log.debug("Updating platform " + platform.getId());
-//        UpdateRequest updateRequest = new UpdatePlatformRequestGenerator(platform).generateRequest();
-//        this.storage.getTripleStore().executeUpdate(updateRequest);
+
         boolean success = deletePlatform(platform.getId());
         if( success ) {
             log.debug("Delete step of update performed successfully ");
@@ -75,7 +78,7 @@ public class PlatformHandler implements IPlatformEvents {
         } else {
             log.error("Delete step of update failed ");
         }
-        storage.getTripleStore().printDataset();
+//        storage.getTripleStore().printDataset();
         return true;
     }
 
@@ -86,5 +89,82 @@ public class PlatformHandler implements IPlatformEvents {
         this.storage.getTripleStore().executeUpdate(updateRequest);
         storage.getTripleStore().printDataset();
         return true;
+    }
+
+
+    @Override
+    public boolean registerSsp(SmartSpace ssp) {
+
+        Model sspModel = HandlerUtils.generateModelFromSsp(ssp);
+
+        storage.registerSsp(ssp.getId(), sspModel );
+//        storage.getTripleStore().printDataset();
+
+        return true;
+
+    }
+
+    @Override
+    public boolean updateSsp(SmartSpace ssp) {
+        log.debug("Updating ssp " + ssp.getId());
+
+        boolean success = deleteSsp(ssp.getId());
+        if( success ) {
+            log.debug("Delete step of update ssp performed successfully ");
+            registerSsp(ssp);
+        } else {
+            log.error("Delete step of update ssp failed ");
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean deleteSsp(String sspId) {
+        log.debug("Deleting ssp " + sspId);
+        UpdateRequest updateRequest = new DeleteSspRequestGenerator(sspId).generateRequest();
+        this.storage.getTripleStore().executeUpdate(updateRequest);
+        storage.getTripleStore().printDataset();
+        return true;
+    }
+
+    @Override
+    public boolean registerSdev(SspRegInfo sdev) {
+
+        Model sdevModel = HandlerUtils.generateModelFromSdev(sdev);
+
+        storage.registerSdev(sdev.getSymId(), sdevModel );
+//        storage.getTripleStore().printDataset();
+
+        return true;
+    }
+
+    @Override
+    public boolean updateSdev(SspRegInfo sdev) {
+        log.debug("Updating sdev " + sdev.getSymId());
+
+        boolean success = deleteSdev(sdev.getSymId());
+        if( success ) {
+            log.debug("Delete of update sdev performed successfully ");
+            registerSdev(sdev);
+        } else {
+            log.error("Delete step of update sdev failed ");
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean deleteSdev(String sdevId) {
+        log.debug("Deleting sdev " + sdevId);
+        UpdateRequest updateRequest = new DeleteSdevRequestGenerator(sdevId).generateRequest();
+        this.storage.getTripleStore().executeUpdate(updateRequest);
+        storage.getTripleStore().printDataset();
+        return true;
+    }
+
+
+    public void printStorage() {
+        this.storage.getTripleStore().printDataset();
     }
 }

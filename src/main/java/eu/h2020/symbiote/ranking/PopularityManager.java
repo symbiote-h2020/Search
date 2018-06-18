@@ -42,7 +42,7 @@ public class PopularityManager {
     }
 
     public Integer getPopularityForResource(String resourceId ) {
-        log.debug("Popularity requested for " + resourceId);
+//        log.debug("Popularity requested for " + resourceId);
 
         Integer result = Integer.valueOf(0);
 
@@ -51,7 +51,7 @@ public class PopularityManager {
         if( popularity.isPresent()) {
             result = popularity.get().getViewsInDefinedInterval();
         } else {
-            log.warn("Null popularities found for " + resourceId );
+//            log.warn("Null popularities found for " + resourceId );
         }
 
         return result;

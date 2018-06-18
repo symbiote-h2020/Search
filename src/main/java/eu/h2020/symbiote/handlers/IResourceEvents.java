@@ -1,6 +1,7 @@
 package eu.h2020.symbiote.handlers;
 
 import eu.h2020.symbiote.core.internal.CoreResourceRegisteredOrModifiedEventPayload;
+import eu.h2020.symbiote.core.internal.CoreSspResourceRegisteredOrModifiedEventPayload;
 
 /**
  * Interface containing all relevant interfaces for Resource related events.
@@ -32,5 +33,6 @@ public interface IResourceEvents {
      * @return <code>true</code> if deletion was successful.
      */
     public boolean deleteResource( String resourceId );
+
 
 }

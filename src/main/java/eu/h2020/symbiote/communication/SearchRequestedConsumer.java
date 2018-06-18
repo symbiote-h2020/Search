@@ -76,6 +76,7 @@ public class SearchRequestedConsumer extends DefaultConsumer {
             AMQP.BasicProperties replyProps = new AMQP.BasicProperties
                     .Builder()
                     .correlationId(properties.getCorrelationId())
+                    .contentType("application/json")
                     .build();
             this.getChannel().basicPublish("", properties.getReplyTo(), replyProps, responseBytes);
             System.out.println("-> Message sent back");

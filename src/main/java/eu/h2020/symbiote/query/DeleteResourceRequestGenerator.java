@@ -10,7 +10,7 @@ import org.apache.jena.update.UpdateRequest;
  *
  * Created by Mael on 26/01/2017.
  */
-public class DeleteResourceRequestGenerator {
+public class DeleteResourceRequestGenerator extends AbstractDeleteRequest {
 
     private UpdateRequest request;
 
@@ -23,15 +23,6 @@ public class DeleteResourceRequestGenerator {
     public DeleteResourceRequestGenerator(String resourceId ) {
         request = UpdateFactory.create();
         request.add(generateResourceRemoval(resourceId));
-    }
-
-    private StringBuilder generateBaseQuery() {
-        StringBuilder query = new StringBuilder();
-        query.append("PREFIX cim: <http://www.symbiote-h2020.eu/ontology/core#> \n");
-        query.append("PREFIX mim: <http://www.symbiote-h2020.eu/ontology/meta#> \n");
-        query.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n");
-
-        return query;
     }
 
     private String generateServiceToResourceLinkRemoval( String resourceId ) {
@@ -57,10 +48,18 @@ public class DeleteResourceRequestGenerator {
         StringBuilder q = generateBaseQuery();
         q.append("DELETE { ?sensor ?p ?o . \n" );
         q.append( " \t?service mim:hasResource ?sensor . \n");
+
+        q.append( " \t?foi ?foip ?foio . \n");
+
         q.append( "} WHERE {\n");
         q.append("\t?sensor ?p ?o ;\n");
         q.append("\t\tcim:id \""+resourceId+"\" .\n");
         q.append("\t?service mim:hasResource ?sensor .\n" );
+
+        q.append("\t?foi a cim:FeatureOfInterest .\n" );
+        q.append("\t?sensor cim:hasFeatureOfInterest ?foi .\n" );
+        q.append("\t?foi ?foip ?foio .\n");
+
         q.append("}");
         return q.toString();
     }

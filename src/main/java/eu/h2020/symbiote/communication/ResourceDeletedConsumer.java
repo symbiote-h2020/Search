@@ -14,8 +14,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Consumer of the search requested event. Translates the message as list of query parameters, translates them into
- * SPARQL and queries the repository.
+ * Consumer of the resource delete event.
  *
  * Created by Mael on 17/01/2017.
  */

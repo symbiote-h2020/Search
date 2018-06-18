@@ -48,7 +48,7 @@ public class TripleStore {
     private static final String MIM_ID = "MIM";
     private static final String QU_ID = "QU";
 
-    private final static boolean SHOULD_PRINT_DATASET = false;
+    private final static boolean SHOULD_PRINT_DATASET = true;
 
     private SecurityManager securityManager;
     private boolean filteringEnabled;
@@ -156,6 +156,9 @@ public class TripleStore {
 //            } catch (IOException e) {
 //                log.fatal("Could not load CIM file: " + e.getMessage(),e);
 //            }
+
+
+            //TODO comment for local
             loadModels();
         }
 
@@ -185,9 +188,6 @@ public class TripleStore {
     private void loadModels() {
 //        try {
 
-
-
-//
             loadBaseModel(CIM.getURI(), ModelHelper.getInformationModelURI(CIM_ID), dataset);
             loadBaseModel(MIM.getURI(), ModelHelper.getInformationModelURI(MIM_ID), dataset);
             loadBaseModel(BIM.getURI(), ModelHelper.getInformationModelURI(BIM_ID), dataset);
