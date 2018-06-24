@@ -41,6 +41,8 @@ public class ResourceDeletedConsumer extends DefaultConsumer {
         String msg = new String(body);
         log.debug( "DeleteResource requested message: " + msg );
 
+        long before = System.currentTimeMillis();
+
         //Try to parse the message
         ObjectMapper mapper = new ObjectMapper();
         List<String> toDelete = mapper.readValue(msg, new TypeReference<List<String>>() {
@@ -53,6 +55,11 @@ public class ResourceDeletedConsumer extends DefaultConsumer {
             //TODO
 
         }
+
+        long after = System.currentTimeMillis();
+
+        log.debug("Total delete operation finished and took: " + (after - before ) + " ms");
+
         getChannel().basicAck(envelope.getDeliveryTag(),false);
     }
 }

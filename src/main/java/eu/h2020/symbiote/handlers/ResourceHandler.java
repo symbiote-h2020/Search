@@ -11,6 +11,7 @@ import eu.h2020.symbiote.security.accesspolicies.IAccessPolicy;
 import eu.h2020.symbiote.security.accesspolicies.common.AccessPolicyFactory;
 import eu.h2020.symbiote.security.commons.exceptions.custom.InvalidArgumentsException;
 import eu.h2020.symbiote.semantics.ModelHelper;
+import org.apache.commons.cli.Option;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jena.rdf.model.Model;
@@ -20,6 +21,7 @@ import org.springframework.util.Assert;
 
 import java.io.StringReader;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Mael on 16/01/2017.
@@ -30,10 +32,12 @@ public class ResourceHandler implements IResourceEvents {
 
     private final SearchStorage storage;
     private final AccessPolicyRepo accessPolicyRepo;
+    private final InterworkingServiceInfoRepo interworkingServiceInfoRepo;
 
-    public ResourceHandler(SearchStorage storage, AccessPolicyRepo accessPolicyRepo) {
+    public ResourceHandler(SearchStorage storage, AccessPolicyRepo accessPolicyRepo, InterworkingServiceInfoRepo interworkingServiceInfoRepo) {
         this.storage = storage;
         this.accessPolicyRepo = accessPolicyRepo;
+        this.interworkingServiceInfoRepo = interworkingServiceInfoRepo;
     }
 
     @Override
@@ -53,18 +57,20 @@ public class ResourceHandler implements IResourceEvents {
             String resourceURL = coreResource.getInterworkingServiceURL(); //match this with
 
             log.debug( "Querying for interworking service URI... resUrl: " + resourceURL + " platformId: " + platformId);
-            String registeredServiceURI = findServiceURI(resourceURL,platformId);
-            if( registeredServiceURI == null ) {
-                //Try with slash in the end - most common mistake from platforms
-                if( !resourceURL.endsWith("/") ) {
-                    log.debug("Couldnt find interworking service URI, trying with URL ending with a slash");
-                    registeredServiceURI = findServiceURI(resourceURL + "/", platformId);
-                } else if (resourceURL.endsWith("/") ) {
-                    log.debug("Couldnt find interworking service URI, trying with URL without trailing slash");
-                    registeredServiceURI = findServiceURI(resourceURL.substring(0,resourceURL.length()-1), platformId);
-                }
-            }
-            if( registeredServiceURI == null ) {
+//            String registeredServiceURI = findServiceURI(resourceURL,platformId);
+//            if( registeredServiceURI == null ) {
+//                //Try with slash in the end - most common mistake from platforms
+//                if( !resourceURL.endsWith("/") ) {
+//                    log.debug("Couldnt find interworking service URI, trying with URL ending with a slash");
+//                    registeredServiceURI = findServiceURI(resourceURL + "/", platformId);
+//                } else if (resourceURL.endsWith("/") ) {
+//                    log.debug("Couldnt find interworking service URI, trying with URL without trailing slash");
+//                    registeredServiceURI = findServiceURI(resourceURL.substring(0,resourceURL.length()-1), platformId);
+//                }
+//            }
+
+            Optional<String> registeredServiceURI = findServiceURI(resourceURL, platformId);
+            if( !registeredServiceURI.isPresent()) {
                 //If still couldnt find
                 log.debug("Couldnt find interworking service URL, returning false");
                 return false;
@@ -73,7 +79,7 @@ public class ResourceHandler implements IResourceEvents {
 
             try (StringReader reader = new StringReader(coreResource.getRdf())) {
                 model.read(reader, null, coreResource.getRdfFormat().toString());
-                this.storage.registerResource(ModelHelper.getPlatformURI(platformId), registeredServiceURI, ModelHelper.getResourceURI(coreResource.getId()), model);
+                this.storage.registerResource(ModelHelper.getPlatformURI(platformId), registeredServiceURI.get(), ModelHelper.getResourceURI(coreResource.getId()), model);
                 if( coreResource.getPolicySpecifier() != null ) {
                     try {
                         IAccessPolicy singleTokenAccessPolicy = AccessPolicyFactory.getAccessPolicy(coreResource.getPolicySpecifier());
@@ -89,7 +95,10 @@ public class ResourceHandler implements IResourceEvents {
         return true;
     }
 
-
+    //TODO write performance improvement
+    // II -> persistable class of URL and IRI of the II
+    // load Map<String,List<II>> -> keys are platformIds
+    // update map on platform crud
 
     private String getSearchInterworkingServiceSPARQL( String resourceURL, String platformId ) {
         return "PREFIX cim: <http://www.symbiote-h2020.eu/ontology/core#>\n" +
@@ -103,7 +112,46 @@ public class ResourceHandler implements IResourceEvents {
                 "} ";
     }
 
-    private String findServiceURI( String resourceURL, String platformId ) {
+    private Optional<String> findServiceURI(String resourceURL, String platformId ) {
+        if( resourceURL != null && !resourceURL.isEmpty() ) {
+            Optional<InterworkingServiceInfo> ii = this.interworkingServiceInfoRepo.findByInterworkingServiceURL(resourceURL);
+            if( !ii.isPresent() ) {
+                if( resourceURL.endsWith("/") ) {
+                    ii = this.interworkingServiceInfoRepo.findByInterworkingServiceURL(resourceURL.substring(0, resourceURL.length() - 1));
+                } else {
+                    ii = this.interworkingServiceInfoRepo.findByInterworkingServiceURL(resourceURL+"/");
+                }
+            }
+
+            return ii.isPresent()?Optional.of(ii.get().getInterworkingServiceIRI()):Optional.empty();
+        }
+        return Optional.empty();
+//            orElse( resourceURL.endsWith("/")?
+//                    this.interworkingServiceInfoRepo.findByInterworkingServiceURL(resourceURL.substring(0,resourceURL.length()-1)):
+//                    this.interworkingServiceInfoRepo.findByInterworkingServiceURL(resourceURL+"/"));
+        }
+
+//        String registeredServiceURI = findServiceURI(resourceURL,platformId);
+//        if( registeredServiceURI == null ) {
+//            //Try with slash in the end - most common mistake from platforms
+//            if( !resourceURL.endsWith("/") ) {
+//                log.debug("Couldnt find interworking service URI, trying with URL ending with a slash");
+//                registeredServiceURI = findServiceURI(resourceURL + "/", platformId);
+//            } else if (resourceURL.endsWith("/") ) {
+//                log.debug("Couldnt find interworking service URI, trying with URL without trailing slash");
+//                registeredServiceURI = findServiceURI(resourceURL.substring(0,resourceURL.length()-1), platformId);
+//            }
+//        }
+//        if( registeredServiceURI == null ) {
+//            //If still couldnt find
+//            log.debug("Couldnt find interworking service URL, returning false");
+//            return false;
+//        }
+//
+//        return foundUri
+//    }
+
+    private String findServiceURISPARQL( String resourceURL, String platformId ) {
         String registeredServiceURI = null;
         String query = getSearchInterworkingServiceSPARQL(resourceURL, platformId);
 

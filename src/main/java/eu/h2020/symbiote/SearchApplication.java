@@ -3,9 +3,7 @@ package eu.h2020.symbiote;
 import eu.h2020.symbiote.communication.RabbitManager;
 import eu.h2020.symbiote.filtering.AccessPolicyRepo;
 import eu.h2020.symbiote.filtering.SecurityManager;
-import eu.h2020.symbiote.handlers.PlatformHandler;
-import eu.h2020.symbiote.handlers.ResourceHandler;
-import eu.h2020.symbiote.handlers.SearchHandler;
+import eu.h2020.symbiote.handlers.*;
 import eu.h2020.symbiote.ranking.AvailabilityManager;
 import eu.h2020.symbiote.ranking.PopularityManager;
 import eu.h2020.symbiote.ranking.RankingHandler;
@@ -23,6 +21,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.util.List;
 
 
 /**
@@ -49,18 +48,20 @@ public class SearchApplication {
         private final PopularityManager popularityManager;
         private final AvailabilityManager availabilityManager;
         private final AccessPolicyRepo accessPolicyRepo;
+        private final InterworkingServiceInfoRepo interworkingServiceInfoRepo;
         private final SecurityManager securityManager;
         private final RankingHandler rankingHandler;
         private final boolean securityEnabled;
         private final boolean rankingEnabled;
 
         @Autowired
-        public CLR(RabbitManager manager, PopularityManager popularityManager, AvailabilityManager availabilityManager, AccessPolicyRepo accessPolicyRepo, SecurityManager securityManager, RankingHandler rankingHandler,
+        public CLR(RabbitManager manager, PopularityManager popularityManager, AvailabilityManager availabilityManager, AccessPolicyRepo accessPolicyRepo, InterworkingServiceInfoRepo interworkingServiceInfoRepo, SecurityManager securityManager, RankingHandler rankingHandler,
                    @Value("${search.security.enabled}") boolean securityEnabled, @Value("${search.ranking.enabled}") boolean rankingEnabled) {
             this.manager = manager;
             this.popularityManager = popularityManager;
             this.availabilityManager = availabilityManager;
             this.accessPolicyRepo = accessPolicyRepo;
+            this.interworkingServiceInfoRepo = interworkingServiceInfoRepo;
             this.securityManager = securityManager;
             this.rankingHandler = rankingHandler;
             this.securityEnabled = securityEnabled;
@@ -71,14 +72,14 @@ public class SearchApplication {
         public void run(String... args) throws Exception {
             SearchStorage searchStorage = getDefaultStorage(securityManager,securityEnabled);
 
-            PlatformHandler platformHandler = new PlatformHandler( searchStorage );
+            PlatformHandler platformHandler = new PlatformHandler( searchStorage, interworkingServiceInfoRepo );
             manager.registerPlatformCreatedConsumer(platformHandler);
 
             manager.registerPlatformDeletedConsumer(platformHandler);
 
             manager.registerPlatformUpdatedConsumer(platformHandler);
 
-            ResourceHandler resourceHandler = new ResourceHandler(searchStorage, this.accessPolicyRepo);
+            ResourceHandler resourceHandler = new ResourceHandler(searchStorage, this.accessPolicyRepo, interworkingServiceInfoRepo);
             manager.registerResourceCreatedConsumer(resourceHandler);
 
             manager.registerResourceDeletedConsumer(resourceHandler);
@@ -104,6 +105,13 @@ public class SearchApplication {
             manager.registerSspResourceCreatedConsumer(resourceHandler);
             manager.registerSspResourceDeletedConsumer(resourceHandler);
             manager.registerSspResourceUpdatedConsumer(resourceHandler);
+
+
+            //TODO
+            //loading interworking services on startup
+//            platformHandler.loadAndSaveInterworkingServicesFromTriplestore();
+//            System.out.println( "Loaded " + interworkingServiceInfos.size() + " ii services");
+
 
         }
     }

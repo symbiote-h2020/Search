@@ -46,13 +46,18 @@ public class ResourceCreatedConsumer extends DefaultConsumer {
         //Try to parse the message
 
         try {
+
+            long before = System.currentTimeMillis();
+
             ObjectMapper mapper = new ObjectMapper();
             CoreResourceRegisteredOrModifiedEventPayload resource = mapper.readValue(msg, CoreResourceRegisteredOrModifiedEventPayload.class);
 
             boolean success = handler.registerResource(resource);
-            log.debug(success?
+
+            long after = System.currentTimeMillis();
+            log.debug((success?
                     "Registration of the resource in RDF is success"
-                    :"Registration of the resource in RDF failed");
+                    :"Registration of the resource in RDF failed") + "in time " + (after - before) + " ms" );
 
         } catch( JsonParseException | JsonMappingException e ) {
             log.error("Error occurred when parsing Resource object JSON: " + msg, e);

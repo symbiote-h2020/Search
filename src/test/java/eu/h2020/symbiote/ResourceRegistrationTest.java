@@ -4,6 +4,7 @@ import eu.h2020.symbiote.core.internal.CoreResource;
 import eu.h2020.symbiote.core.internal.CoreResourceRegisteredOrModifiedEventPayload;
 import eu.h2020.symbiote.filtering.AccessPolicyRepo;
 import eu.h2020.symbiote.filtering.SecurityManager;
+import eu.h2020.symbiote.handlers.InterworkingServiceInfoRepo;
 import eu.h2020.symbiote.handlers.PlatformHandler;
 import eu.h2020.symbiote.handlers.ResourceHandler;
 import eu.h2020.symbiote.model.mim.Platform;
@@ -37,6 +38,8 @@ public class ResourceRegistrationTest {
     private SecurityManager securityManager;
     @Mock
     private AccessPolicyRepo accessPolicyRepo;
+    @Mock
+    private InterworkingServiceInfoRepo interworkingServiceInfoRepo;
 
 //    private static final String PLATFORM_A_ID = "1";
 //    private static final String PLATFORM_A_URI = "http://www.symbiote-h2020.eu/ontology/internal/platforms/1";
@@ -89,14 +92,14 @@ public class ResourceRegistrationTest {
 
         SearchStorage.clearStorage();
         SearchStorage searchStorage = SearchStorage.getInstance( SearchStorage.TESTCASE_STORAGE_NAME, securityManager, false );
-        PlatformHandler handler = new PlatformHandler(searchStorage);
+        PlatformHandler handler = new PlatformHandler(searchStorage,interworkingServiceInfoRepo);
         Platform platform = generatePlatformA();
         boolean result = handler.registerPlatform(platform);
         assert(result);
 
         CoreResource res = generateResource();
 
-        ResourceHandler resHandler = new ResourceHandler(searchStorage,accessPolicyRepo);
+        ResourceHandler resHandler = new ResourceHandler(searchStorage,accessPolicyRepo,interworkingServiceInfoRepo);
         CoreResourceRegisteredOrModifiedEventPayload regReq = new CoreResourceRegisteredOrModifiedEventPayload();
         regReq.setPlatformId(PLATFORM_A_ID);
 

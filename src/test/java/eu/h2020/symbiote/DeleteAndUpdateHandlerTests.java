@@ -7,6 +7,7 @@ import eu.h2020.symbiote.core.internal.CoreResourceRegisteredOrModifiedEventPayl
 import eu.h2020.symbiote.core.internal.RDFFormat;
 import eu.h2020.symbiote.filtering.AccessPolicyRepo;
 import eu.h2020.symbiote.filtering.SecurityManager;
+import eu.h2020.symbiote.handlers.InterworkingServiceInfoRepo;
 import eu.h2020.symbiote.handlers.PlatformHandler;
 import eu.h2020.symbiote.handlers.ResourceHandler;
 import eu.h2020.symbiote.handlers.SearchHandler;
@@ -49,6 +50,8 @@ public class DeleteAndUpdateHandlerTests {
     private SecurityManager securityManager;
     @Mock
     private RankingHandler rankingHandler;
+    @Mock
+    private InterworkingServiceInfoRepo interworkingServiceInfoRepo;
 
     @Before
     public void setUp() throws Exception {
@@ -106,7 +109,7 @@ public class DeleteAndUpdateHandlerTests {
         assertNotNull(otherSearchResponse.getResources());
         assertEquals("Before delete should be 1 resource", 1, otherSearchResponse.getResources().size());
 
-        ResourceHandler delHandler = new ResourceHandler(storage,accessPolicyRepo);
+        ResourceHandler delHandler = new ResourceHandler(storage,accessPolicyRepo, interworkingServiceInfoRepo);
         delHandler.deleteResource("stationary1");
 
         searchResponse = searchHandler.search(searchReq);
@@ -137,7 +140,7 @@ public class DeleteAndUpdateHandlerTests {
         boolean contains = graph.contains(resource, CIM.id, PLATFORM_A_ID);
         assertTrue("Before platform A should exist", contains);
 
-        PlatformHandler delHandler = new PlatformHandler(storage);
+        PlatformHandler delHandler = new PlatformHandler(storage,interworkingServiceInfoRepo);
         delHandler.deletePlatform(PLATFORM_A_ID);
 
         System.out.println(" ====== AFTER ===== ");
@@ -169,7 +172,7 @@ public class DeleteAndUpdateHandlerTests {
 
         CoreResource resource = generateModifiedStationarySensor();
         resource.setName(RESOURCE_STATIONARY_LABEL_MODIFIED);
-        ResourceHandler modifyHandler = new ResourceHandler(storage,accessPolicyRepo);
+        ResourceHandler modifyHandler = new ResourceHandler(storage,accessPolicyRepo,interworkingServiceInfoRepo);
         CoreResourceRegisteredOrModifiedEventPayload updateReq = new CoreResourceRegisteredOrModifiedEventPayload();
         updateReq.setPlatformId(PLATFORM_A_ID);
 

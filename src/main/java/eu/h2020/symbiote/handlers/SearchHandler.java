@@ -72,12 +72,19 @@ public class SearchHandler implements ISearchEvents {
             Map<SecurityCredentials, ValidationStatus> validatedCredentials = new HashMap<>();
             QueryGenerator q = HandlerUtils.generateQueryFromSearchRequest(request);
 
+            long afterQGeneration = System.currentTimeMillis();
+
             ResultSet results = this.triplestore.executeQuery(q.toString(),request.getSecurityRequest(),false);
+
+            long afterInitialQuery = System.currentTimeMillis();
 
             response = HandlerUtils.generateSearchResponseFromResultSet(results);
 
+            long afterGeneratingResponse = System.currentTimeMillis();
+
             if (q.isMultivaluequery()) {
                     searchForPropertiesOfResources(response.getBody(), request.getSecurityRequest());
+
             }
             long afterSparql = System.currentTimeMillis();
 
@@ -86,19 +93,23 @@ public class SearchHandler implements ISearchEvents {
 
             long beforeCheckPolicy = System.currentTimeMillis();
 
-            List<QueryResourceResult> filteredResults = response.getBody().stream().filter(res -> {
+            List<QueryResourceResult> resultsList = response.getBody();
+            if( securityEnabled ) {
+                resultsList = response.getBody().stream().filter(res -> {
 //                    log.debug("Checking policies for for res: " + res.getId() );
-                    return securityManager.checkPolicyByResourceId(res.getId(), request.getSecurityRequest(),validatedCredentials);
-            }).collect(Collectors.toList());
+                    return securityManager.checkPolicyByResourceId(res.getId(), request.getSecurityRequest(), validatedCredentials);
+                }).collect(Collectors.toList());
+            }
 
             long afterCheckPolicy = System.currentTimeMillis();
 
-            log.debug("After filtering got " + filteredResults.size() + " results");
-            log.debug("[Timers] Sparql: " + (afterSparql - beforeSparql ) + " ms | Checking policy: " + (afterCheckPolicy - beforeCheckPolicy ) + " ms." );
+            log.debug("After filtering got " + resultsList.size() + " results");
 
-            response.setBody(filteredResults);
+            response.setBody(resultsList);
             response.setStatus(HttpStatus.SC_OK);
             response.setMessage(SUCCESS_MESSAGE);
+
+            long beforeRank = System.currentTimeMillis();
 
             if( shouldRank ) {
                 log.debug("Generating ranking for response...");
@@ -106,6 +117,15 @@ public class SearchHandler implements ISearchEvents {
                 rankingQuery.setIncludeDistance(HandlerUtils.isDistanceQuery(request));
                 response = rankingHandler.generateRanking(rankingQuery);
             }
+            long afterRank = System.currentTimeMillis();
+
+            log.debug("[Timers] : queryGen " + (afterQGeneration - beforeSparql ) + " ms " +
+                    "| InitialQ " + (afterInitialQuery - afterQGeneration ) + " ms " +
+                    "| generatingResponse " + (afterGeneratingResponse - afterInitialQuery) + " ms " +
+                    "| propertiesQ " + (afterSparql - afterGeneratingResponse ) + " ms " +
+                    "| Checking policy: " + (afterCheckPolicy - beforeCheckPolicy ) + " ms." +
+                    "| ranking " + (afterRank - beforeRank ) + " ms " +
+                    "| TOTAL " + ( afterRank - beforeSparql) + " ms.");
 
         } catch (Exception e) {
             log.error("Error occurred during search: " + e.getMessage());

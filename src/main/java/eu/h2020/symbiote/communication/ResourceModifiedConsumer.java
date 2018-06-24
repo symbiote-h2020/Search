@@ -50,10 +50,15 @@ public class ResourceModifiedConsumer extends DefaultConsumer {
             ObjectMapper mapper = new ObjectMapper();
             CoreResourceRegisteredOrModifiedEventPayload resource = mapper.readValue(msg, CoreResourceRegisteredOrModifiedEventPayload.class);
 
+            long before = System.currentTimeMillis();
+
             boolean success = handler.updateResource(resource);
-            log.debug(success?
+
+            long after = System.currentTimeMillis();
+
+            log.debug((success?
                     "Update of the resource in RDF is success"
-                    :"Update of the resource in RDF failed");
+                    :"Update of the resource in RDF failed") + "in time " + (after - before) + " ms" );
 
         } catch( JsonParseException | JsonMappingException e ) {
             log.error("Error occurred when parsing Resource object JSON: " + msg, e);

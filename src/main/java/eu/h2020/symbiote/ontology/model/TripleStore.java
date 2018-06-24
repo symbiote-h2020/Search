@@ -179,6 +179,9 @@ public class TripleStore {
         } else {
             securedModel = model;
         }
+
+
+
     }
 
     public void setSparqlQueryTimeout(int sparqlQueryTimeout) {
