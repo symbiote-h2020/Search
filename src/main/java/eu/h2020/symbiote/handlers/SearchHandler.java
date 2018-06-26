@@ -94,12 +94,23 @@ public class SearchHandler implements ISearchEvents {
             long beforeCheckPolicy = System.currentTimeMillis();
 
             List<QueryResourceResult> resultsList = response.getBody();
-            if( securityEnabled ) {
-                resultsList = response.getBody().stream().filter(res -> {
-//                    log.debug("Checking policies for for res: " + res.getId() );
-                    return securityManager.checkPolicyByResourceId(res.getId(), request.getSecurityRequest(), validatedCredentials);
-                }).collect(Collectors.toList());
-            }
+
+            List<String> validatedIds = securityManager.checkGroupPolicies(resultsList.stream().map(QueryResourceResult::getId).collect(Collectors.toList()), request.getSecurityRequest());
+
+            List<QueryResourceResult> filteredResults = resultsList.stream().filter(qresult -> validatedIds.contains(qresult.getId())).collect(Collectors.toList());
+
+            log.debug("Filtered results size: " + filteredResults.size());
+
+            resultsList = filteredResults;
+
+
+            //OLD format, now:
+//            if( securityEnabled ) {
+//                resultsList = response.getBody().stream().filter(res -> {
+////                    log.debug("Checking policies for for res: " + res.getId() );
+//                    return securityManager.checkPolicyByResourceId(res.getId(), request.getSecurityRequest(), validatedCredentials);
+//                }).collect(Collectors.toList());
+//            }
 
             long afterCheckPolicy = System.currentTimeMillis();
 

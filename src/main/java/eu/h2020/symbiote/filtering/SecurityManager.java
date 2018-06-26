@@ -13,10 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Utility class for resolving filtering policies of the resources that are being queried for.
@@ -56,6 +54,37 @@ public class SecurityManager implements IFilteringManager {
     @Override
     public boolean checkPolicyByResourceIri(String resourceIri, SecurityRequest request, Map<SecurityCredentials, ValidationStatus> validatedCredentials) {
         return checkPolicy(accessPolicyRepo.findByIri(resourceIri), request, validatedCredentials);
+    }
+
+    public List<String> checkGroupPolicies( List<String> resourceIds, SecurityRequest securityRequest ) {
+        if( !this.securityHandlerComponent.isSecurityEnabled() ) {
+            //If no security -> return all resources
+            return resourceIds;
+        }
+
+        List<String> result = new ArrayList<>();
+
+        Map<String, IAccessPolicy> accessPolicies = new HashMap<>();
+
+        result.addAll(resourceIds.stream().filter( id ->  {
+            Optional<AccessPolicy> accessPolicy = accessPolicyRepo.findById(id);
+            if( accessPolicy.isPresent() ) {
+                //Add to list of policies to check
+                accessPolicies.put(id,accessPolicy.get().getPolicy());
+                return false;
+            } else {
+                return true;
+            }
+        }).collect(Collectors.toList()));
+
+        log.debug("Got list of ids with size: " + resourceIds.size() + " and found " + result.size() + " resources without policies which has been added to return list");
+
+        Set<String> idsFulfillingPolicies = this.securityHandlerComponent.getHandler().getSatisfiedPoliciesIdentifiers(accessPolicies, securityRequest);
+
+        result.addAll(idsFulfillingPolicies);
+        log.debug("Checking access policies for map with size: " + accessPolicies.size() + " found additional " + idsFulfillingPolicies.size() + " resources fulfilling criteria. Returning total of " + result.size());
+
+        return result;
     }
 
     private boolean checkPolicy(Optional<AccessPolicy> policy, SecurityRequest request, Map<SecurityCredentials, ValidationStatus> validatedCredentials) {
