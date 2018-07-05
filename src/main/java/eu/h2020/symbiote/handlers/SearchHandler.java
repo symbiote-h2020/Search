@@ -187,12 +187,14 @@ public class SearchHandler implements ISearchEvents {
         response.setStatus(HttpStatus.SC_OK);
         response.setMessage(SUCCESS_MESSAGE);
 
-        try {
-            response.setServiceResponse(securityManager.generateSecurityResponse());
-        } catch (SecurityHandlerException e) {
-            log.error("Error occurred when generating security response. Setting response to empty string. Message of error: " + e.getMessage(), e);
-            response.setServiceResponse("");
-            response.setMessage("Security response could not be correctly generated");
+        if( securityEnabled ) {
+            try {
+                response.setServiceResponse(securityManager.generateSecurityResponse());
+            } catch (SecurityHandlerException e) {
+                log.error("Error occurred when generating security response. Setting response to empty string. Message of error: " + e.getMessage(), e);
+                response.setServiceResponse("");
+                response.setMessage("Security response could not be correctly generated");
+            }
         }
         return response;
     }

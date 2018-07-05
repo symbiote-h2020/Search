@@ -322,7 +322,12 @@ public class HandlerUtils {
             String capDataObj = null;
 
             if (capability != null) {
+//                System.out.println("Got capability " + capability.asResource().getId());
                 capabilityName = readValueFromSolution(solution, CAPABILITY_NAME);
+                if( capabilityName == null ) { // In case capability has been added without name, use anonymousId
+                    capabilityName = capability.asResource().getId().toString();
+                }
+
                 if (capParameter != null) {
                     capParameterName = readValueFromSolution(solution, CAP_PARAMETER_NAME);
                     capParameterMandatory = readValueFromSolution(solution, CAP_PARAMETER_MANDATORY);
@@ -386,7 +391,7 @@ public class HandlerUtils {
                             parameterDatatype, paramDataPred, paramDataObj);
                 }
 
-                if (capability != null && capabilityName != null) {
+                if (capability != null && capabilityName != null ) {
                     if (!capabilitiesInfos.get(resId).containsKey(capabilityName)) {
                         CapabilitiesInfo capabilitiesInfo = new CapabilitiesInfo(capabilityName, new HashMap<>());
                         capabilitiesInfos.get(resId).put(capabilityName, capabilitiesInfo);
@@ -500,7 +505,10 @@ public class HandlerUtils {
             param.setName(paramInfo.getParameterName());
             param.setMandatory(Boolean.valueOf(paramInfo.getParameterMandatory()));
             List<DatatypeInfo> datatypes = paramInfo.getDatatypes();
-            List<DatatypeInfo> type = getAllTripletsWithPredicate(datatypes, RDF.type.toString());
+            List<DatatypeInfo> allTypes = getAllTripletsWithPredicate(datatypes, RDF.type.toString());
+            //Get only CIM types
+            List<DatatypeInfo> type = allTypes.stream().filter(dtype -> dtype.getDataObj().equals(CIM.PrimitiveDatatype.toString())
+                    || dtype.getDataObj().equals(CIM.ComplexDatatype.toString())).collect(Collectors.toList());
             if (type != null && type.size() == 1) {
                 String typeIRI = type.get(0).getDataObj();
                 Datatype datatype = null;

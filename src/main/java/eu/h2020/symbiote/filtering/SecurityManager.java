@@ -78,6 +78,8 @@ public class SecurityManager implements IFilteringManager {
         }).collect(Collectors.toList()));
 
         log.debug("Got list of ids with size: " + resourceIds.size() + " and found " + result.size() + " resources without policies which has been added to return list");
+        log.debug("Resources without policies: " + String.join(",",result));
+
 
         Set<String> idsFulfillingPolicies = this.securityHandlerComponent.getHandler().getSatisfiedPoliciesIdentifiers(accessPolicies, securityRequest);
 

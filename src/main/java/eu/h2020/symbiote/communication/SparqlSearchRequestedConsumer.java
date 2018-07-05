@@ -68,7 +68,7 @@ public class SparqlSearchRequestedConsumer extends DefaultConsumer {
 //                responseMessage = "Response is null or empty";
 //            }
 
-            log.debug( "Got Sparql response : " + StringUtils.substring(response.getBody(), 0,500 ));
+            log.debug( "Got Sparql response : " + StringUtils.substring(response.getBody(), 0,400 ));
 
             if( response.getBody().length() > MAX_SPARQL_SIZE ) {
                 log.debug( "Size is too big: " + response.getBody().length() );
