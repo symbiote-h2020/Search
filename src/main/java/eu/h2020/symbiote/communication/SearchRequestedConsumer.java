@@ -16,6 +16,7 @@ import org.apache.http.HttpStatus;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * Consumer of the search requested event. Translates the message as list of query parameters, translates them into
@@ -44,7 +45,9 @@ public class SearchRequestedConsumer extends DefaultConsumer {
     @Override
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
         String msg = new String(body);
-        log.debug( "Consume search requested message: " + msg );
+        String reqId = UUID.randomUUID().toString();
+        log.debug( "["+reqId+"] Consume search requested message: " + msg );
+        long in = System.currentTimeMillis();
 
 
         //Try to parse the message
@@ -79,7 +82,7 @@ public class SearchRequestedConsumer extends DefaultConsumer {
                     .contentType("application/json")
                     .build();
             this.getChannel().basicPublish("", properties.getReplyTo(), replyProps, responseBytes);
-            System.out.println("-> Message sent back");
+            System.out.println("["+reqId+"-> Message sent back in total time " + (System.currentTimeMillis() - in) + " ms");
 
             this.getChannel().basicAck(envelope.getDeliveryTag(), false);
 

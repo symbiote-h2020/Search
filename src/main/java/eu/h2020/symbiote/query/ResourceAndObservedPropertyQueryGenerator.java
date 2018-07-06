@@ -42,7 +42,7 @@ public class ResourceAndObservedPropertyQueryGenerator {
     @Override
     public String toString() {
         String resp = query.toString() +"\n}";
-        log.debug( "SPARQL: " + resp );
+//        log.debug( "SPARQL: " + resp );
         return resp;
     }
 

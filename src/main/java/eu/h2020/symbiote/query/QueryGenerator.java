@@ -291,7 +291,7 @@ public class QueryGenerator {
         generateModiafableQuery();
 
         String resp = query.toString() + extension.toString() + "\n}";
-        log.debug("SPARQL: " + resp);
+//        log.debug("SPARQL: " + resp);
         return resp;
     }
 
