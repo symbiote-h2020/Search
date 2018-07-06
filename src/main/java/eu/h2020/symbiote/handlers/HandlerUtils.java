@@ -540,7 +540,7 @@ public class HandlerUtils {
                     param.setDatatype(datatype);
                 }
             } else {
-                log.warn("Error parsing parameter info into model: " + type == null ? "type is null" : "type has size " + type.size());
+//                log.warn("Error parsing parameter info into model: " + type == null ? "type is null" : "type has size " + type.size());
             }
 
         }

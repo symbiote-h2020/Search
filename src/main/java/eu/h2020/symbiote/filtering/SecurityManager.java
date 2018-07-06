@@ -77,14 +77,14 @@ public class SecurityManager implements IFilteringManager {
             }
         }).collect(Collectors.toList()));
 
-        log.debug("Got list of ids with size: " + resourceIds.size() + " and found " + result.size() + " resources without policies which has been added to return list");
-        log.debug("Resources without policies: " + String.join(",",result));
+//        log.debug("Got list of ids with size: " + resourceIds.size() + " and found " + result.size() + " resources without policies which has been added to return list");
+//        log.debug("Resources without policies: " + String.join(",",result));
 
 
         Set<String> idsFulfillingPolicies = this.securityHandlerComponent.getHandler().getSatisfiedPoliciesIdentifiers(accessPolicies, securityRequest);
 
         result.addAll(idsFulfillingPolicies);
-        log.debug("Checking access policies for map with size: " + accessPolicies.size() + " found additional " + idsFulfillingPolicies.size() + " resources fulfilling criteria. Returning total of " + result.size());
+//        log.debug("Checking access policies for map with size: " + accessPolicies.size() + " found additional " + idsFulfillingPolicies.size() + " resources fulfilling criteria. Returning total of " + result.size());
 
         return result;
     }

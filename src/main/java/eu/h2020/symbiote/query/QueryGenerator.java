@@ -109,6 +109,10 @@ public class QueryGenerator {
         query.append("\t?capParameterDatatype ?capDataPred ?capDataObj .\n");
         query.append("} \n");
 
+//        query.append("OPTIONAL { ");
+//        query.append("\t?capability cim:name ?capName \n");
+//        query.append("} \n");
+
     }
 
     public QueryGenerator addPlatformId(String platformId) {

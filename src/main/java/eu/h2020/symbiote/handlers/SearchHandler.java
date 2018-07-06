@@ -204,7 +204,7 @@ public class SearchHandler implements ISearchEvents {
         List<String> resourceIds = resources.stream().map(q -> q.getId()).collect(Collectors.toList());
 
         ResourceAndObservedPropertyQueryGenerator q = new ResourceAndObservedPropertyQueryGenerator(resourceIds);
-        ResultSet resultSet = this.triplestore.executeQuery(q.toString(),request,true);
+        ResultSet resultSet = this.triplestore.executeQuery(q.toString(),request,false);
 
         Map<String,List<Property>> resourcesPropertiesMap = new HashMap<>();
 

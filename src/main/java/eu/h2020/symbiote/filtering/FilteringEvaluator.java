@@ -82,7 +82,7 @@ public class FilteringEvaluator implements SecurityEvaluator {
             try {
                 boolean b = securityManager.checkPolicyByResourceIri(r.getURI(), securityRequest, this.validatedCredentials);
                 if( !b) {
-                    log.debug("Policy not fulfilled for " + r.getURI());
+//                    log.debug("Policy not fulfilled for " + r.getURI());
                 }
 //                log.debug("EVALUATOR - > IN RESOURCE, CHECKING POLICIES FOR IRI " + r.getURI() + "   ||xxxxxx||   principal: " + principal.getName() + "   ||xxxxxx||   result: " + b);
                 return b;
