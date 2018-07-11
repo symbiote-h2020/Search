@@ -9,6 +9,7 @@ import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 import eu.h2020.symbiote.core.ci.QueryResponse;
 import eu.h2020.symbiote.core.internal.CoreQueryRequest;
+import eu.h2020.symbiote.handlers.ISearchEvents;
 import eu.h2020.symbiote.handlers.SearchHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -17,6 +18,8 @@ import org.apache.http.HttpStatus;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Consumer of the search requested event. Translates the message as list of query parameters, translates them into
@@ -28,7 +31,7 @@ public class SearchRequestedConsumer extends DefaultConsumer {
 
     private static Log log = LogFactory.getLog(SearchRequestedConsumer.class);
 
-    private final SearchHandler handler;
+    private final ISearchEvents handler;
 
     /**
      * Constructs a new instance and records its association to the passed-in channel.
@@ -37,7 +40,7 @@ public class SearchRequestedConsumer extends DefaultConsumer {
      * @param handler handler to be used by the consumer.
      *
      */
-    public SearchRequestedConsumer(Channel channel, SearchHandler handler) {
+    public SearchRequestedConsumer(Channel channel, ISearchEvents handler) {
         super(channel);
         this.handler = handler;
     }
@@ -55,36 +58,34 @@ public class SearchRequestedConsumer extends DefaultConsumer {
             ObjectMapper mapper = new ObjectMapper();
             CoreQueryRequest searchRequest = mapper.readValue(msg, CoreQueryRequest.class);
 
+            SearchCommunicationHandler comm = new SearchCommunicationHandler(reqId, this.getChannel(), consumerTag,envelope,properties);
+
+            handler.search(comm,searchRequest);
+
 
             String responseMessage = "Something wrong happened when executing search";
-            QueryResponse response = null;
-            try {
-                response = handler.search(searchRequest);
-                //Send the response back to the client
-                if (response != null && response.getBody() != null) {
-                    responseMessage = "size is " + response.getBody().size();
-                } else {
-                    responseMessage = "Response is null or empty";
-                }
-            } catch( Exception e ) {
-                log.error("Error occurred when performing search operation: " + e.getMessage(), e);
-                response = new QueryResponse(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Error occurred during search: " + e.getMessage(), new ArrayList<>());
-            }
+//            QueryResponse response = null;
+//            try {
+//                response = handler.search(reqId,searchRequest);
+//                //Send the response back to the client
+//                if (response != null && response.getBody() != null) {
+//                    responseMessage = "size is " + response.getBody().size();
+//                } else {
+//                    responseMessage = "Response is null or empty";
+//                }
+//            }catch( ExecutionException e ) {
+//                log.error("Execution error occurred when performing search operation: " + e.getMessage(), e);
+//                response = new QueryResponse(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Execution error occurred during search: " + e.getMessage(), new ArrayList<>());
+//            }catch( TimeoutException e ) {
+//                log.error("Timeout occurred when performing search operation: " + e.getMessage(), e);
+//                response = new QueryResponse(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Timeout occurred when performing search: " + e.getMessage(), new ArrayList<>());
+//            }catch( Exception e ) {
+//                log.error("Error occurred when performing search operation: " + e.getMessage(), e);
+//                response = new QueryResponse(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Error occurred during search: " + e.getMessage(), new ArrayList<>());
+//            }
 
 
-            log.debug( "Calculated response, sending back to the sender: " + responseMessage);
 
-            byte[] responseBytes = mapper.writeValueAsBytes(response!=null?response:"[]");
-
-            AMQP.BasicProperties replyProps = new AMQP.BasicProperties
-                    .Builder()
-                    .correlationId(properties.getCorrelationId())
-                    .contentType("application/json")
-                    .build();
-            this.getChannel().basicPublish("", properties.getReplyTo(), replyProps, responseBytes);
-            System.out.println("["+reqId+"-> Message sent back in total time " + (System.currentTimeMillis() - in) + " ms");
-
-            this.getChannel().basicAck(envelope.getDeliveryTag(), false);
 
         } catch( JsonParseException | JsonMappingException e ) {
             log.error("Error occurred when parsing Resource object JSON: " + msg, e);

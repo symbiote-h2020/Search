@@ -1,5 +1,6 @@
 package eu.h2020.symbiote.handlers;
 
+import eu.h2020.symbiote.communication.SearchCommunicationHandler;
 import eu.h2020.symbiote.core.ci.QueryResourceResult;
 import eu.h2020.symbiote.core.ci.QueryResponse;
 import eu.h2020.symbiote.core.ci.SparqlQueryResponse;
@@ -65,7 +66,7 @@ public class SearchHandler implements ISearchEvents {
 
 
     @Override
-    public QueryResponse search(CoreQueryRequest request) {
+    public QueryResponse search(SearchCommunicationHandler comm, CoreQueryRequest request) {
         QueryResponse response = new QueryResponse();
         try {
             long beforeSparql = System.currentTimeMillis();
@@ -89,7 +90,7 @@ public class SearchHandler implements ISearchEvents {
             long afterSparql = System.currentTimeMillis();
 
             //Filtering of the results
-            log.debug("Initially found " + response.getBody().size() + " resources, performing filtering" );
+            log.debug("["+comm.getReqId()+"] Initially found " + response.getBody().size() + " resources, performing filtering" );
 
             long beforeCheckPolicy = System.currentTimeMillis();
 
@@ -99,7 +100,7 @@ public class SearchHandler implements ISearchEvents {
 
             List<QueryResourceResult> filteredResults = resultsList.stream().filter(qresult -> validatedIds.contains(qresult.getId())).collect(Collectors.toList());
 
-            log.debug("Filtered results size: " + filteredResults.size());
+            log.debug("["+comm.getReqId()+"] Filtered results size: " + filteredResults.size());
 
             resultsList = filteredResults;
 
@@ -114,7 +115,7 @@ public class SearchHandler implements ISearchEvents {
 
             long afterCheckPolicy = System.currentTimeMillis();
 
-            log.debug("After filtering got " + resultsList.size() + " results");
+            log.debug("["+comm.getReqId()+"] After filtering got " + resultsList.size() + " results");
 
             response.setBody(resultsList);
             response.setStatus(HttpStatus.SC_OK);
@@ -123,14 +124,14 @@ public class SearchHandler implements ISearchEvents {
             long beforeRank = System.currentTimeMillis();
 
             if( shouldRank ) {
-                log.debug("Generating ranking for response...");
+                log.debug("["+comm.getReqId()+"] Generating ranking for response...");
                 RankingQuery rankingQuery = new RankingQuery(response);
                 rankingQuery.setIncludeDistance(HandlerUtils.isDistanceQuery(request));
                 response = rankingHandler.generateRanking(rankingQuery);
             }
             long afterRank = System.currentTimeMillis();
 
-            log.debug("[Timers] : queryGen " + (afterQGeneration - beforeSparql ) + " ms " +
+            log.debug("["+comm.getReqId()+"] [Timers] : queryGen " + (afterQGeneration - beforeSparql ) + " ms " +
                     "| InitialQ " + (afterInitialQuery - afterQGeneration ) + " ms " +
                     "| generatingResponse " + (afterGeneratingResponse - afterInitialQuery) + " ms " +
                     "| propertiesQ " + (afterSparql - afterGeneratingResponse ) + " ms " +
@@ -139,7 +140,7 @@ public class SearchHandler implements ISearchEvents {
                     "| TOTAL " + ( afterRank - beforeSparql) + " ms.");
 
         } catch (Exception e) {
-            log.error("Error occurred during search: " + e.getMessage());
+            log.error("["+comm.getReqId()+"] Error occurred during search: " + e.getMessage());
             response.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
             response.setMessage("Internal server error occurred during search : " + e.getMessage());
         }
@@ -148,7 +149,7 @@ public class SearchHandler implements ISearchEvents {
                 response.setServiceResponse(securityEnabled?securityManager.generateSecurityResponse():"");
             }
         } catch (SecurityHandlerException e) {
-            log.error("Error occurred when generating security response. Setting response to empty string. Message of error: " + e.getMessage(), e);
+            log.error("["+comm.getReqId()+"] Error occurred when generating security response. Setting response to empty string. Message of error: " + e.getMessage(), e);
             response.setServiceResponse("");
         }
         return response;

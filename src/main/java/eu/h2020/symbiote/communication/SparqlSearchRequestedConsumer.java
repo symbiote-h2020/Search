@@ -9,6 +9,7 @@ import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 import eu.h2020.symbiote.core.ci.SparqlQueryResponse;
 import eu.h2020.symbiote.core.internal.CoreSparqlQueryRequest;
+import eu.h2020.symbiote.handlers.ISearchEvents;
 import eu.h2020.symbiote.handlers.SearchHandler;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -29,7 +30,7 @@ public class SparqlSearchRequestedConsumer extends DefaultConsumer {
 
     private static Log log = LogFactory.getLog(SparqlSearchRequestedConsumer.class);
 
-    private final SearchHandler handler;
+    private final ISearchEvents handler;
 
     /**
      * Constructs a new instance and records its association to the passed-in channel.
@@ -38,7 +39,7 @@ public class SparqlSearchRequestedConsumer extends DefaultConsumer {
      * @param handler handler to be used by the consumer.
      *
      */
-    public SparqlSearchRequestedConsumer(Channel channel, SearchHandler handler) {
+    public SparqlSearchRequestedConsumer(Channel channel, ISearchEvents handler) {
         super(channel);
         this.handler = handler;
     }

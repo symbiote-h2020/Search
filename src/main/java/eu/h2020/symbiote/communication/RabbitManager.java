@@ -3,6 +3,7 @@ package eu.h2020.symbiote.communication;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
+import eu.h2020.symbiote.handlers.ISearchEvents;
 import eu.h2020.symbiote.handlers.PlatformHandler;
 import eu.h2020.symbiote.handlers.ResourceHandler;
 import eu.h2020.symbiote.handlers.SearchHandler;
@@ -358,7 +359,7 @@ public class RabbitManager {
      * @param searchHandler Event handler which will be triggered when resource.searchRequested event is received.
      * @throws IOException In case there are problems with RabbitMQ connections.
      */
-    public void registerResourceSearchConsumer( SearchHandler searchHandler ) throws IOException {
+    public void registerResourceSearchConsumer( ISearchEvents searchHandler ) throws IOException {
         String queueName = "symbIoTe-Search-search-requested";
 
         Channel channel = connection.createChannel();
@@ -372,13 +373,33 @@ public class RabbitManager {
     }
 
     /**
+     * Registers consumer for event resource.searchRequested. Event will trigger translation of the request into SPARQL
+     * and executing it in JENA repository.
+     *
+     * @param searchHandler Event handler which will be triggered when resource.searchRequested event is received.
+     * @throws IOException In case there are problems with RabbitMQ connections.
+     */
+    public void registerSingleThreadResourceSearchConsumer( ISearchEvents searchHandler ) throws IOException {
+        String queueName = "symbIoTe-Search-search-requested";
+
+        Channel channel = connection.createChannel();
+        channel.queueDeclare(queueName, false, true, true, null);
+        channel.queueBind(queueName, resourceExchangeName, resourceSearchRequestedRoutingKey );
+
+        SingleThreadSearchRequestedConsumer consumer = new SingleThreadSearchRequestedConsumer(channel, searchHandler );
+
+        channel.basicConsume(queueName, false, consumer);
+        log.debug( "Consumer search created!!!" );
+    }
+
+    /**
      * Registers consumer for event resource.sparqlSearchRequested. Event will trigger translation of the request into SPARQL
      * and executing it in JENA repository.
      *
      * @param searchHandler Event handler which will be triggered when resource.sparqlSearchRequested event is received.
      * @throws IOException In case there are problems with RabbitMQ connections.
      */
-    public void registerResourceSparqlSearchConsumer( SearchHandler searchHandler ) throws IOException {
+    public void registerResourceSparqlSearchConsumer( ISearchEvents searchHandler ) throws IOException {
         String queueName = "symbIoTe-Search-sparqlSearch-requested";
 
         Channel channel = connection.createChannel();

@@ -51,12 +51,17 @@ public class SearchApplication {
         private final InterworkingServiceInfoRepo interworkingServiceInfoRepo;
         private final SecurityManager securityManager;
         private final RankingHandler rankingHandler;
+        private final boolean searchMultithread;
         private final boolean securityEnabled;
         private final boolean rankingEnabled;
+        private final int coreThreads;
+        private final int maxThreads;
+        private final int threadsKeepAlive;
 
         @Autowired
         public CLR(RabbitManager manager, PopularityManager popularityManager, AvailabilityManager availabilityManager, AccessPolicyRepo accessPolicyRepo, InterworkingServiceInfoRepo interworkingServiceInfoRepo, SecurityManager securityManager, RankingHandler rankingHandler,
-                   @Value("${search.security.enabled}") boolean securityEnabled, @Value("${search.ranking.enabled}") boolean rankingEnabled) {
+                   @Value("${search.multithreading}") boolean searchMultithread, @Value("${search.security.enabled}") boolean securityEnabled, @Value("${search.ranking.enabled}") boolean rankingEnabled,
+                   @Value("${search.multithreading.coreThreads}") int coreThreads, @Value("${search.multithreading.maxThreads}") int maxThreads, @Value("${search.multithreading.keepAliveInMinutes}") int threadsKeepAlive) {
             this.manager = manager;
             this.popularityManager = popularityManager;
             this.availabilityManager = availabilityManager;
@@ -66,6 +71,10 @@ public class SearchApplication {
             this.rankingHandler = rankingHandler;
             this.securityEnabled = securityEnabled;
             this.rankingEnabled = rankingEnabled;
+            this.searchMultithread = searchMultithread;
+            this.coreThreads=coreThreads;
+            this.maxThreads = maxThreads;
+            this.threadsKeepAlive = threadsKeepAlive;
         }
 
         @Override
@@ -86,8 +95,17 @@ public class SearchApplication {
 
             manager.registerResourceUpdatedConsumer(resourceHandler);
 
-            SearchHandler searchHandler = new SearchHandler(searchStorage.getTripleStore(), securityEnabled, securityManager, rankingHandler, rankingEnabled );
-            manager.registerResourceSearchConsumer(searchHandler);
+            ISearchEvents searchHandler;
+            if( searchMultithread ) {
+                searchHandler = new MultiSearchHandler(searchStorage.getTripleStore(), securityEnabled, securityManager,
+                        rankingHandler, rankingEnabled, coreThreads, maxThreads, threadsKeepAlive );
+                manager.registerResourceSearchConsumer(searchHandler);
+            } else {
+                searchHandler = new SearchHandler(searchStorage.getTripleStore(), securityEnabled, securityManager, rankingHandler, rankingEnabled );
+                manager.registerSingleThreadResourceSearchConsumer(searchHandler);
+            }
+
+
             manager.registerResourceSparqlSearchConsumer(searchHandler);
 
             manager.registerPopularityUpdateConsumer(popularityManager);

@@ -221,7 +221,7 @@ public class TestSetupConfig {
         sspRegInfo.setDerivedKey1("deriveKey1");
         sspRegInfo.setHashField("hashSecret");
         sspRegInfo.setPluginId(pluginId);
-        sspRegInfo.setPluginUrl(pluginUrl);
+        sspRegInfo.setPluginURL(pluginUrl);
         return sspRegInfo;
     }
 
