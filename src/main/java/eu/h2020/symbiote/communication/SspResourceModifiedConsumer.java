@@ -14,6 +14,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.IOException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Consumer of the resource modified event. Handler removes existing resource and creates RDF representation of
@@ -27,6 +29,8 @@ public class SspResourceModifiedConsumer extends DefaultConsumer {
 
     private final ResourceHandler handler;
 
+    private final ThreadPoolExecutor writerExecutorService;
+
     /**
      * Constructs a new instance and records its association to the passed-in channel.
      *
@@ -34,9 +38,10 @@ public class SspResourceModifiedConsumer extends DefaultConsumer {
      * @param handler handler to be used by the consumer.
      *
      */
-    public SspResourceModifiedConsumer(Channel channel, ResourceHandler handler) {
+    public SspResourceModifiedConsumer(Channel channel, ResourceHandler handler, ThreadPoolExecutor writerExecutorService) {
         super(channel);
         this.handler = handler;
+        this.writerExecutorService = writerExecutorService;
     }
 
     @Override
@@ -50,10 +55,14 @@ public class SspResourceModifiedConsumer extends DefaultConsumer {
             ObjectMapper mapper = new ObjectMapper();
             CoreSspResourceRegisteredOrModifiedEventPayload resource = mapper.readValue(msg, CoreSspResourceRegisteredOrModifiedEventPayload.class);
 
-            boolean success = handler.updateResource(resource);
-            log.debug(success?
-                    "Update of the resource in RDF is success"
-                    :"Update of the resource in RDF failed");
+            Callable<Boolean> callable = () -> {
+                boolean success = handler.updateResource(resource);
+                log.debug(success ?
+                        "Update of the resource in RDF is success"
+                        : "Update of the resource in RDF failed");
+                return Boolean.TRUE;
+            };
+            writerExecutorService.submit(callable);
 
         } catch( JsonParseException | JsonMappingException e ) {
             log.error("Error occurred when parsing Resource object JSON: " + msg, e);

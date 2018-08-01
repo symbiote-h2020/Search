@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -244,13 +245,13 @@ public class RabbitManager {
      * @param platformHandler Event handler which will be triggered when platform.created event is received.
      * @throws IOException In case there are problems with RabbitMQ connections.
      */
-    public void registerPlatformCreatedConsumer( PlatformHandler platformHandler ) throws IOException {
+    public void registerPlatformCreatedConsumer(PlatformHandler platformHandler, ThreadPoolExecutor executor ) throws IOException {
         String queueName = "symbIoTe-Search-platform-created";
 
         Channel channel = connection.createChannel();
         channel.queueDeclare(queueName, false, true, true, null);
         channel.queueBind(queueName, platformExchangeName, platformCreatedRoutingKey);
-        PlatformCreatedConsumer consumer = new PlatformCreatedConsumer(channel, platformHandler );
+        PlatformCreatedConsumer consumer = new PlatformCreatedConsumer(channel, platformHandler, executor );
 
         channel.basicConsume(queueName, false, consumer);
         log.debug( "Consumer platform created!!!" );
@@ -263,13 +264,13 @@ public class RabbitManager {
      * @param platformHandler Event handler which will be triggered when platform.deleted event is received.
      * @throws IOException In case there are problems with RabbitMQ connections.
      */
-    public void registerPlatformDeletedConsumer( PlatformHandler platformHandler ) throws IOException {
+    public void registerPlatformDeletedConsumer( PlatformHandler platformHandler, ThreadPoolExecutor executor  ) throws IOException {
         String queueName = "symbIoTe-Search-platform-deleted";
 
         Channel channel = connection.createChannel();
         channel.queueDeclare(queueName, false, true, true, null);
         channel.queueBind(queueName, platformExchangeName, platformDeletedRoutingKey);
-        PlatformDeletedConsumer consumer = new PlatformDeletedConsumer(channel,platformHandler );
+        PlatformDeletedConsumer consumer = new PlatformDeletedConsumer(channel,platformHandler, executor );
 
         channel.basicConsume(queueName, false, consumer);
         log.debug( "Consumer delete platform created!!!" );
@@ -282,13 +283,13 @@ public class RabbitManager {
      * @param platformHandler Event handler which will be triggered when platform.updated event is received.
      * @throws IOException In case there are problems with RabbitMQ connections.
      */
-    public void registerPlatformUpdatedConsumer(PlatformHandler platformHandler) throws IOException {
+    public void registerPlatformUpdatedConsumer(PlatformHandler platformHandler, ThreadPoolExecutor executor ) throws IOException {
         String queueName = "symbIoTe-Search-platform-updated";
 
         Channel channel = connection.createChannel();
         channel.queueDeclare(queueName, false, true, true, null);
         channel.queueBind(queueName, platformExchangeName, platformModifiedRoutingKey);
-        PlatformModifiedConsumer consumer = new PlatformModifiedConsumer(channel, platformHandler );
+        PlatformModifiedConsumer consumer = new PlatformModifiedConsumer(channel, platformHandler, executor );
 
         channel.basicConsume(queueName, false, consumer);
         log.debug( "Consumer platform modified created!!!" );
@@ -301,13 +302,13 @@ public class RabbitManager {
      * @param resourceHandler Event handler which will be triggered when resource.created event is received.
      * @throws IOException In case there are problems with RabbitMQ connections.
      */
-    public void registerResourceCreatedConsumer( ResourceHandler resourceHandler) throws IOException {
+    public void registerResourceCreatedConsumer( ResourceHandler resourceHandler, ThreadPoolExecutor executor ) throws IOException {
         String queueName = "symbIoTe-Search-resource-created";
 
         Channel channel = connection.createChannel();
         channel.queueDeclare(queueName, false, true, true, null);
         channel.queueBind(queueName, resourceExchangeName, resourceCreatedRoutingKey);
-        ResourceCreatedConsumer consumer = new ResourceCreatedConsumer(channel, resourceHandler );
+        ResourceCreatedConsumer consumer = new ResourceCreatedConsumer(channel, resourceHandler, executor );
 
         channel.basicConsume(queueName, false, consumer);
         log.debug( "Consumer resource created!!!" );
@@ -320,13 +321,13 @@ public class RabbitManager {
      * @param resourceDeleteHandler Event handler which will be triggered when resource.deleted event is received.
      * @throws IOException In case there are problems with RabbitMQ connections.
      */
-    public void registerResourceDeletedConsumer( ResourceHandler resourceDeleteHandler ) throws IOException {
+    public void registerResourceDeletedConsumer( ResourceHandler resourceDeleteHandler, ThreadPoolExecutor executor  ) throws IOException {
         String queueName = "symbIoTe-Search-resource-deleted";
 
         Channel channel = connection.createChannel();
         channel.queueDeclare(queueName, false, true, true, null);
         channel.queueBind(queueName, resourceExchangeName, resourceDeletedRoutingKey);
-        ResourceDeletedConsumer consumer = new ResourceDeletedConsumer(channel,resourceDeleteHandler );
+        ResourceDeletedConsumer consumer = new ResourceDeletedConsumer(channel,resourceDeleteHandler, executor );
 
         channel.basicConsume(queueName, false, consumer);
         log.debug( "Consumer delete resource created!!!" );
@@ -339,13 +340,13 @@ public class RabbitManager {
      * @param resourceHandler Event handler which will be triggered when resource.created event is received.
      * @throws IOException In case there are problems with RabbitMQ connections.
      */
-    public void registerResourceUpdatedConsumer(ResourceHandler resourceHandler) throws IOException {
+    public void registerResourceUpdatedConsumer(ResourceHandler resourceHandler, ThreadPoolExecutor executor ) throws IOException {
         String queueName = "symbIoTe-Search-resource-updated";
 
         Channel channel = connection.createChannel();
         channel.queueDeclare(queueName, false, true, true, null);
         channel.queueBind(queueName, resourceExchangeName, resourceModifiedRoutingKey);
-        ResourceModifiedConsumer consumer = new ResourceModifiedConsumer(channel, resourceHandler );
+        ResourceModifiedConsumer consumer = new ResourceModifiedConsumer(channel, resourceHandler, executor );
 
         channel.basicConsume(queueName, false, consumer);
         log.debug( "Consumer resource modified created!!!" );
@@ -449,13 +450,13 @@ public class RabbitManager {
      * @param platformHandler Event handler which will be triggered when ssp.created event is received.
      * @throws IOException In case there are problems with RabbitMQ connections.
      */
-    public void registerSspCreatedConsumer( PlatformHandler platformHandler ) throws IOException {
+    public void registerSspCreatedConsumer( PlatformHandler platformHandler, ThreadPoolExecutor executor ) throws IOException {
         String queueName = "symbIoTe-Search-ssp-created";
 
         Channel channel = connection.createChannel();
         channel.queueDeclare(queueName, false, true, true, null);
         channel.queueBind(queueName, sspExchangeName, sspCreatedRoutingKey);
-        SspCreatedConsumer consumer = new SspCreatedConsumer(channel, platformHandler );
+        SspCreatedConsumer consumer = new SspCreatedConsumer(channel, platformHandler, executor );
 
         channel.basicConsume(queueName, false, consumer);
         log.debug( "Consumer ssp created!!!" );
@@ -468,13 +469,13 @@ public class RabbitManager {
      * @param platformHandler Event handler which will be triggered when ssp.deleted event is received.
      * @throws IOException In case there are problems with RabbitMQ connections.
      */
-    public void registerSspDeletedConsumer( PlatformHandler platformHandler ) throws IOException {
+    public void registerSspDeletedConsumer( PlatformHandler platformHandler, ThreadPoolExecutor executor ) throws IOException {
         String queueName = "symbIoTe-Search-ssp-deleted";
 
         Channel channel = connection.createChannel();
         channel.queueDeclare(queueName, false, true, true, null);
         channel.queueBind(queueName, sspExchangeName, sspRemovedRoutingKey);
-        SspDeletedConsumer consumer = new SspDeletedConsumer(channel,platformHandler );
+        SspDeletedConsumer consumer = new SspDeletedConsumer(channel,platformHandler, executor );
 
         channel.basicConsume(queueName, false, consumer);
         log.debug( "Consumer delete ssp created!!!" );
@@ -487,13 +488,13 @@ public class RabbitManager {
      * @param platformHandler Event handler which will be triggered when ssp.updated event is received.
      * @throws IOException In case there are problems with RabbitMQ connections.
      */
-    public void registerSspUpdatedConsumer(PlatformHandler platformHandler) throws IOException {
+    public void registerSspUpdatedConsumer(PlatformHandler platformHandler,ThreadPoolExecutor executor) throws IOException {
         String queueName = "symbIoTe-Search-ssp-updated";
 
         Channel channel = connection.createChannel();
         channel.queueDeclare(queueName, false, true, true, null);
         channel.queueBind(queueName, sspExchangeName, sspModifiedRoutingKey);
-        SspModifiedConsumer consumer = new SspModifiedConsumer(channel, platformHandler );
+        SspModifiedConsumer consumer = new SspModifiedConsumer(channel, platformHandler, executor );
 
         channel.basicConsume(queueName, false, consumer);
         log.debug( "Consumer ssp modified created!!!" );
@@ -507,13 +508,13 @@ public class RabbitManager {
      * @param platformHandler Event handler which will be triggered when platform.created event is received.
      * @throws IOException In case there are problems with RabbitMQ connections.
      */
-    public void registerSdevCreatedConsumer( PlatformHandler platformHandler ) throws IOException {
+    public void registerSdevCreatedConsumer( PlatformHandler platformHandler, ThreadPoolExecutor executor ) throws IOException {
         String queueName = "symbIoTe-Search-sdev-created";
 
         Channel channel = connection.createChannel();
         channel.queueDeclare(queueName, false, true, true, null);
         channel.queueBind(queueName, sspExchangeName, sspSdevCreatedRoutingKey);
-        SdevCreatedConsumer consumer = new SdevCreatedConsumer(channel, platformHandler );
+        SdevCreatedConsumer consumer = new SdevCreatedConsumer(channel, platformHandler, executor );
 
         channel.basicConsume(queueName, false, consumer);
         log.debug( "Consumer sdev created!!!" );
@@ -526,13 +527,13 @@ public class RabbitManager {
      * @param platformHandler Event handler which will be triggered when sdev.deleted event is received.
      * @throws IOException In case there are problems with RabbitMQ connections.
      */
-    public void registerSdevDeletedConsumer( PlatformHandler platformHandler ) throws IOException {
+    public void registerSdevDeletedConsumer( PlatformHandler platformHandler, ThreadPoolExecutor executor ) throws IOException {
         String queueName = "symbIoTe-Search-sdev-deleted";
 
         Channel channel = connection.createChannel();
         channel.queueDeclare(queueName, false, true, true, null);
         channel.queueBind(queueName, sspExchangeName, sspSdevRemovedRoutingKey);
-        SdevDeletedConsumer consumer = new SdevDeletedConsumer(channel,platformHandler );
+        SdevDeletedConsumer consumer = new SdevDeletedConsumer(channel,platformHandler, executor );
 
         channel.basicConsume(queueName, false, consumer);
         log.debug( "Consumer delete sdev created!!!" );
@@ -545,13 +546,13 @@ public class RabbitManager {
      * @param platformHandler Event handler which will be triggered when sdev.updated event is received.
      * @throws IOException In case there are problems with RabbitMQ connections.
      */
-    public void registerSdevUpdatedConsumer(PlatformHandler platformHandler) throws IOException {
+    public void registerSdevUpdatedConsumer(PlatformHandler platformHandler, ThreadPoolExecutor executor) throws IOException {
         String queueName = "symbIoTe-Search-sdev-updated";
 
         Channel channel = connection.createChannel();
         channel.queueDeclare(queueName, false, true, true, null);
         channel.queueBind(queueName, sspExchangeName, sspSdevModifiedRoutingKey);
-        SdevModifiedConsumer consumer = new SdevModifiedConsumer(channel, platformHandler );
+        SdevModifiedConsumer consumer = new SdevModifiedConsumer(channel, platformHandler, executor );
 
         channel.basicConsume(queueName, false, consumer);
         log.debug( "Consumer sdev modified created!!!" );
@@ -564,13 +565,13 @@ public class RabbitManager {
      * @param resourceHandler Event handler which will be triggered when sspresource.created event is received.
      * @throws IOException In case there are problems with RabbitMQ connections.
      */
-    public void registerSspResourceCreatedConsumer( ResourceHandler resourceHandler ) throws IOException {
+    public void registerSspResourceCreatedConsumer( ResourceHandler resourceHandler, ThreadPoolExecutor executor ) throws IOException {
         String queueName = "symbIoTe-Search-ssp-resource-created";
 
         Channel channel = connection.createChannel();
         channel.queueDeclare(queueName, false, true, true, null);
         channel.queueBind(queueName, resourceExchangeName, sspSdevResourceCreatedRoutingKey);
-        SspResourceCreatedConsumer consumer = new SspResourceCreatedConsumer(channel, resourceHandler );
+        SspResourceCreatedConsumer consumer = new SspResourceCreatedConsumer(channel, resourceHandler, executor );
 
         channel.basicConsume(queueName, false, consumer);
         log.debug( "Consumer sspResourceCreated created!!!" );
@@ -583,13 +584,13 @@ public class RabbitManager {
      * @param resourceHandler Event handler which will be triggered when sspResource.deleted event is received.
      * @throws IOException In case there are problems with RabbitMQ connections.
      */
-    public void registerSspResourceDeletedConsumer( ResourceHandler resourceHandler ) throws IOException {
+    public void registerSspResourceDeletedConsumer( ResourceHandler resourceHandler, ThreadPoolExecutor executor ) throws IOException {
         String queueName = "symbIoTe-Search-ssp-resource-deleted";
 
         Channel channel = connection.createChannel();
         channel.queueDeclare(queueName, false, true, true, null);
         channel.queueBind(queueName, resourceExchangeName, sspSdevResourceRemoveddRoutingKey);
-        ResourceDeletedConsumer consumer = new ResourceDeletedConsumer(channel,resourceHandler );
+        ResourceDeletedConsumer consumer = new ResourceDeletedConsumer(channel,resourceHandler, executor );
 
         channel.basicConsume(queueName, false, consumer);
         log.debug( "Consumer delete sspResource created!!!" );
@@ -602,13 +603,13 @@ public class RabbitManager {
      * @param resourceHandler Event handler which will be triggered when sspResource.updated event is received.
      * @throws IOException In case there are problems with RabbitMQ connections.
      */
-    public void registerSspResourceUpdatedConsumer(ResourceHandler resourceHandler) throws IOException {
+    public void registerSspResourceUpdatedConsumer(ResourceHandler resourceHandler, ThreadPoolExecutor executor) throws IOException {
         String queueName = "symbIoTe-Search-ssp-resource-updated";
 
         Channel channel = connection.createChannel();
         channel.queueDeclare(queueName, false, true, true, null);
         channel.queueBind(queueName, resourceExchangeName, sspSdevResourceModifiedRoutingKey);
-        SspResourceModifiedConsumer consumer = new SspResourceModifiedConsumer(channel, resourceHandler );
+        SspResourceModifiedConsumer consumer = new SspResourceModifiedConsumer(channel, resourceHandler, executor );
 
         channel.basicConsume(queueName, false, consumer);
         log.debug( "Consumer sspResource modified created!!!" );

@@ -61,8 +61,6 @@ public class MultiSearchHandler implements ISearchEvents {
 
     private final ThreadPoolExecutor executorService;
 
-
-
     /**
      * Create a handler of the platform events for specified storage.
      *
@@ -193,6 +191,8 @@ public class MultiSearchHandler implements ISearchEvents {
                 Map<SecurityCredentials, ValidationStatus> validatedCredentials = new HashMap<>();
                 QueryGenerator q = HandlerUtils.generateQueryFromSearchRequest(request);
 
+                System.out.println(q.toString());
+
                 long afterQGeneration = System.currentTimeMillis();
 
                 ResultSet results = this.triplestore.executeQuery(q.toString(), request.getSecurityRequest(), false);
@@ -215,6 +215,18 @@ public class MultiSearchHandler implements ISearchEvents {
                 long beforeCheckPolicy = System.currentTimeMillis();
 
                 List<QueryResourceResult> resultsList = response.getBody();
+
+
+                //TODO delete
+                List<QueryResourceResult> ssp_test = resultsList.stream().filter(qres -> {
+//                    return qres.getPlatformName().equals("SSP_TEST") ||
+//                            qres.getPlatformName().equals("SSP_UNIPA") ||
+//                            qres.getPlatformName().equals("mySSPName");
+                    return qres.getId().equals("5b5f04fa8199a01ea1acb0fe");
+                }).collect(Collectors.toList());
+                if (ssp_test != null ) {
+                    log.info("Got " + ssp_test.size() + " resources from ssp_test");
+                }
 
                 List<String> validatedIds = securityManager.checkGroupPolicies(resultsList.stream().map(QueryResourceResult::getId).collect(Collectors.toList()), request.getSecurityRequest());
 

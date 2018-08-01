@@ -13,6 +13,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.IOException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Consumer of the platform created event. Handler creates RDF representation of provided platform and adds it into
@@ -26,15 +28,19 @@ public class PlatformCreatedConsumer extends DefaultConsumer {
 
     private final PlatformHandler handler;
 
+
+    private final ThreadPoolExecutor writerExecutorService;
+
     /**
      * Constructs a new instance and records its association to the passed-in channel.
      *
      * @param channel the channel to which this consumer is attached.
      * @param handler handler to be used by the consumer.
      */
-    public PlatformCreatedConsumer(Channel channel, PlatformHandler handler) {
+    public PlatformCreatedConsumer(Channel channel, PlatformHandler handler, ThreadPoolExecutor writerExecutorService ) {
         super(channel);
         this.handler = handler;
+        this.writerExecutorService = writerExecutorService;
     }
 
     @Override
@@ -48,10 +54,14 @@ public class PlatformCreatedConsumer extends DefaultConsumer {
             ObjectMapper mapper = new ObjectMapper();
             Platform platform = mapper.readValue(msg, Platform.class);
 
-            boolean success = handler.registerPlatform(platform);
-            log.debug(success ?
-                    "Registration of the platform in RDF is success"
-                    : "Registration of the platform in RDF failed");
+            Callable<Boolean> callable = () -> {
+                boolean success = handler.registerPlatform(platform);
+                log.debug(success ?
+                        "Registration of the platform in RDF is success"
+                        : "Registration of the platform in RDF failed");
+                return Boolean.TRUE;
+            };
+            writerExecutorService.submit(callable);
 
         } catch (JsonParseException | JsonMappingException e) {
             log.error("Error occurred when parsing Platform object JSON: " + msg, e);

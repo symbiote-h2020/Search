@@ -59,7 +59,7 @@ public class Registry {
      * Registers resource of the platform described by specified Uri. Model will be stored in the platform's named graph.
      *
      * @param platformUri Uri of the platform for which resource is added.
-     * @param resourceModel Model describiding the resource.
+     * @param resourceModel Model describing the resource.
      */
     public void registerResource(String platformUri, String serviceURI, String resourceUri, Model resourceModel) {
         tripleStore.insertGraph(platformUri, resourceModel);

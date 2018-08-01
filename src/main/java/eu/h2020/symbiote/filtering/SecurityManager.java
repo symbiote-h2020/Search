@@ -1,16 +1,13 @@
 package eu.h2020.symbiote.filtering;
 
-import eu.h2020.symbiote.security.ComponentSecurityHandlerFactory;
 import eu.h2020.symbiote.security.accesspolicies.IAccessPolicy;
 import eu.h2020.symbiote.security.commons.enums.ValidationStatus;
 import eu.h2020.symbiote.security.commons.exceptions.custom.SecurityHandlerException;
 import eu.h2020.symbiote.security.communication.payloads.SecurityCredentials;
 import eu.h2020.symbiote.security.communication.payloads.SecurityRequest;
-import eu.h2020.symbiote.security.handler.IComponentSecurityHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -29,7 +26,7 @@ public class SecurityManager implements IFilteringManager {
     private final AccessPolicyRepo accessPolicyRepo;
 //    IComponentSecurityHandler componentSecurityHandler;
     SecurityHandlerComponent securityHandlerComponent;
-    private SecurityCache<SecurityCacheKey, Boolean> cache = new SecurityCache<>(10 * 1000,120*1000,150);
+    private CachedMap<SecurityCacheKey, Boolean> cache = new CachedMap<>(10 * 1000,120*1000,150);
 
     @Autowired
     public SecurityManager(AccessPolicyRepo accessPolicyRepo,

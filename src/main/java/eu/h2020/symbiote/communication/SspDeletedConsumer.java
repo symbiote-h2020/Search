@@ -14,6 +14,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.IOException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Consumer of the ssp deleted event. Handler removes RDF representation of specified ssp.
@@ -26,15 +28,18 @@ public class SspDeletedConsumer extends DefaultConsumer {
 
     private final PlatformHandler handler;
 
+    private final ThreadPoolExecutor writerExecutorService;
+
     /**
      * Constructs a new instance and records its association to the passed-in channel.
      *
      * @param channel the channel to which this consumer is attached.
      * @param handler handler to be used by the consumer.
      */
-    public SspDeletedConsumer(Channel channel, PlatformHandler handler ) {
+    public SspDeletedConsumer(Channel channel, PlatformHandler handler, ThreadPoolExecutor writerExecutorService ) {
         super(channel);
         this.handler = handler;
+        this.writerExecutorService = writerExecutorService;
     }
 
     @Override
@@ -48,12 +53,14 @@ public class SspDeletedConsumer extends DefaultConsumer {
             ObjectMapper mapper = new ObjectMapper();
             SmartSpace ssp = mapper.readValue(msg, SmartSpace.class);
 
-            boolean success = handler.deleteSsp(ssp.getId());
-            log.debug(success?
-                    "Ssp " + ssp.getId() + " deleted successfully"
-                    :"Ssp " + ssp.getId() + " is reported to not be deleted");
-
-            handler.printStorage();
+            Callable<Boolean> callable = () -> {
+                boolean success = handler.deleteSsp(ssp.getId());
+                log.debug(success ?
+                        "Ssp " + ssp.getId() + " deleted successfully"
+                        : "Ssp " + ssp.getId() + " is reported to not be deleted");
+                return Boolean.TRUE;
+            };
+            writerExecutorService.submit(callable);
 
         } catch( JsonParseException | JsonMappingException e ) {
             log.error("Error occurred when parsing Ssp object JSON: " + msg, e);

@@ -14,6 +14,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.IOException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Consumer of the sdev modified event. Handler creates SPARQL Update Delete/Insert representation of modified
@@ -26,6 +28,7 @@ public class SdevModifiedConsumer extends DefaultConsumer {
     private static Log log = LogFactory.getLog(SdevModifiedConsumer.class);
 
     private final PlatformHandler handler;
+    private final ThreadPoolExecutor writerExecutorService;
 
     /**
      * Constructs a new instance and records its association to the passed-in channel.
@@ -33,9 +36,10 @@ public class SdevModifiedConsumer extends DefaultConsumer {
      * @param channel the channel to which this consumer is attached.
      * @param handler handler to be used by the consumer.
      */
-    public SdevModifiedConsumer(Channel channel, PlatformHandler handler ) {
+    public SdevModifiedConsumer(Channel channel, PlatformHandler handler, ThreadPoolExecutor writerExecutorService ) {
         super(channel);
         this.handler = handler;
+        this.writerExecutorService = writerExecutorService;
     }
 
     @Override
@@ -49,12 +53,15 @@ public class SdevModifiedConsumer extends DefaultConsumer {
             ObjectMapper mapper = new ObjectMapper();
             SspRegInfo sdev = mapper.readValue(msg, SspRegInfo.class);
 
-            boolean success = handler.updateSdev(sdev);
-            log.debug(success?
-                    "Sdev " + sdev.getSymId() + " updated successfully"
-                    :"Sdev " + sdev.getSymId() + " is reported to not be updated");
+            Callable<Boolean> callable = () -> {
+                boolean success = handler.updateSdev(sdev);
+                log.debug(success ?
+                        "Sdev " + sdev.getSymId() + " updated successfully"
+                        : "Sdev " + sdev.getSymId() + " is reported to not be updated");
+                return Boolean.TRUE;
+            };
+            writerExecutorService.submit(callable);
 
-            handler.printStorage();
 
         } catch( JsonParseException | JsonMappingException e ) {
             log.error("Error occurred when parsing Sdev object JSON: " + msg, e);

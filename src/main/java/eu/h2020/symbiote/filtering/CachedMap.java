@@ -12,9 +12,9 @@ import java.util.TimerTask;
 /**
  * Created by Szymon Mueller on 03/11/2017.
  */
-public class SecurityCache<K, T> {
+public class CachedMap<K, T> {
 
-    private static final Log log = LogFactory.getLog(SecurityCache.class);
+    private static final Log log = LogFactory.getLog(CachedMap.class);
 
 //    private static final long TIME_TO_LIVE = 10 * 1000;
 //    private static final long CLEANUP_INTERVAL = 120 * 1000; //Every 2 minutes
@@ -24,16 +24,16 @@ public class SecurityCache<K, T> {
 
     private LRUMap securityCache;
 
-    protected class SecurityCacheObject {
+    protected class CacheObject {
         public long lastAccessed = System.currentTimeMillis();
         public T value;
 
-        protected SecurityCacheObject(T value) {
+        protected CacheObject(T value) {
             this.value = value;
         }
     }
 
-    public SecurityCache(long ttl, long cleanupInterval, int maxItems) {
+    public CachedMap(long ttl, long cleanupInterval, int maxItems) {
 
         this.ttl = ttl;
         this.cleanupInterval = cleanupInterval;
@@ -56,14 +56,14 @@ public class SecurityCache<K, T> {
 
     public void put(K key, T value) {
         synchronized (securityCache) {
-            securityCache.put(key, new SecurityCacheObject(value));
+            securityCache.put(key, new CacheObject(value));
         }
     }
 
     @SuppressWarnings("unchecked")
     public T get(K key) {
         synchronized (securityCache) {
-            SecurityCacheObject c = (SecurityCacheObject) securityCache.get(key);
+            CacheObject c = (CacheObject) securityCache.get(key);
 
             if (c == null)
                 return null;
@@ -97,11 +97,11 @@ public class SecurityCache<K, T> {
 
             deleteKey = new ArrayList<K>((securityCache.size() / 2) + 1);
             K key = null;
-            SecurityCacheObject c = null;
+            CacheObject c = null;
 
             while (itr.hasNext()) {
                 key = (K) itr.next();
-                c = (SecurityCacheObject) itr.getValue();
+                c = (CacheObject) itr.getValue();
 
                 if (c != null && (now > (ttl + c.lastAccessed))) {
                     deleteKey.add(key);

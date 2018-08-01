@@ -134,9 +134,8 @@ public class HandlerUtils {
 
         platformResource.addProperty(CIM.name, ssp.getName());
 
-
         for (InterworkingService service : ssp.getInterworkingServices()) {
-            Resource interworkingServiceResource = model.createResource(generateInterworkingServiceUri(ModelHelper.getPlatformURI(ssp.getId()), service.getUrl()))
+            Resource interworkingServiceResource = model.createResource(generateInterworkingServiceUri(ModelHelper.getSspURI(ssp.getId()), service.getUrl()))
                     .addProperty(RDF.type, MIM.InterworkingService)
                     .addProperty(MIM.usesInformationModel, model.createResource(ModelHelper.getInformationModelURI(service.getInformationModelId())))
                     .addProperty(MIM.url, service.getUrl());

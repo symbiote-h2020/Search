@@ -7,7 +7,6 @@ import eu.h2020.symbiote.security.accesspolicies.common.singletoken.SingleLocalH
 import eu.h2020.symbiote.security.commons.exceptions.custom.InvalidArgumentsException;
 import eu.h2020.symbiote.security.communication.payloads.SecurityRequest;
 import eu.h2020.symbiote.security.handler.IComponentSecurityHandler;
-import eu.h2020.symbiote.security.handler.SecurityHandler;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +19,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.*;
 
-import static org.apache.jena.sparql.vocabulary.TestManifestUpdate_11.request;
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 
@@ -52,7 +50,7 @@ public class SecurityManagerTests {
     @Before
     public void setup() {
         when(securityHandlerComponent.getHandler()).thenReturn(componentSecurityHandler);
-        ReflectionTestUtils.setField(securityManager, "componentSecurityHandler", componentSecurityHandler);
+        ReflectionTestUtils.setField(securityManager, "securityHandlerComponent", securityHandlerComponent);
     }
 
     @Test
@@ -87,6 +85,7 @@ public class SecurityManagerTests {
     public void getPolicyForNullSecurityRequest() throws InvalidArgumentsException {
         AccessPolicy accessPolicy = generatePolicy(RES_ID,RES_IRI);
         when(accessPolicyRepo.findById(RES_ID)).thenReturn(Optional.of(accessPolicy));
+        when(securityHandlerComponent.isSecurityEnabled()).thenReturn(true);
 
         SecurityRequest request = null;
 
@@ -99,6 +98,8 @@ public class SecurityManagerTests {
     public void getPolicyResultForSensorNotFulfillingPolicy() throws InvalidArgumentsException {
         AccessPolicy accessPolicy = generatePolicy(RES2_ID,RES2_IRI);
         when(accessPolicyRepo.findById(RES2_ID)).thenReturn(Optional.of(accessPolicy));
+        when(securityHandlerComponent.isSecurityEnabled()).thenReturn(true);
+
 
         SecurityRequest request = new SecurityRequest("test");
 
@@ -120,7 +121,7 @@ public class SecurityManagerTests {
     @Test
     public void testSecurityCache() {
         //Size test
-        SecurityCache<SecurityCacheKey, Boolean> cache = new SecurityCache(10 * 1000, 120*1000, 1);
+        CachedMap<SecurityCacheKey, Boolean> cache = new CachedMap(10 * 1000, 120*1000, 1);
 
         SecurityRequest request = new SecurityRequest("test1");
         SecurityCacheKey key1 = new SecurityCacheKey(request,RES_IRI);
@@ -139,7 +140,7 @@ public class SecurityManagerTests {
     @Test
     public void testSecurityTTL() {
         //Size test
-        SecurityCache<SecurityCacheKey, Boolean> cache = new SecurityCache(1 * 1000, 3*1000, 10);
+        CachedMap<SecurityCacheKey, Boolean> cache = new CachedMap(1 * 1000, 3*1000, 10);
 
         SecurityRequest request = new SecurityRequest("test1");
         SecurityCacheKey key1 = new SecurityCacheKey(request,RES_IRI);

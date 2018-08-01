@@ -249,9 +249,12 @@ public class TripleStore {
 //        }
 //        dataset.getNamedModel(uri).add(model);
         dataset.begin(ReadWrite.WRITE);
-        dataset.getDefaultModel().add(model);
-        dataset.commit();
-        dataset.end();
+        try {
+            dataset.getDefaultModel().add(model);
+            dataset.commit();
+        } finally {
+            dataset.end();
+        }
     }
 
     public ResultSet executeQuery(String queryString, SecurityRequest securityRequest, boolean useSecureGraph) {
@@ -268,15 +271,19 @@ public class TripleStore {
 
     public void executeUpdate( UpdateRequest request ) {
         dataset.begin(ReadWrite.WRITE);
-        UpdateAction.execute(request,dataset);
-        dataset.commit();
-        dataset.end();
+        try {
+            UpdateAction.execute(request, dataset);
+            dataset.commit();
+        } finally {
+            dataset.end();
+        }
     }
 
     public ResultSet executeQueryOnGraph(Query query, String graphUri, SecurityRequest securityRequest, boolean useSecureGraph) {
         dataset.begin(ReadWrite.READ);
         ResultSet result;
-        //TODO not sure if synchronization here is needed
+        try {
+            //TODO not sure if synchronization here is needed
 //        synchronized( TripleStore.class ) {
 
 //        Model model = dataset.containsNamedModel(graphUri)
@@ -291,19 +298,18 @@ public class TripleStore {
 //            model = Factory.getInstance(evaluator,"http://symbiote-h2020.eu/secureModel",model);
 
 //            Model modelToUse = useSecureGraph ? securedModel:model;
-            if( useSecureGraph ) {
-                synchronized( TripleStore.class ) {
+            if (useSecureGraph) {
+//                synchronized (TripleStore.class) {
                     setSecurityRequest(securityRequest);
                     try (QueryExecution qe = QueryExecutionFactory.create(query, securedModel)) {
                         qe.setTimeout(sparqlQueryTimeout);
                         result = ResultSetFactory.copyResults(qe.execSelect());
-                        dataset.end();
                     }
-                }
+//                }
             } else {
 //            Model mm = ModelFactory.createRDFSModel(dataset.getDefaultModel());
-                try (QueryExecution qe = QueryExecutionFactory.create(query,dataset)) {
-                qe.setTimeout(sparqlQueryTimeout);
+                try (QueryExecution qe = QueryExecutionFactory.create(query, dataset)) {
+                    qe.setTimeout(sparqlQueryTimeout);
                     ResultSet resultSet = qe.execSelect();
                     //PRINTING INSTEAD OF RETURNING - comment
 //                    log.debug("Copying resultSet, hasNext: " + resultSet.hasNext());
@@ -325,10 +331,13 @@ public class TripleStore {
 //                    }
 
                     result = ResultSetFactory.copyResults(resultSet);
-                    dataset.end();
+
                 }
             }
 //        }
+        } finally {
+            dataset.end();
+        }
         return result;
     }
 

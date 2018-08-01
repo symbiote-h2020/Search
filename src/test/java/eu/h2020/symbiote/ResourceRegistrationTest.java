@@ -4,6 +4,7 @@ import eu.h2020.symbiote.core.internal.CoreResource;
 import eu.h2020.symbiote.core.internal.CoreResourceRegisteredOrModifiedEventPayload;
 import eu.h2020.symbiote.filtering.AccessPolicyRepo;
 import eu.h2020.symbiote.filtering.SecurityManager;
+import eu.h2020.symbiote.handlers.InterworkingServiceInfo;
 import eu.h2020.symbiote.handlers.InterworkingServiceInfoRepo;
 import eu.h2020.symbiote.handlers.PlatformHandler;
 import eu.h2020.symbiote.handlers.ResourceHandler;
@@ -23,10 +24,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static eu.h2020.symbiote.TestSetupConfig.*;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Created by Mael on 18/01/2017.
@@ -89,6 +92,10 @@ public class ResourceRegistrationTest {
 
     @Test
     public void testRegisterHandler() {
+
+        InterworkingServiceInfo infoToBeReturned = new InterworkingServiceInfo("http://iri","http://url",PLATFORM_A_ID);
+
+        when(interworkingServiceInfoRepo.findByInterworkingServiceURL(anyString())).thenReturn(Optional.of(infoToBeReturned));
 
         SearchStorage.clearStorage();
         SearchStorage searchStorage = SearchStorage.getInstance( SearchStorage.TESTCASE_STORAGE_NAME, securityManager, false );

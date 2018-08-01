@@ -22,6 +22,9 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -58,10 +61,17 @@ public class SearchApplication {
         private final int maxThreads;
         private final int threadsKeepAlive;
 
+        private final int writerExecutorCoreThreads;
+        private final int writerExecutorMaxThreads;
+        private final int writerExecutorKeepAliveInMinutes;
+
+        private final ThreadPoolExecutor writerExecutorService;
+
         @Autowired
         public CLR(RabbitManager manager, PopularityManager popularityManager, AvailabilityManager availabilityManager, AccessPolicyRepo accessPolicyRepo, InterworkingServiceInfoRepo interworkingServiceInfoRepo, SecurityManager securityManager, RankingHandler rankingHandler,
                    @Value("${search.multithreading}") boolean searchMultithread, @Value("${search.security.enabled}") boolean securityEnabled, @Value("${search.ranking.enabled}") boolean rankingEnabled,
-                   @Value("${search.multithreading.coreThreads}") int coreThreads, @Value("${search.multithreading.maxThreads}") int maxThreads, @Value("${search.multithreading.keepAliveInMinutes}") int threadsKeepAlive) {
+                   @Value("${search.multithreading.coreThreads}") int coreThreads, @Value("${search.multithreading.maxThreads}") int maxThreads, @Value("${search.multithreading.keepAliveInMinutes}") int threadsKeepAlive,
+                   @Value("${search.multithreading.writer.coreThreads}") int writerExecutorCoreThreads, @Value("${search.multithreading.writer.maxThreads}") int writerExecutorMaxThreads, @Value("${search.multithreading.writer.keepAliveInMinutes}") int writerExecutorKeepAliveInMinutes) {
             this.manager = manager;
             this.popularityManager = popularityManager;
             this.availabilityManager = availabilityManager;
@@ -75,6 +85,14 @@ public class SearchApplication {
             this.coreThreads=coreThreads;
             this.maxThreads = maxThreads;
             this.threadsKeepAlive = threadsKeepAlive;
+
+            this.writerExecutorCoreThreads = writerExecutorCoreThreads;
+            this.writerExecutorMaxThreads = writerExecutorMaxThreads;
+            this.writerExecutorKeepAliveInMinutes = writerExecutorKeepAliveInMinutes;
+
+            this.writerExecutorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(writerExecutorCoreThreads);
+            writerExecutorService.setMaximumPoolSize(writerExecutorMaxThreads);
+            writerExecutorService.setKeepAliveTime(writerExecutorKeepAliveInMinutes, TimeUnit.MINUTES);
         }
 
         @Override
@@ -82,18 +100,18 @@ public class SearchApplication {
             SearchStorage searchStorage = getDefaultStorage(securityManager,securityEnabled);
 
             PlatformHandler platformHandler = new PlatformHandler( searchStorage, interworkingServiceInfoRepo );
-            manager.registerPlatformCreatedConsumer(platformHandler);
+            manager.registerPlatformCreatedConsumer(platformHandler, writerExecutorService);
 
-            manager.registerPlatformDeletedConsumer(platformHandler);
+            manager.registerPlatformDeletedConsumer(platformHandler, writerExecutorService);
 
-            manager.registerPlatformUpdatedConsumer(platformHandler);
+            manager.registerPlatformUpdatedConsumer(platformHandler,writerExecutorService);
 
             ResourceHandler resourceHandler = new ResourceHandler(searchStorage, this.accessPolicyRepo, interworkingServiceInfoRepo);
-            manager.registerResourceCreatedConsumer(resourceHandler);
+            manager.registerResourceCreatedConsumer(resourceHandler, writerExecutorService);
 
-            manager.registerResourceDeletedConsumer(resourceHandler);
+            manager.registerResourceDeletedConsumer(resourceHandler, writerExecutorService);
 
-            manager.registerResourceUpdatedConsumer(resourceHandler);
+            manager.registerResourceUpdatedConsumer(resourceHandler, writerExecutorService);
 
             ISearchEvents searchHandler;
             if( searchMultithread ) {
@@ -112,17 +130,17 @@ public class SearchApplication {
             manager.registerAvailabilityUpdateConsumer(availabilityManager);
 
             //SSP
-            manager.registerSspCreatedConsumer(platformHandler);
-            manager.registerSspDeletedConsumer(platformHandler);
-            manager.registerSspUpdatedConsumer(platformHandler);
+            manager.registerSspCreatedConsumer(platformHandler, writerExecutorService);
+            manager.registerSspDeletedConsumer(platformHandler, writerExecutorService);
+            manager.registerSspUpdatedConsumer(platformHandler, writerExecutorService);
 
-            manager.registerSdevCreatedConsumer(platformHandler);
-            manager.registerSdevDeletedConsumer(platformHandler);
-            manager.registerSdevUpdatedConsumer(platformHandler);
+            manager.registerSdevCreatedConsumer(platformHandler, writerExecutorService);
+            manager.registerSdevDeletedConsumer(platformHandler, writerExecutorService);
+            manager.registerSdevUpdatedConsumer(platformHandler, writerExecutorService);
 
-            manager.registerSspResourceCreatedConsumer(resourceHandler);
-            manager.registerSspResourceDeletedConsumer(resourceHandler);
-            manager.registerSspResourceUpdatedConsumer(resourceHandler);
+            manager.registerSspResourceCreatedConsumer(resourceHandler, writerExecutorService);
+            manager.registerSspResourceDeletedConsumer(resourceHandler, writerExecutorService);
+            manager.registerSspResourceUpdatedConsumer(resourceHandler, writerExecutorService);
 
 
             //TODO

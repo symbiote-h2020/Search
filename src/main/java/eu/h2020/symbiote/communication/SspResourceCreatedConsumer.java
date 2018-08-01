@@ -14,6 +14,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.IOException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Consumer of the resource created event. Handler creates RDF representation of provided resource and adds it into
@@ -27,6 +29,8 @@ public class SspResourceCreatedConsumer extends DefaultConsumer {
 
     private final ResourceHandler handler;
 
+    private final ThreadPoolExecutor writerExecutorService;
+
     /**
      * Constructs a new instance and records its association to the passed-in channel.
      *
@@ -34,9 +38,10 @@ public class SspResourceCreatedConsumer extends DefaultConsumer {
      * @param handler handler to be used by the consumer.
      *
      */
-    public SspResourceCreatedConsumer(Channel channel, ResourceHandler handler) {
+    public SspResourceCreatedConsumer(Channel channel, ResourceHandler handler, ThreadPoolExecutor writerExecutorService) {
         super(channel);
         this.handler = handler;
+        this.writerExecutorService = writerExecutorService;
     }
 
     @Override
@@ -50,10 +55,14 @@ public class SspResourceCreatedConsumer extends DefaultConsumer {
             ObjectMapper mapper = new ObjectMapper();
             CoreSspResourceRegisteredOrModifiedEventPayload resources = mapper.readValue(msg, CoreSspResourceRegisteredOrModifiedEventPayload.class);
 
-            boolean success = handler.registerResource(resources);
-            log.debug(success?
-                    "Registration of the resource in RDF is success"
-                    :"Registration of the resource in RDF failed");
+            Callable<Boolean> callable = () -> {
+                boolean success = handler.registerResource(resources);
+                log.debug(success ?
+                        "Registration of the resource in RDF is success"
+                        : "Registration of the resource in RDF failed");
+                return Boolean.TRUE;
+            };
+            writerExecutorService.submit(callable);
 
 
         } catch( JsonParseException | JsonMappingException e ) {
