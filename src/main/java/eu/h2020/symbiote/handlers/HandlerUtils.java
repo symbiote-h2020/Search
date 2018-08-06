@@ -263,7 +263,8 @@ public class HandlerUtils {
 
             String resId = solution.get(RESOURCE_ID).toString();
             String resName = solution.get(RESOURCE_NAME).toString();
-            String resDescription = solution.get(RESOURCE_DESCRIPTION).toString();
+            RDFNode resDescNode = solution.get(RESOURCE_DESCRIPTION);
+            String resDescription = resDescNode!=null?resDescNode.toString(): "";
             String platformId = solution.get(PLATFORM_ID).toString();
             String platformName = solution.get(PLATFORM_NAME).toString();
             RDFNode locationNode = solution.get(LOCATION_NAME);
