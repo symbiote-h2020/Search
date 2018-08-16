@@ -13,6 +13,7 @@ import eu.h2020.symbiote.cloud.monitoring.model.CloudMonitoringPlatformRequest;
 import eu.h2020.symbiote.core.internal.popularity.PopularityUpdatesMessage;
 import eu.h2020.symbiote.ranking.AvailabilityManager;
 import eu.h2020.symbiote.ranking.PopularityManager;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -46,6 +47,8 @@ public class AvailabilityUpdatesConsumer extends DefaultConsumer {
         if( msg != null && msg.length() > 0 && msg.startsWith("\"") && msg.endsWith("\"")) {
             msg = msg.substring(1, msg.length() - 1);
         }
+
+        msg = StringEscapeUtils.unescapeJson(msg);
 
         //Try to parse the message
 
