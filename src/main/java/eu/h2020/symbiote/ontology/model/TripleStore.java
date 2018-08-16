@@ -60,7 +60,7 @@ public class TripleStore {
     private final Model securedModel;
     private final Model model;
     private FilteringEvaluator evaluator;
-    private int sparqlQueryTimeout = 30000;
+    private int sparqlQueryTimeout = 300000;
 
 
 //    private static final String CIM_FILE = "/core-v0.6.owl";

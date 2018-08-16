@@ -1,6 +1,8 @@
 package eu.h2020.symbiote.communication;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.DeserializationConfig;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.AMQP;
@@ -41,10 +43,15 @@ public class AvailabilityUpdatesConsumer extends DefaultConsumer {
         String msg = new String(body);
 //        log.debug( "Consuming popularity : " + msg );
 
+        if( msg != null && msg.length() > 0 && msg.startsWith("\"") && msg.endsWith("\"")) {
+            msg = msg.substring(1, msg.length() - 1);
+        }
+
         //Try to parse the message
 
         try {
             ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT,true);
             CloudMonitoringPlatformRequest availabilityUpdate = mapper.readValue(msg, CloudMonitoringPlatformRequest.class);
             manager.saveAvailabilityMessage(availabilityUpdate);
 

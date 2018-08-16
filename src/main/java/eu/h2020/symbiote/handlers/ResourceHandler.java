@@ -5,6 +5,7 @@ import eu.h2020.symbiote.core.internal.CoreResourceRegisteredOrModifiedEventPayl
 import eu.h2020.symbiote.core.internal.CoreSspResourceRegisteredOrModifiedEventPayload;
 import eu.h2020.symbiote.filtering.AccessPolicy;
 import eu.h2020.symbiote.filtering.AccessPolicyRepo;
+import eu.h2020.symbiote.query.CleanupBlankOrphansRequestGenerator;
 import eu.h2020.symbiote.query.DeleteResourceRequestGenerator;
 import eu.h2020.symbiote.search.SearchStorage;
 import eu.h2020.symbiote.security.accesspolicies.IAccessPolicy;
@@ -198,9 +199,19 @@ public class ResourceHandler implements IResourceEvents {
         log.debug("Deleting resource " + resourceId);
         UpdateRequest updateRequest = new DeleteResourceRequestGenerator(resourceId).generateRequest();
         this.storage.getTripleStore().executeUpdate(updateRequest);
+
         this.storage.getTripleStore().printDataset();
         this.accessPolicyRepo.delete(resourceId);
         return true;
+    }
+
+    @Override
+    public void cleanupBlankOrphans() {
+        log.debug("Deleting orphans ...");
+        CleanupBlankOrphansRequestGenerator generator = new CleanupBlankOrphansRequestGenerator();
+        UpdateRequest orphanClears = generator.generateRequest();
+
+        this.storage.getTripleStore().executeUpdate(orphanClears);
     }
 
 }

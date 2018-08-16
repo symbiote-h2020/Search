@@ -21,10 +21,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 
 /**
@@ -149,11 +152,26 @@ public class SearchApplication {
 //            System.out.println( "Loaded " + interworkingServiceInfos.size() + " ii services");
 
 
+            startBlankCleanupScheduler(resourceHandler);
         }
     }
 
     public static SearchStorage getDefaultStorage(SecurityManager securityManager, boolean securityEnabled) {
         return SearchStorage.getInstance(DIRECTORY,securityManager,securityEnabled);
+    }
+
+    public static void startBlankCleanupScheduler( ResourceHandler resourceHandler) {
+        Runnable callable = () -> resourceHandler.cleanupBlankOrphans();
+
+        ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+
+        Calendar nowCal = Calendar.getInstance();
+        long epochSecondsTomorrow = LocalDate.now().plusDays(1).atTime(2,0).toEpochSecond(ZoneOffset.UTC);
+        long epochSecondsNow = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+        long l = epochSecondsTomorrow - epochSecondsNow;
+
+        scheduledExecutorService.scheduleAtFixedRate(callable, l ,86400,TimeUnit.SECONDS);
+
     }
 
     @Bean

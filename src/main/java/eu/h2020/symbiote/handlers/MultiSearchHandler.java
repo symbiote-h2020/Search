@@ -43,9 +43,6 @@ public class MultiSearchHandler implements ISearchEvents {
     public static final String SUCCESS_MESSAGE = "Search performed correctly";
 
     private static final Log log = LogFactory.getLog(MultiSearchHandler.class);
-//    public static final int EXECUTOR_CORE_THREADS_NUMBER = 10;
-//    public static final int EXECUTOR_MAX_THREADS_NUMBER = 15;
-//    private final int EXECUTOR_KEEP_ALIVE_MINUTES = 5;
 
     private final TripleStore triplestore;
 
@@ -99,7 +96,7 @@ public class MultiSearchHandler implements ISearchEvents {
 
 
         //TODO change to true for deployment
-        ResultSet resultSet = this.triplestore.executeQuery(request.getBody(), request.getSecurityRequest(), true);
+        ResultSet resultSet = this.triplestore.executeQuery(request.getBody(), request.getSecurityRequest(), false);
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
