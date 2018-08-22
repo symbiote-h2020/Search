@@ -46,10 +46,10 @@ public class AvailabilityManager {
         float result = 0.0f;
         Optional<MonitoringInfo> monitoringInfo = availabilityRepository.findById(resourceId);
         if( !monitoringInfo.isPresent() ) {
-            log.debug("Could not find availability for resource " + resourceId + ", setting " + result);
+//            log.debug("Could not find availability for resource " + resourceId + ", setting " + result);
         } else {
             //TODO to be changed when new metrics system arrives
-            log.warn("TODO to be changed when new metrics system arrives");
+//            log.warn("TODO to be changed when new metrics system arrives");
 //            if( monitoringInfo.get().getMonitoringDeviceInfo().getMetrics()== 1 ) {
 //                log.debug("Resource " + resourceId + " available");
 //                result = 1.0f;

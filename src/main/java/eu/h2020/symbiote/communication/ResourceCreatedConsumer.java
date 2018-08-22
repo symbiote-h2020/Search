@@ -13,6 +13,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.IOException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Consumer of the resource created event. Handler creates RDF representation of provided resource and adds it into
@@ -26,6 +28,8 @@ public class ResourceCreatedConsumer extends DefaultConsumer {
 
     private final ResourceHandler handler;
 
+    private final ThreadPoolExecutor writerExecutorService;
+
     /**
      * Constructs a new instance and records its association to the passed-in channel.
      *
@@ -33,9 +37,10 @@ public class ResourceCreatedConsumer extends DefaultConsumer {
      * @param handler handler to be used by the consumer.
      *
      */
-    public ResourceCreatedConsumer(Channel channel, ResourceHandler handler) {
+    public ResourceCreatedConsumer(Channel channel, ResourceHandler handler, ThreadPoolExecutor writerExecutorService) {
         super(channel);
         this.handler = handler;
+        this.writerExecutorService = writerExecutorService;
     }
 
     @Override
@@ -46,13 +51,21 @@ public class ResourceCreatedConsumer extends DefaultConsumer {
         //Try to parse the message
 
         try {
+
+            long before = System.currentTimeMillis();
+
             ObjectMapper mapper = new ObjectMapper();
             CoreResourceRegisteredOrModifiedEventPayload resource = mapper.readValue(msg, CoreResourceRegisteredOrModifiedEventPayload.class);
+            Callable<Boolean> callable = () -> {
+                boolean success = handler.registerResource(resource);
 
-            boolean success = handler.registerResource(resource);
-            log.debug(success?
-                    "Registration of the resource in RDF is success"
-                    :"Registration of the resource in RDF failed");
+                long after = System.currentTimeMillis();
+                log.debug((success ?
+                        "Registration of the resource in RDF is success"
+                        : "Registration of the resource in RDF failed") + "in time " + (after - before) + " ms");
+                return Boolean.TRUE;
+            };
+            writerExecutorService.submit(callable);
 
         } catch( JsonParseException | JsonMappingException e ) {
             log.error("Error occurred when parsing Resource object JSON: " + msg, e);

@@ -13,6 +13,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.IOException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Consumer of the platform deleted event. Handler removes RDF representation of specified platform.
@@ -25,15 +27,18 @@ public class PlatformDeletedConsumer extends DefaultConsumer {
 
     private final PlatformHandler handler;
 
+    private final ThreadPoolExecutor writerExecutorService;
+
     /**
      * Constructs a new instance and records its association to the passed-in channel.
      *
      * @param channel the channel to which this consumer is attached.
      * @param handler handler to be used by the consumer.
      */
-    public PlatformDeletedConsumer(Channel channel, PlatformHandler handler ) {
+    public PlatformDeletedConsumer(Channel channel, PlatformHandler handler, ThreadPoolExecutor writerExecutorService ) {
         super(channel);
         this.handler = handler;
+        this.writerExecutorService = writerExecutorService;
     }
 
     @Override
@@ -47,10 +52,16 @@ public class PlatformDeletedConsumer extends DefaultConsumer {
             ObjectMapper mapper = new ObjectMapper();
             Platform platform = mapper.readValue(msg, Platform.class);
 
-            boolean success = handler.deletePlatform(platform.getId());
-            log.debug(success?
-                    "Platform " + platform.getId() + " deleted successfully"
-                    :"Platform " + platform.getId() + " is reported to not be deleted");
+            Callable<Boolean> callable = () -> {
+                boolean success = handler.deletePlatform(platform.getId());
+                log.debug(success ?
+                        "Platform " + platform.getId() + " deleted successfully"
+                        : "Platform " + platform.getId() + " is reported to not be deleted");
+                return Boolean.TRUE;
+            };
+
+            writerExecutorService.submit(callable);
+
 
         } catch( JsonParseException | JsonMappingException e ) {
             log.error("Error occurred when parsing Platform object JSON: " + msg, e);

@@ -7,8 +7,8 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
+import eu.h2020.symbiote.cloud.model.ssp.SspRegInfo;
 import eu.h2020.symbiote.handlers.PlatformHandler;
-import eu.h2020.symbiote.model.mim.Platform;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -17,17 +17,16 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
- * Consumer of the platform created event. Handler creates RDF representation of provided platform and adds it into
+ * Consumer of the ssp sdev created event. Handler creates RDF representation of provided ssp and adds it into
  * repository.
  * <p>
- * Created by Mael on 13/01/2017.
+ * Created by Szymon Mueller on 25/05/2018.
  */
-public class PlatformCreatedConsumer extends DefaultConsumer {
+public class SdevCreatedConsumer extends DefaultConsumer {
 
-    private static Log log = LogFactory.getLog(PlatformCreatedConsumer.class);
+    private static Log log = LogFactory.getLog(SdevCreatedConsumer.class);
 
     private final PlatformHandler handler;
-
 
     private final ThreadPoolExecutor writerExecutorService;
 
@@ -37,7 +36,7 @@ public class PlatformCreatedConsumer extends DefaultConsumer {
      * @param channel the channel to which this consumer is attached.
      * @param handler handler to be used by the consumer.
      */
-    public PlatformCreatedConsumer(Channel channel, PlatformHandler handler, ThreadPoolExecutor writerExecutorService ) {
+    public SdevCreatedConsumer(Channel channel, PlatformHandler handler, ThreadPoolExecutor writerExecutorService) {
         super(channel);
         this.handler = handler;
         this.writerExecutorService = writerExecutorService;
@@ -46,27 +45,30 @@ public class PlatformCreatedConsumer extends DefaultConsumer {
     @Override
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
         String msg = new String(body);
-        log.debug("Consume platform created message: " + msg);
+        log.debug("Consume sdev created message: " + msg);
 
         //Try to parse the message
 
         try {
             ObjectMapper mapper = new ObjectMapper();
-            Platform platform = mapper.readValue(msg, Platform.class);
+            SspRegInfo sdev = mapper.readValue(msg, SspRegInfo.class);
 
             Callable<Boolean> callable = () -> {
-                boolean success = handler.registerPlatform(platform);
+                boolean success = handler.registerSdev(sdev);
                 log.debug(success ?
-                        "Registration of the platform in RDF is success"
-                        : "Registration of the platform in RDF failed");
+                        "Registration of the sdev in RDF is success"
+                        : "Registration of the sdev in RDF failed");
                 return Boolean.TRUE;
             };
+
             writerExecutorService.submit(callable);
 
+//            handler.printStorage();
+
         } catch (JsonParseException | JsonMappingException e) {
-            log.error("Error occurred when parsing Platform object JSON: " + msg, e);
+            log.error("Error occurred when parsing Sdev object JSON: " + msg, e);
         } catch (IOException e) {
-            log.error("I/O Exception occurred when parsing Platform object", e);
+            log.error("I/O Exception occurred when parsing Sdev object", e);
         }
 
 

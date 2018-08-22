@@ -103,7 +103,7 @@ public class SearchStorage {
     /**
      * Registers platform in the search engine, using specified platform's id to generate platform graph uri
      *
-     * @param platformId
+     * @param platformId symbIoTe Id of the platform
      * @param rdfModel
      */
     public void registerPlatform(String platformId, Model rdfModel ) {
@@ -111,6 +111,31 @@ public class SearchStorage {
         core.registerPlatform(platformId, rdfModel );
         log.info( "Platform registered!");
     }
+
+    /**
+     * Registers ssp in the search engine, using specified ssp's id to generate graph uri
+     *
+     * @param sspId symbIoTe Id of the ssp
+     * @param rdfModel
+     */
+    public void registerSsp(String sspId, Model rdfModel ) {
+        log.info( "Registering ssp in search " + sspId + " ...");
+        core.registerSsp(sspId, rdfModel );
+        log.info( "Ssp registered!");
+    }
+
+    /**
+     * Registers sdev in the search engine, using specified sdev's id to generate graph uri
+     *
+     * @param sdevId symbIoTe Id of the sdev
+     * @param rdfModel
+     */
+    public void registerSdev(String sdevId, Model rdfModel ) {
+        log.info( "Registering sdev in search " + sdevId + " ...");
+        core.registerSdev(sdevId, rdfModel );
+        log.info( "Sdev registered!");
+    }
+
 
     /**
      * Registers resource in the search engine for specified platform

@@ -1,5 +1,6 @@
 package eu.h2020.symbiote.handlers;
 
+import eu.h2020.symbiote.cloud.model.ssp.SspRegInfo;
 import eu.h2020.symbiote.core.ci.QueryResourceResult;
 import eu.h2020.symbiote.core.ci.QueryResponse;
 import eu.h2020.symbiote.core.ci.ResourceType;
@@ -7,9 +8,11 @@ import eu.h2020.symbiote.core.internal.CoreQueryRequest;
 import eu.h2020.symbiote.model.cim.*;
 import eu.h2020.symbiote.model.mim.InterworkingService;
 import eu.h2020.symbiote.model.mim.Platform;
+import eu.h2020.symbiote.model.mim.SmartSpace;
 import eu.h2020.symbiote.query.QueryGenerator;
 import eu.h2020.symbiote.semantics.ModelHelper;
 import eu.h2020.symbiote.semantics.ontology.CIM;
+import eu.h2020.symbiote.semantics.ontology.INTERNAL;
 import eu.h2020.symbiote.semantics.ontology.MIM;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.logging.Log;
@@ -89,72 +92,6 @@ public class HandlerUtils {
         return model;
     }
 
-//    /**
-//     * Generates a model containing RDF statements equivalent to specified resource.
-//     *
-//     * @param resource Resource to be translated into RDF.
-//     * @return Model containing RDF statements.
-//     */
-//    public static Model generateModelFromResource( Resource resource ) {
-//        log.debug("Generating model from resource");
-//        Model model = ModelFactory.createDefaultModel();
-//
-//        List<String> properties = resource.getObservedProperties();
-//        org.apache.jena.rdf.model.Resource res = model.createResource();
-//        for( String prop: properties ) {
-//            res.addProperty(CoreInformationModel.RDFS_LABEL,prop);
-//            res.addProperty(CoreInformationModel.RDFS_COMMENT,"");
-//        }
-//
-//        model.createResource(Ontology.getResourceGraphURI(resource.getId()))
-//                .addProperty(MetaInformationModel.RDF_TYPE,CoreInformationModel.CIM_RESOURCE)
-//                .addProperty(CoreInformationModel.CIM_ID,resource.getId())
-//                .addProperty(CoreInformationModel.RDFS_LABEL,resource.getName())
-//                .addProperty(CoreInformationModel.RDFS_COMMENT,resource.getDescription()!=null?resource.getDescription():"")
-//                .addProperty(CoreInformationModel.CIM_LOCATED_AT,model.createResource(Ontology.getResourceGraphURI(resource.getId())+"/location"))
-//                .addProperty(CoreInformationModel.CIM_OBSERVES,res);
-//
-//        Model locationModel = generateLocation(resource);
-//        model.add(locationModel);
-//
-//        model.write(System.out,"TURTLE");
-//        return model;
-//    }
-//
-//    /**
-//     * Generates a model containing RDF statements describing resource's location.
-//     *
-//     * @param resource Resource, for which location model will be created.
-//     * @return Model containing location RDF statements.
-//     */
-//    public static Model generateLocation( Resource resource ) {
-//        Model model = ModelFactory.createDefaultModel();
-//        model.createResource(Ontology.getResourceGraphURI(resource.getId())+"/location")
-//                .addProperty(CoreInformationModel.RDFS_LABEL,resource.getLocation().getName())
-//                .addProperty(CoreInformationModel.RDFS_COMMENT, resource.getLocation().getDescription()!=null?resource.getLocation().getDescription():"")
-//                .addProperty(CoreInformationModel.GEO_LAT, resource.getLocation().getLatitude().toString())
-//                .addProperty(CoreInformationModel.GEO_LONG, resource.getLocation().getLongitude().toString())
-//                .addProperty(CoreInformationModel.GEO_ALT, resource.getLocation().getAltitude().toString());
-//
-//        return model;
-//    }
-//
-//    /**
-//     * Generates a model containing RDF statements describing interworking service of the specified platform.
-//     *
-//     * @param platform Platform, whose interworking Ssrvice will be translated into RDF.
-//     * @return Model containing RDF statements.
-//     */
-//    public static Model generateInterworkingService( Platform platform ) {
-//        Model model = ModelFactory.createDefaultModel();
-//        model.createResource(generateInterworkingServiceUri(Ontology.getPlatformGraphURI(platform.getId()),platform.getUrl()))
-//                .addProperty(MetaInformationModel.RDF_TYPE,MetaInformationModel.MIM_INTERWORKINGSERVICE)
-//                .addProperty(MetaInformationModel.MIM_HASURL, platform.getUrl() )
-//                .addProperty(MetaInformationModel.MIM_HASINFORMATIONMODEL, model.createResource()
-//                        .addProperty(MetaInformationModel.CIM_HASID,platform.getInformationModelId()));
-//        return model;
-//    }
-
     /**
      * Generates interworking service uri combining unique platform (graph) URI with service URL of the interwroking service.
      *
@@ -170,6 +107,92 @@ public class HandlerUtils {
             cutServiceUrl = serviceUrl.substring(8);
         }
         return platformUri + "/service/" + cutServiceUrl;
+    }
+
+    public static Model generateModelFromSsp(SmartSpace ssp) {
+        log.debug("Generating model from ssp");
+        // create an empty Model
+        Model model = ModelFactory.createDefaultModel();
+        model.setNsPrefix("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+        model.setNsPrefix("rdfs", "http://www.w3.org/2000/01/rdf-schema#");
+        model.setNsPrefix("owl", "http://www.w3.org/2002/07/owl#");
+        model.setNsPrefix("xsd", "http://www.w3.org/2001/XMLSchema#");
+        model.setNsPrefix("core", "http://www.symbiote-h2020.eu/ontology/core#");
+        model.setNsPrefix("meta", "http://www.symbiote-h2020.eu/ontology/meta#");
+        model.setNsPrefix("geo", "http://www.w3.org/2003/01/geo/wgs84_pos#");
+        model.setNsPrefix("qu", "http://purl.oclc.org/NET/ssnx/qu/quantity#");
+
+        // construct proper Platform entry
+        Resource platformResource = model.createResource(ModelHelper.getSspURI(ssp.getId()))
+                .addProperty(RDF.type, MIM.SmartSpace)
+                .addProperty(CIM.id, ssp.getId());
+        if( ssp.getDescription() != null ) {
+            for (String comment : ssp.getDescription()) {
+                platformResource.addProperty(CIM.description, comment);
+            }
+        }
+
+        platformResource.addProperty(CIM.name, ssp.getName());
+
+        for (InterworkingService service : ssp.getInterworkingServices()) {
+            Resource interworkingServiceResource = model.createResource(generateInterworkingServiceUri(ModelHelper.getSspURI(ssp.getId()), service.getUrl()))
+                    .addProperty(RDF.type, MIM.InterworkingService)
+                    .addProperty(MIM.usesInformationModel, model.createResource(ModelHelper.getInformationModelURI(service.getInformationModelId())))
+                    .addProperty(MIM.url, service.getUrl());
+            platformResource.addProperty(MIM.hasService, interworkingServiceResource);
+        }
+
+//        Model serviceModel = generateInterworkingService(platform);
+//        model.add(serviceModel);
+
+        model.write(System.out, "TURTLE");
+        return model;
+    }
+
+    /**
+     * Generates a model containing RDF statements equivalent to specified Smart Device.
+     *
+     * @param sdev Smart Device to be translated into RDF.
+     * @return Model containing RDF statements.
+     */
+    public static Model generateModelFromSdev(SspRegInfo sdev) {
+        log.debug("Generating model from sdev");
+        // create an empty Model
+        Model model = ModelFactory.createDefaultModel();
+        model.setNsPrefix("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+        model.setNsPrefix("rdfs", "http://www.w3.org/2000/01/rdf-schema#");
+        model.setNsPrefix("owl", "http://www.w3.org/2002/07/owl#");
+        model.setNsPrefix("xsd", "http://www.w3.org/2001/XMLSchema#");
+        model.setNsPrefix("core", "http://www.symbiote-h2020.eu/ontology/core#");
+        model.setNsPrefix("meta", "http://www.symbiote-h2020.eu/ontology/meta#");
+        model.setNsPrefix("geo", "http://www.w3.org/2003/01/geo/wgs84_pos#");
+        model.setNsPrefix("qu", "http://purl.oclc.org/NET/ssnx/qu/quantity#");
+
+        String interworkingServiceUrl = sdev.getPluginURL(); //Not needed
+        String sspId = sdev.getPluginId(); // plugin = platform = ssp
+        String sspIri = ModelHelper.getSspURI(sspId);
+        log.debug("Connecting sdev with ssp: " + sspIri);
+
+
+        // construct proper Platform entry
+        Resource sdevResource = model.createResource(ModelHelper.getSdevURI(sdev.getSymId()))
+                .addProperty(RDF.type, MIM.SmartDevice)
+                .addProperty(CIM.id, sdev.getSymId())
+                .addProperty(MIM.isConnectedTo,model.createResource(sspIri) );
+
+        //No name or description in the sdev model
+//        for (InterworkingService service : platform.getInterworkingServices()) {
+//            Resource interworkingServiceResource = model.createResource(generateInterworkingServiceUri(ModelHelper.getPlatformURI(platform.getId()), service.getUrl()))
+//                    .addProperty(RDF.type, MIM.InterworkingService)
+//                    .addProperty(MIM.usesInformationModel, model.createResource(ModelHelper.getInformationModelURI(service.getInformationModelId())))
+//                    .addProperty(MIM.url, service.getUrl());
+//            platformResource.addProperty(MIM.hasService, interworkingServiceResource);
+//        }
+//        Model serviceModel = generateInterworkingService(platform);
+//        model.add(serviceModel);
+
+        model.write(System.out, "TURTLE");
+        return model;
     }
 
     /**
@@ -233,14 +256,15 @@ public class HandlerUtils {
         if (!resultSet.hasNext()) {
             System.out.println("Could not generate search response from result set, cause resultSet is empty");
         }
-        System.out.println("Found vars: " + resultSet.getResultVars());
+//        System.out.println("Found vars: " + resultSet.getResultVars());
         while (resultSet.hasNext()) {
             QuerySolution solution = resultSet.next();
-            printSolution(solution);
+//            printSolution(solution);
 
             String resId = solution.get(RESOURCE_ID).toString();
             String resName = solution.get(RESOURCE_NAME).toString();
-            String resDescription = solution.get(RESOURCE_DESCRIPTION).toString();
+            RDFNode resDescNode = solution.get(RESOURCE_DESCRIPTION);
+            String resDescription = resDescNode!=null?resDescNode.toString(): "";
             String platformId = solution.get(PLATFORM_ID).toString();
             String platformName = solution.get(PLATFORM_NAME).toString();
             RDFNode locationNode = solution.get(LOCATION_NAME);
@@ -298,7 +322,12 @@ public class HandlerUtils {
             String capDataObj = null;
 
             if (capability != null) {
+//                System.out.println("Got capability " + capability.asResource().getId());
                 capabilityName = readValueFromSolution(solution, CAPABILITY_NAME);
+                if( capabilityName == null ) { // In case capability has been added without name, use anonymousId
+                    capabilityName = capability.asResource().getId().toString();
+                }
+
                 if (capParameter != null) {
                     capParameterName = readValueFromSolution(solution, CAP_PARAMETER_NAME);
                     capParameterMandatory = readValueFromSolution(solution, CAP_PARAMETER_MANDATORY);
@@ -362,7 +391,7 @@ public class HandlerUtils {
                             parameterDatatype, paramDataPred, paramDataObj);
                 }
 
-                if (capability != null && capabilityName != null) {
+                if (capability != null && capabilityName != null ) {
                     if (!capabilitiesInfos.get(resId).containsKey(capabilityName)) {
                         CapabilitiesInfo capabilitiesInfo = new CapabilitiesInfo(capabilityName, new HashMap<>());
                         capabilitiesInfos.get(resId).put(capabilityName, capabilitiesInfo);
@@ -476,7 +505,10 @@ public class HandlerUtils {
             param.setName(paramInfo.getParameterName());
             param.setMandatory(Boolean.valueOf(paramInfo.getParameterMandatory()));
             List<DatatypeInfo> datatypes = paramInfo.getDatatypes();
-            List<DatatypeInfo> type = getAllTripletsWithPredicate(datatypes, RDF.type.toString());
+            List<DatatypeInfo> allTypes = getAllTripletsWithPredicate(datatypes, RDF.type.toString());
+            //Get only CIM types
+            List<DatatypeInfo> type = allTypes.stream().filter(dtype -> dtype.getDataObj().equals(CIM.PrimitiveDatatype.toString())
+                    || dtype.getDataObj().equals(CIM.ComplexDatatype.toString())).collect(Collectors.toList());
             if (type != null && type.size() == 1) {
                 String typeIRI = type.get(0).getDataObj();
                 Datatype datatype = null;
@@ -508,15 +540,15 @@ public class HandlerUtils {
                     param.setDatatype(datatype);
                 }
             } else {
-                log.warn("Error parsing parameter info into model: " + type == null ? "type is null" : "type has size " + type.size());
+//                log.warn("Error parsing parameter info into model: " + type == null ? "type is null" : "type has size " + type.size());
             }
 
         }
-        if( param.getDatatype() == null ) {
-            System.out.println("Create param - datatype null");
-        } else {
-            System.out.println("Create param - datatype not null - " + param.getDatatype());
-        }
+//        if( param.getDatatype() == null ) {
+//            System.out.println("Create param - datatype null");
+//        } else {
+//            System.out.println("Create param - datatype not null - " + param.getDatatype());
+//        }
 
         return param;
     }

@@ -48,13 +48,16 @@ public class QueryGenerator {
 //        query.append("\t?sensor a cim:Resource ;\n"); \\TODO r3 dereference
         query.append("\t?sensor a ?type ;\n");
         query.append("\t\tcim:id ?resId ;\n");
-        query.append("\t\tcim:name ?resName ;\n");
-        query.append("\t\tcim:description ?resDescription.\n");
+        query.append("\t\tcim:name ?resName .\n");
         query.append("\t?platform cim:id ?platformId ;\n");
         query.append("\t\tcim:name ?platformName .\n");
 
-        query.append("\t?platform a mim:Platform;\n");
-        query.append("\t\tmim:hasService ?service .\n");
+        //PLATFORM CHANGE - can be also SSP
+//        query.append("\t?platform a mim:Platform;\n");
+//        query.append("\t\tmim:hasService ?service .\n");
+
+        query.append("\t?platform mim:hasService ?service .\n");
+
         query.append("\t?service mim:hasResource ?sensor .\n");
 
         if (locationquery) {
@@ -77,6 +80,12 @@ public class QueryGenerator {
             query.append("\t?location cim:name ?locationName.\n");
         }
         query.append("} \n");
+
+        //OPTIONAL description
+        query.append("OPTIONAL { ");
+        query.append("\t?sensor cim:description ?resDescription.\n");
+        query.append("} \n");
+
         if (!propertyquery) {
             query.append("OPTIONAL { ");
             query.append("\t?sensor cim:observesProperty ?property.\n");
@@ -104,6 +113,10 @@ public class QueryGenerator {
         query.append("\t?capParameter cim:hasDatatype ?capParameterDatatype .\n");
         query.append("\t?capParameterDatatype ?capDataPred ?capDataObj .\n");
         query.append("} \n");
+
+//        query.append("OPTIONAL { ");
+//        query.append("\t?capability cim:name ?capName \n");
+//        query.append("} \n");
 
     }
 
@@ -283,7 +296,7 @@ public class QueryGenerator {
         generateModiafableQuery();
 
         String resp = query.toString() + extension.toString() + "\n}";
-        log.debug("SPARQL: " + resp);
+//        log.debug("SPARQL: " + resp);
         return resp;
     }
 

@@ -1,5 +1,6 @@
 package eu.h2020.symbiote;
 
+import eu.h2020.symbiote.cloud.model.ssp.SspRegInfo;
 import eu.h2020.symbiote.core.ci.QueryResourceResult;
 import eu.h2020.symbiote.core.ci.QueryResponse;
 import eu.h2020.symbiote.core.internal.CoreResource;
@@ -8,6 +9,7 @@ import eu.h2020.symbiote.core.internal.RDFFormat;
 import eu.h2020.symbiote.handlers.HandlerUtils;
 import eu.h2020.symbiote.model.mim.InterworkingService;
 import eu.h2020.symbiote.model.mim.Platform;
+import eu.h2020.symbiote.model.mim.SmartSpace;
 import org.apache.commons.io.IOUtils;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
@@ -23,6 +25,33 @@ import java.util.Iterator;
  * Created by Mael on 23/01/2017.
  */
 public class TestSetupConfig {
+
+    //Rabbit messaging constants
+    public static final String PLATFORM_EXCHANGE_NAME = "test.symbiote.platform";
+    public static final String PLATFORM_CREATED = "platform.created";
+    public static final String PLATFORM_MODIFIED = "platform.modified";
+    public static final String PLATFORM_DELETED = "platform.removed";
+    public static final String RESOURCE_EXCHANGE_NAME = "test.symbiote.resource";
+    public static final String RESOURCE_CREATED = "resource.created";
+    public static final String RESOURCE_MODIFIED = "resource.modified";
+    public static final String RESOURCE_DELETED = "resource.removed";
+    public static final String SEARCH_REQUESTED = "resource.searchRequested";
+    public static final String SEARCH_PERFORMED = "resource.searchPerformed";
+    public static final String SPARQL_REQUESTED = "resource.sparqlRequested";
+    public static final String SPARQL_PERFORMED = "resource.sparqlPerformed";
+    public static final String EXCHANGE_SEARCH = "test.symbiote.search";
+    public static final String POPULARITY_RK = "symbiote.popularity.rk";
+    public static final String SSP_EXCHANGE = "test.ssp.exchange";
+    public static final String SSP_CREATED = "test.ssp.createdrk";
+    public static final String SSP_DELETED = "test.ssp.deletedrk";
+    public static final String SSP_MODIFIED = "test.ssp.modifiedrk";
+    public static final String SSP_SDEV_CREATED = "test.ssp.sdev.createdrk";
+    public static final String SSP_SDEV_DELETED = "test.ssp.sdev.deletedrk";
+    public static final String SSP_SDEV_MODIFIED = "test.ssp.sdev.modifiedrk";
+    public static final String SSP_RESOURCE_CREATED = "test.ssp.resource.createdrk";
+    public static final String SSP_RESOURCE_DELETED = "test.ssp.resource.deletedrk";
+    public static final String SSP_RESOURCE_MODIFIED = "test.ssp.resource.modifiedrk";
+    public static final String SSP_ID_1 = "ssp_id_1";
 
     public static final String PLATFORM_A_ID = "1";
     public static final String PLATFORM_A_NAME = "Platform A";
@@ -118,7 +147,9 @@ public class TestSetupConfig {
     public static final String RESOURCE_ACTUATOR_FILENAME = "/exampleActuator2Params.json";
     public static final String RESOURCE_ACTUATOR_LABEL = "Actuator 1";
     public static final String RESOURCE_ACTUATOR_URI = RESOURCE_PREDICATE + "actuator1";
-
+    public static final String SSP_NAME = "SmartSpace1";
+    public static final String SSP_ID = "Ssp1";
+    public static final String SDEV_ID_1 = "sdevId1";
 
 
     public static Model loadFileAsModel(String fileLocation, String format ) {
@@ -168,6 +199,30 @@ public class TestSetupConfig {
         platform.setDescription(Arrays.asList(comment));
         platform.setName(label);
         return platform;
+    }
+
+    public static SmartSpace generateSmartSpace(String sspName, String sspId, String interworkingServiceUrl) {
+        SmartSpace smartSpace = new SmartSpace();
+        smartSpace.setName(sspName);
+        smartSpace.setDescription(Arrays.asList("This is smart space 1"));
+        smartSpace.setId(sspId);
+        InterworkingService interworkingService = new InterworkingService();
+        interworkingService.setUrl(interworkingServiceUrl);
+        interworkingService.setInformationModelId("BIM");
+        smartSpace.setInterworkingServices( Arrays.asList(interworkingService));
+        return smartSpace;
+    }
+
+    public static SspRegInfo generateSdev(String sspId, String sdevId, String pluginId, String pluginUrl) {
+        SspRegInfo sspRegInfo = new SspRegInfo();
+        sspRegInfo.setSspId(sspId);
+        sspRegInfo.setSymId(sdevId);
+        sspRegInfo.setRoaming(true);
+        sspRegInfo.setDerivedKey1("deriveKey1");
+        sspRegInfo.setHashField("hashSecret");
+        sspRegInfo.setPluginId(pluginId);
+        sspRegInfo.setPluginURL(pluginUrl);
+        return sspRegInfo;
     }
 
 //    public static Resource generateResource() {

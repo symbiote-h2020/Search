@@ -1,0 +1,70 @@
+{
+  "@graph" : [ {
+    "@id" : "_:b0",
+    "@type" : "core:FeatureOfInterest",
+    "hasProperty" : "qu:temperature",
+    "description" : "This is room 1",
+    "name" : "Room_xt_1"
+  }, {
+    "@id" : "http://www.symbiote-h2020.eu/ontology/internal/platforms/platform_xt_id1/location/59ad0b5f8d116620906557er",
+    "@type" : "core:WGS84Location",
+    "description" : "This is paris",
+    "name" : "Paris",
+    "alt" : "15.0",
+    "lat" : "48.864716",
+    "long" : "2.349014"
+  }, {
+    "@id" : "http://www.symbiote-h2020.eu/ontology/internal/resources/xt_resource1",
+    "@type" : "core:StationarySensor",
+    "hasFeatureOfInterest" : "_:b0",
+    "id" : "xt_resource1",
+    "locatedAt" : "http://www.symbiote-h2020.eu/ontology/internal/platforms/platform_xt_id1/location/59ad0b5f8d116620906557er",
+    "observesProperty" : [ "qu:humidity", "qu:temperature" ],
+    "description" : "xt_resource1_comment",
+    "name" : "xt_resource1_label"
+  } ],
+  "@context" : {
+    "hasProperty" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasProperty",
+      "@type" : "@id"
+    },
+    "description" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#description"
+    },
+    "name" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#name"
+    },
+    "hasFeatureOfInterest" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#hasFeatureOfInterest",
+      "@type" : "@id"
+    },
+    "locatedAt" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#locatedAt",
+      "@type" : "@id"
+    },
+    "observesProperty" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#observesProperty",
+      "@type" : "@id"
+    },
+    "id" : {
+      "@id" : "http://www.symbiote-h2020.eu/ontology/core#id"
+    },
+    "alt" : {
+      "@id" : "http://www.w3.org/2003/01/geo/wgs84_pos#alt"
+    },
+    "long" : {
+      "@id" : "http://www.w3.org/2003/01/geo/wgs84_pos#long"
+    },
+    "lat" : {
+      "@id" : "http://www.w3.org/2003/01/geo/wgs84_pos#lat"
+    },
+    "geo" : "http://www.w3.org/2003/01/geo/wgs84_pos#",
+    "core" : "http://www.symbiote-h2020.eu/ontology/core#",
+    "qu" : "http://purl.oclc.org/NET/ssnx/qu/quantity#",
+    "rdf" : "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "owl" : "http://www.w3.org/2002/07/owl#",
+    "meta" : "http://www.symbiote-h2020.eu/ontology/meta#",
+    "xsd" : "http://www.w3.org/2001/XMLSchema#",
+    "rdfs" : "http://www.w3.org/2000/01/rdf-schema#"
+  }
+}

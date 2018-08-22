@@ -1,6 +1,8 @@
 package eu.h2020.symbiote.communication;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.DeserializationConfig;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.AMQP;
@@ -11,6 +13,7 @@ import eu.h2020.symbiote.cloud.monitoring.model.CloudMonitoringPlatformRequest;
 import eu.h2020.symbiote.core.internal.popularity.PopularityUpdatesMessage;
 import eu.h2020.symbiote.ranking.AvailabilityManager;
 import eu.h2020.symbiote.ranking.PopularityManager;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -39,12 +42,19 @@ public class AvailabilityUpdatesConsumer extends DefaultConsumer {
     @Override
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
         String msg = new String(body);
-        log.debug( "Consuming popularity : " + msg );
+//        log.debug( "Consuming popularity : " + msg );
+
+        if( msg != null && msg.length() > 0 && msg.startsWith("\"") && msg.endsWith("\"")) {
+            msg = msg.substring(1, msg.length() - 1);
+        }
+
+        msg = StringEscapeUtils.unescapeJson(msg);
 
         //Try to parse the message
 
         try {
             ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT,true);
             CloudMonitoringPlatformRequest availabilityUpdate = mapper.readValue(msg, CloudMonitoringPlatformRequest.class);
             manager.saveAvailabilityMessage(availabilityUpdate);
 

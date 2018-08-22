@@ -8,8 +8,8 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 import eu.h2020.symbiote.core.internal.CoreResourceRegisteredOrModifiedEventPayload;
+import eu.h2020.symbiote.core.internal.CoreSspResourceRegisteredOrModifiedEventPayload;
 import eu.h2020.symbiote.handlers.ResourceHandler;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -23,9 +23,9 @@ import java.util.concurrent.ThreadPoolExecutor;
  *
  * Created by Mael on 17/01/2017.
  */
-public class ResourceModifiedConsumer extends DefaultConsumer {
+public class SspResourceModifiedConsumer extends DefaultConsumer {
 
-    private static Log log = LogFactory.getLog(ResourceModifiedConsumer.class);
+    private static Log log = LogFactory.getLog(SspResourceModifiedConsumer.class);
 
     private final ResourceHandler handler;
 
@@ -38,7 +38,7 @@ public class ResourceModifiedConsumer extends DefaultConsumer {
      * @param handler handler to be used by the consumer.
      *
      */
-    public ResourceModifiedConsumer(Channel channel, ResourceHandler handler, ThreadPoolExecutor writerExecutorService) {
+    public SspResourceModifiedConsumer(Channel channel, ResourceHandler handler, ThreadPoolExecutor writerExecutorService) {
         super(channel);
         this.handler = handler;
         this.writerExecutorService = writerExecutorService;
@@ -53,18 +53,13 @@ public class ResourceModifiedConsumer extends DefaultConsumer {
 
         try {
             ObjectMapper mapper = new ObjectMapper();
-            CoreResourceRegisteredOrModifiedEventPayload resource = mapper.readValue(msg, CoreResourceRegisteredOrModifiedEventPayload.class);
-
-            long before = System.currentTimeMillis();
+            CoreSspResourceRegisteredOrModifiedEventPayload resource = mapper.readValue(msg, CoreSspResourceRegisteredOrModifiedEventPayload.class);
 
             Callable<Boolean> callable = () -> {
                 boolean success = handler.updateResource(resource);
-
-                long after = System.currentTimeMillis();
-
-                log.debug((success ?
+                log.debug(success ?
                         "Update of the resource in RDF is success"
-                        : "Update of the resource in RDF failed") + "in time " + (after - before) + " ms");
+                        : "Update of the resource in RDF failed");
                 return Boolean.TRUE;
             };
             writerExecutorService.submit(callable);

@@ -1,6 +1,7 @@
 package eu.h2020.symbiote.handlers;
 
 import eu.h2020.symbiote.core.internal.CoreResourceRegisteredOrModifiedEventPayload;
+import eu.h2020.symbiote.core.internal.CoreSspResourceRegisteredOrModifiedEventPayload;
 
 /**
  * Interface containing all relevant interfaces for Resource related events.
@@ -15,7 +16,7 @@ public interface IResourceEvents {
      * @param resources Resource to be saved
      * @return <code>true</code> if registration was successful.
      */
-    public boolean registerResource( CoreResourceRegisteredOrModifiedEventPayload resources );
+    boolean registerResource( CoreResourceRegisteredOrModifiedEventPayload resources );
 
     /**
      * Updates specified resource representation in the Apache Jena repository.
@@ -23,7 +24,7 @@ public interface IResourceEvents {
      * @param resources Updated resource
      * @return <code>true</code> if update was successful.
      */
-    public boolean updateResource( CoreResourceRegisteredOrModifiedEventPayload resources );
+    boolean updateResource( CoreResourceRegisteredOrModifiedEventPayload resources );
 
     /**
      * Deletes resource representation in the Apache Jena repository.
@@ -31,6 +32,13 @@ public interface IResourceEvents {
      * @param resourceId Id of the resource to be deleted
      * @return <code>true</code> if deletion was successful.
      */
-    public boolean deleteResource( String resourceId );
+    boolean deleteResource( String resourceId );
+
+    /**
+     * Deletes all blank orphans
+     *
+     * @return
+     */
+    void cleanupBlankOrphans();
 
 }

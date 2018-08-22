@@ -1,5 +1,6 @@
 package eu.h2020.symbiote.handlers;
 
+import eu.h2020.symbiote.communication.SearchCommunicationHandler;
 import eu.h2020.symbiote.core.ci.QueryResourceResult;
 import eu.h2020.symbiote.core.ci.QueryResponse;
 import eu.h2020.symbiote.core.ci.SparqlQueryResponse;
@@ -65,50 +66,81 @@ public class SearchHandler implements ISearchEvents {
 
 
     @Override
-    public QueryResponse search(CoreQueryRequest request) {
+    public QueryResponse search(SearchCommunicationHandler comm, CoreQueryRequest request) {
         QueryResponse response = new QueryResponse();
         try {
             long beforeSparql = System.currentTimeMillis();
             Map<SecurityCredentials, ValidationStatus> validatedCredentials = new HashMap<>();
             QueryGenerator q = HandlerUtils.generateQueryFromSearchRequest(request);
 
+            long afterQGeneration = System.currentTimeMillis();
+
             ResultSet results = this.triplestore.executeQuery(q.toString(),request.getSecurityRequest(),false);
+
+            long afterInitialQuery = System.currentTimeMillis();
 
             response = HandlerUtils.generateSearchResponseFromResultSet(results);
 
+            long afterGeneratingResponse = System.currentTimeMillis();
+
             if (q.isMultivaluequery()) {
                     searchForPropertiesOfResources(response.getBody(), request.getSecurityRequest());
+
             }
             long afterSparql = System.currentTimeMillis();
 
             //Filtering of the results
-            log.debug("Initially found " + response.getBody().size() + " resources, performing filtering" );
+            log.debug("["+comm.getReqId()+"] Initially found " + response.getBody().size() + " resources, performing filtering" );
 
             long beforeCheckPolicy = System.currentTimeMillis();
 
-            List<QueryResourceResult> filteredResults = response.getBody().stream().filter(res -> {
-//                    log.debug("Checking policies for for res: " + res.getId() );
-                    return securityManager.checkPolicyByResourceId(res.getId(), request.getSecurityRequest(),validatedCredentials);
-            }).collect(Collectors.toList());
+            List<QueryResourceResult> resultsList = response.getBody();
+
+            List<String> validatedIds = securityManager.checkGroupPolicies(resultsList.stream().map(QueryResourceResult::getId).collect(Collectors.toList()), request.getSecurityRequest());
+
+            List<QueryResourceResult> filteredResults = resultsList.stream().filter(qresult -> validatedIds.contains(qresult.getId())).collect(Collectors.toList());
+
+            log.debug("["+comm.getReqId()+"] Filtered results size: " + filteredResults.size());
+
+            resultsList = filteredResults;
+
+
+            //OLD format, now:
+//            if( securityEnabled ) {
+//                resultsList = response.getBody().stream().filter(res -> {
+////                    log.debug("Checking policies for for res: " + res.getId() );
+//                    return securityManager.checkPolicyByResourceId(res.getId(), request.getSecurityRequest(), validatedCredentials);
+//                }).collect(Collectors.toList());
+//            }
 
             long afterCheckPolicy = System.currentTimeMillis();
 
-            log.debug("After filtering got " + filteredResults.size() + " results");
-            log.debug("[Timers] Sparql: " + (afterSparql - beforeSparql ) + " ms | Checking policy: " + (afterCheckPolicy - beforeCheckPolicy ) + " ms." );
+            log.debug("["+comm.getReqId()+"] After filtering got " + resultsList.size() + " results");
 
-            response.setBody(filteredResults);
+            response.setBody(resultsList);
             response.setStatus(HttpStatus.SC_OK);
             response.setMessage(SUCCESS_MESSAGE);
 
+            long beforeRank = System.currentTimeMillis();
+
             if( shouldRank ) {
-                log.debug("Generating ranking for response...");
+                log.debug("["+comm.getReqId()+"] Generating ranking for response...");
                 RankingQuery rankingQuery = new RankingQuery(response);
                 rankingQuery.setIncludeDistance(HandlerUtils.isDistanceQuery(request));
                 response = rankingHandler.generateRanking(rankingQuery);
             }
+            long afterRank = System.currentTimeMillis();
+
+            log.debug("["+comm.getReqId()+"] [Timers] : queryGen " + (afterQGeneration - beforeSparql ) + " ms " +
+                    "| InitialQ " + (afterInitialQuery - afterQGeneration ) + " ms " +
+                    "| generatingResponse " + (afterGeneratingResponse - afterInitialQuery) + " ms " +
+                    "| propertiesQ " + (afterSparql - afterGeneratingResponse ) + " ms " +
+                    "| Checking policy: " + (afterCheckPolicy - beforeCheckPolicy ) + " ms." +
+                    "| ranking " + (afterRank - beforeRank ) + " ms " +
+                    "| TOTAL " + ( afterRank - beforeSparql) + " ms.");
 
         } catch (Exception e) {
-            log.error("Error occurred during search: " + e.getMessage());
+            log.error("["+comm.getReqId()+"] Error occurred during search: " + e.getMessage());
             response.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
             response.setMessage("Internal server error occurred during search : " + e.getMessage());
         }
@@ -117,7 +149,7 @@ public class SearchHandler implements ISearchEvents {
                 response.setServiceResponse(securityEnabled?securityManager.generateSecurityResponse():"");
             }
         } catch (SecurityHandlerException e) {
-            log.error("Error occurred when generating security response. Setting response to empty string. Message of error: " + e.getMessage(), e);
+            log.error("["+comm.getReqId()+"] Error occurred when generating security response. Setting response to empty string. Message of error: " + e.getMessage(), e);
             response.setServiceResponse("");
         }
         return response;
@@ -156,12 +188,14 @@ public class SearchHandler implements ISearchEvents {
         response.setStatus(HttpStatus.SC_OK);
         response.setMessage(SUCCESS_MESSAGE);
 
-        try {
-            response.setServiceResponse(securityManager.generateSecurityResponse());
-        } catch (SecurityHandlerException e) {
-            log.error("Error occurred when generating security response. Setting response to empty string. Message of error: " + e.getMessage(), e);
-            response.setServiceResponse("");
-            response.setMessage("Security response could not be correctly generated");
+        if( securityEnabled ) {
+            try {
+                response.setServiceResponse(securityManager.generateSecurityResponse());
+            } catch (SecurityHandlerException e) {
+                log.error("Error occurred when generating security response. Setting response to empty string. Message of error: " + e.getMessage(), e);
+                response.setServiceResponse("");
+                response.setMessage("Security response could not be correctly generated");
+            }
         }
         return response;
     }
@@ -171,7 +205,7 @@ public class SearchHandler implements ISearchEvents {
         List<String> resourceIds = resources.stream().map(q -> q.getId()).collect(Collectors.toList());
 
         ResourceAndObservedPropertyQueryGenerator q = new ResourceAndObservedPropertyQueryGenerator(resourceIds);
-        ResultSet resultSet = this.triplestore.executeQuery(q.toString(),request,true);
+        ResultSet resultSet = this.triplestore.executeQuery(q.toString(),request,false);
 
         Map<String,List<Property>> resourcesPropertiesMap = new HashMap<>();
 
@@ -181,7 +215,7 @@ public class SearchHandler implements ISearchEvents {
             if( !resourcesPropertiesMap.containsKey(resourceId) ) {
                 resourcesPropertiesMap.put(resourceId,new ArrayList<>());
             }
-            log.debug("Adding property " + qs.get(QueryVarName.PROPERTY_NAME).toString() + " for res " + resourceId );
+//            log.debug("Adding property " + qs.get(QueryVarName.PROPERTY_NAME).toString() + " for res " + resourceId );
             List<Property> propertiesList = resourcesPropertiesMap.get(resourceId);
             Property prop = new Property(qs.get(QueryVarName.PROPERTY_NAME).toString(),qs.get(QueryVarName.PROPERTY_IRI).toString(), Arrays.asList(qs.get(QueryVarName.PROPERTY_DESC).toString()));
             propertiesList.add(prop);

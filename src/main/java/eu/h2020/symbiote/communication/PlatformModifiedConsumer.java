@@ -13,6 +13,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.IOException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Consumer of the platform modified event. Handler creates SPARQL Update Delete/Insert representation of modifed
@@ -26,15 +28,18 @@ public class PlatformModifiedConsumer extends DefaultConsumer {
 
     private final PlatformHandler handler;
 
+    private final ThreadPoolExecutor writerExecutorService;
+
     /**
      * Constructs a new instance and records its association to the passed-in channel.
      *
      * @param channel the channel to which this consumer is attached.
      * @param handler handler to be used by the consumer.
      */
-    public PlatformModifiedConsumer(Channel channel, PlatformHandler handler ) {
+    public PlatformModifiedConsumer(Channel channel, PlatformHandler handler, ThreadPoolExecutor writerExecutorService ) {
         super(channel);
         this.handler = handler;
+        this.writerExecutorService = writerExecutorService;
     }
 
     @Override
@@ -48,10 +53,14 @@ public class PlatformModifiedConsumer extends DefaultConsumer {
             ObjectMapper mapper = new ObjectMapper();
             Platform platform = mapper.readValue(msg, Platform.class);
 
-            boolean success = handler.updatePlatform(platform);
-            log.debug(success?
-                    "Platform " + platform.getId() + " updated successfully"
-                    :"Platform " + platform.getId() + " is reported to not be updated");
+            Callable<Boolean> callable = () -> {
+                boolean success = handler.updatePlatform(platform);
+                log.debug(success ?
+                        "Platform " + platform.getId() + " updated successfully"
+                        : "Platform " + platform.getId() + " is reported to not be updated");
+                return Boolean.TRUE;
+            };
+            writerExecutorService.submit(callable);
 
         } catch( JsonParseException | JsonMappingException e ) {
             log.error("Error occurred when parsing Platform object JSON: " + msg, e);
