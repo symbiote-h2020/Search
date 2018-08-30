@@ -90,7 +90,9 @@ public class QueryGenerator {
             query.append("OPTIONAL { ");
             query.append("\t?sensor cim:observesProperty ?property.\n");
             query.append("\t?property cim:name ?propName.\n");
+            query.append("OPTIONAL { ");
             query.append("\t?property cim:description ?propDesc.\n");
+            query.append("} \n");
             query.append("} \n");
         }
 

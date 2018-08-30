@@ -26,6 +26,8 @@ public class ResourceCreatedConsumer extends DefaultConsumer {
 
     private static Log log = LogFactory.getLog(ResourceCreatedConsumer.class);
 
+    private static Log timerLog = LogFactory.getLog("TimerLog");
+
     private final ResourceHandler handler;
 
     private final ThreadPoolExecutor writerExecutorService;
@@ -62,7 +64,7 @@ public class ResourceCreatedConsumer extends DefaultConsumer {
                 long after = System.currentTimeMillis();
                 log.debug((success ?
                         "Registration of the resource in RDF is success"
-                        : "Registration of the resource in RDF failed") + "in time " + (after - before) + " ms");
+                        : "Registration of the resource in RDF failed") + " in time " + (after - before) + " ms");
                 return Boolean.TRUE;
             };
             writerExecutorService.submit(callable);

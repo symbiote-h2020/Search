@@ -84,8 +84,11 @@ public class SearchHandler implements ISearchEvents {
             long afterGeneratingResponse = System.currentTimeMillis();
 
             if (q.isMultivaluequery()) {
+                log.debug("Searching for properties");
                     searchForPropertiesOfResources(response.getBody(), request.getSecurityRequest());
 
+            } else {
+                log.debug("Not multivalue query = not searching for properties");
             }
             long afterSparql = System.currentTimeMillis();
 
@@ -205,7 +208,10 @@ public class SearchHandler implements ISearchEvents {
         List<String> resourceIds = resources.stream().map(q -> q.getId()).collect(Collectors.toList());
 
         ResourceAndObservedPropertyQueryGenerator q = new ResourceAndObservedPropertyQueryGenerator(resourceIds);
-        ResultSet resultSet = this.triplestore.executeQuery(q.toString(),request,false);
+        String propertiesQuery = q.toString();
+
+        log.debug(propertiesQuery);
+        ResultSet resultSet = this.triplestore.executeQuery(propertiesQuery,request,false);
 
         Map<String,List<Property>> resourcesPropertiesMap = new HashMap<>();
 
@@ -217,7 +223,10 @@ public class SearchHandler implements ISearchEvents {
             }
 //            log.debug("Adding property " + qs.get(QueryVarName.PROPERTY_NAME).toString() + " for res " + resourceId );
             List<Property> propertiesList = resourcesPropertiesMap.get(resourceId);
-            Property prop = new Property(qs.get(QueryVarName.PROPERTY_NAME).toString(),qs.get(QueryVarName.PROPERTY_IRI).toString(), Arrays.asList(qs.get(QueryVarName.PROPERTY_DESC).toString()));
+            String propName = qs.get(QueryVarName.PROPERTY_NAME)!=null?qs.get(QueryVarName.PROPERTY_NAME).toString():"N/A";
+            String propIri = qs.get(QueryVarName.PROPERTY_IRI)!=null?qs.get(QueryVarName.PROPERTY_IRI).toString():"N/A";
+            String propDesc = qs.get(QueryVarName.PROPERTY_DESC)!=null?qs.get(QueryVarName.PROPERTY_DESC).toString():"N/A";
+            Property prop = new Property(propName,propIri, Arrays.asList(propDesc));
             propertiesList.add(prop);
         }
 

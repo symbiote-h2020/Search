@@ -51,15 +51,19 @@ public class SspResourceModifiedConsumer extends DefaultConsumer {
 
         //Try to parse the message
 
+        long before = System.currentTimeMillis();
+
         try {
             ObjectMapper mapper = new ObjectMapper();
             CoreSspResourceRegisteredOrModifiedEventPayload resource = mapper.readValue(msg, CoreSspResourceRegisteredOrModifiedEventPayload.class);
 
             Callable<Boolean> callable = () -> {
                 boolean success = handler.updateResource(resource);
-                log.debug(success ?
+
+                long after = System.currentTimeMillis();
+                log.debug((success ?
                         "Update of the resource in RDF is success"
-                        : "Update of the resource in RDF failed");
+                        : "Update of the resource in RDF failed") + " in time " + (after - before) + " ms");
                 return Boolean.TRUE;
             };
             writerExecutorService.submit(callable);

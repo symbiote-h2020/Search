@@ -139,6 +139,7 @@ public class MultiSearchHandler implements ISearchEvents {
         List<String> resourceIds = resources.stream().map(q -> q.getId()).collect(Collectors.toList());
 
         ResourceAndObservedPropertyQueryGenerator q = new ResourceAndObservedPropertyQueryGenerator(resourceIds);
+
         ResultSet resultSet = this.triplestore.executeQuery(q.toString(), request, false);
 
         Map<String, List<Property>> resourcesPropertiesMap = new HashMap<>();
@@ -151,7 +152,10 @@ public class MultiSearchHandler implements ISearchEvents {
             }
 //            log.debug("Adding property " + qs.get(QueryVarName.PROPERTY_NAME).toString() + " for res " + resourceId );
             List<Property> propertiesList = resourcesPropertiesMap.get(resourceId);
-            Property prop = new Property(qs.get(QueryVarName.PROPERTY_NAME).toString(), qs.get(QueryVarName.PROPERTY_IRI).toString(), Arrays.asList(qs.get(QueryVarName.PROPERTY_DESC).toString()));
+            String propName = qs.get(QueryVarName.PROPERTY_NAME)!=null?qs.get(QueryVarName.PROPERTY_NAME).toString():"N/A";
+            String propIri = qs.get(QueryVarName.PROPERTY_IRI)!=null?qs.get(QueryVarName.PROPERTY_IRI).toString():"N/A";
+            String propDesc = qs.get(QueryVarName.PROPERTY_DESC)!=null?qs.get(QueryVarName.PROPERTY_DESC).toString():"N/A";
+            Property prop = new Property(propName,propIri, Arrays.asList(propDesc));
             propertiesList.add(prop);
         }
 
@@ -202,7 +206,6 @@ public class MultiSearchHandler implements ISearchEvents {
 
                 if (q.isMultivaluequery()) {
                     searchForPropertiesOfResources(response.getBody(), request.getSecurityRequest());
-
                 }
                 long afterSparql = System.currentTimeMillis();
 
@@ -215,15 +218,15 @@ public class MultiSearchHandler implements ISearchEvents {
 
 
                 //TODO delete
-                List<QueryResourceResult> ssp_test = resultsList.stream().filter(qres -> {
-//                    return qres.getPlatformName().equals("SSP_TEST") ||
-//                            qres.getPlatformName().equals("SSP_UNIPA") ||
-//                            qres.getPlatformName().equals("mySSPName");
-                    return qres.getId().equals("5b5f04fa8199a01ea1acb0fe");
-                }).collect(Collectors.toList());
-                if (ssp_test != null ) {
-                    log.info("Got " + ssp_test.size() + " resources from ssp_test");
-                }
+//                List<QueryResourceResult> ssp_test = resultsList.stream().filter(qres -> {
+////                    return qres.getPlatformName().equals("SSP_TEST") ||
+////                            qres.getPlatformName().equals("SSP_UNIPA") ||
+////                            qres.getPlatformName().equals("mySSPName");
+//                    return qres.getId().equals("5b5f04fa8199a01ea1acb0fe");
+//                }).collect(Collectors.toList());
+//                if (ssp_test != null ) {
+//                    log.info("Got " + ssp_test.size() + " resources from ssp_test");
+//                }
 
                 List<String> validatedIds = securityManager.checkGroupPolicies(resultsList.stream().map(QueryResourceResult::getId).collect(Collectors.toList()), request.getSecurityRequest());
 

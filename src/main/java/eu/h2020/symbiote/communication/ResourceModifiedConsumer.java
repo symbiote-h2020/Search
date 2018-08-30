@@ -64,7 +64,7 @@ public class ResourceModifiedConsumer extends DefaultConsumer {
 
                 log.debug((success ?
                         "Update of the resource in RDF is success"
-                        : "Update of the resource in RDF failed") + "in time " + (after - before) + " ms");
+                        : "Update of the resource in RDF failed") + " in time " + (after - before) + " ms");
                 return Boolean.TRUE;
             };
             writerExecutorService.submit(callable);

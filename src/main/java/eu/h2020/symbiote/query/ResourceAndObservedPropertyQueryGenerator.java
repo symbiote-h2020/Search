@@ -31,12 +31,13 @@ public class ResourceAndObservedPropertyQueryGenerator {
 
         query.append("SELECT ?sensor ?propName ?property ?propDesc ?value WHERE {\n");
         query.append("VALUES (?value) {" + sb.toString() + "}");
-        query.append("\t?sensor a cim:Sensor ;\n");
-        query.append("\t\tcim:id ?value ;\n");
+//        query.append("\t?sensor a cim:Sensor ;\n");
+        query.append("\t?sensor cim:id ?value ;\n");
         query.append("\t\tcim:observesProperty ?property .\n");
         query.append("\t?property cim:name ?propName .\n");
+        query.append("\tOPTIONAL {\n");
         query.append("\t?property cim:description ?propDesc .\n");
-
+        query.append("\t}\n");
     }
 
     @Override

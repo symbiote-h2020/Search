@@ -51,15 +51,18 @@ public class SspResourceCreatedConsumer extends DefaultConsumer {
 
         //Try to parse the message
 
+        long before = System.currentTimeMillis();
+
         try {
             ObjectMapper mapper = new ObjectMapper();
             CoreSspResourceRegisteredOrModifiedEventPayload resources = mapper.readValue(msg, CoreSspResourceRegisteredOrModifiedEventPayload.class);
 
             Callable<Boolean> callable = () -> {
                 boolean success = handler.registerResource(resources);
-                log.debug(success ?
+                long after = System.currentTimeMillis();
+                log.debug((success ?
                         "Registration of the resource in RDF is success"
-                        : "Registration of the resource in RDF failed");
+                        : "Registration of the resource in RDF failed") + " in time " + (after - before) + " ms");
                 return Boolean.TRUE;
             };
             writerExecutorService.submit(callable);
