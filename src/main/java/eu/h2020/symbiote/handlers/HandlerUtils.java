@@ -178,15 +178,19 @@ public class HandlerUtils {
         Resource sdevResource = model.createResource(ModelHelper.getSdevURI(sdev.getSymId()))
                 .addProperty(RDF.type, MIM.SmartDevice)
                 .addProperty(CIM.id, sdev.getSymId())
+                .addProperty(CIM.name,sdev.getSspId())
                 .addProperty(MIM.isConnectedTo,model.createResource(sspIri) );
+
+        sdevResource.addProperty(MIM.hasService, model.createResource(generateInterworkingServiceUri(ModelHelper.getSspURI(sspId), interworkingServiceUrl)));
 
         //No name or description in the sdev model
 //        for (InterworkingService service : platform.getInterworkingServices()) {
-//            Resource interworkingServiceResource = model.createResource(generateInterworkingServiceUri(ModelHelper.getPlatformURI(platform.getId()), service.getUrl()))
+//            Resource interworkingServiceResource = model.createResource(
 //                    .addProperty(RDF.type, MIM.InterworkingService)
 //                    .addProperty(MIM.usesInformationModel, model.createResource(ModelHelper.getInformationModelURI(service.getInformationModelId())))
 //                    .addProperty(MIM.url, service.getUrl());
-//            platformResource.addProperty(MIM.hasService, interworkingServiceResource);
+
+
 //        }
 //        Model serviceModel = generateInterworkingService(platform);
 //        model.add(serviceModel);
