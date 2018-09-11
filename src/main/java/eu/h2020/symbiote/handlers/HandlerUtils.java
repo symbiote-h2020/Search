@@ -15,6 +15,7 @@ import eu.h2020.symbiote.semantics.ontology.CIM;
 import eu.h2020.symbiote.semantics.ontology.INTERNAL;
 import eu.h2020.symbiote.semantics.ontology.MIM;
 import org.apache.commons.collections.ListUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jena.query.QuerySolution;
@@ -109,6 +110,10 @@ public class HandlerUtils {
         return platformUri + "/service/" + cutServiceUrl;
     }
 
+    public static String generateInterworkingServiceUriForSdev( String sdevUri ) {
+        return sdevUri + "/service/internal";
+    }
+
     public static Model generateModelFromSsp(SmartSpace ssp) {
         log.debug("Generating model from ssp");
         // create an empty Model
@@ -181,7 +186,7 @@ public class HandlerUtils {
                 .addProperty(CIM.name,sdev.getSspId())
                 .addProperty(MIM.isConnectedTo,model.createResource(sspIri) );
 
-        sdevResource.addProperty(MIM.hasService, model.createResource(generateInterworkingServiceUri(ModelHelper.getSspURI(sspId), interworkingServiceUrl)));
+        sdevResource.addProperty(MIM.hasService, model.createResource(generateInterworkingServiceUriForSdev(ModelHelper.getSdevURI(sdev.getSymId()))));
 
         //No name or description in the sdev model
 //        for (InterworkingService service : platform.getInterworkingServices()) {
@@ -249,6 +254,10 @@ public class HandlerUtils {
         if (request.getLocation_lat() != null && request.getLocation_long() != null && request.getMax_distance() != null) {
             q.addResourceLocationDistance(request.getLocation_lat(), request.getLocation_long(), request.getMax_distance());
         }
+        if(StringUtils.isNotEmpty(request.getOwner())) {
+            q.addSdevOwner(request.getOwner());
+        }
+
         return q;
     }
 
@@ -265,6 +274,7 @@ public class HandlerUtils {
             QuerySolution solution = resultSet.next();
 //            printSolution(solution);
 
+            String owner = solution.get(OWNER)!=null?solution.get(OWNER).toString():"";
             String resId = solution.get(RESOURCE_ID).toString();
             String resName = solution.get(RESOURCE_NAME).toString();
             RDFNode resDescNode = solution.get(RESOURCE_DESCRIPTION);
@@ -366,6 +376,7 @@ public class HandlerUtils {
                     resource.setLocationAltitude(altVal);
                     resource.setObservedProperties(properties);
                     resource.setResourceType(types);
+                    resource.setOwner(owner);
                     responses.put(resId, resource);
 
                     serviceParams.put(resId, new HashMap<>());

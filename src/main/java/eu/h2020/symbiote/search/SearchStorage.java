@@ -149,6 +149,10 @@ public class SearchStorage {
         log.info( "Resource registered!");
     }
 
+    public void registerSdevResourceLinkToSdevService( String sdevServiceUri, String resourceUri ) {
+        core.registerSdevResourceLinkToInterworkingService(sdevServiceUri, resourceUri);
+    }
+
 
     public List<String> query
             ( String modelGraphUri, String query) {

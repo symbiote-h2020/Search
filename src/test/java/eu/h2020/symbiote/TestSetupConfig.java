@@ -150,6 +150,7 @@ public class TestSetupConfig {
     public static final String SSP_NAME = "SmartSpace1";
     public static final String SSP_ID = "Ssp1";
     public static final String SDEV_ID_1 = "sdevId1";
+    public static final String SDEV_ID_2 = "sdevId2";
 
 
     public static Model loadFileAsModel(String fileLocation, String format ) {

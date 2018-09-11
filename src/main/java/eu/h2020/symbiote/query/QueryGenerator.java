@@ -44,7 +44,7 @@ public class QueryGenerator {
         query.append("SELECT ?resId ?resName ?resDescription ?locationName ?locationLat ?locationLong ?locationAlt " +
                 "?platformId ?platformName ?property ?propName ?propDesc ?type ?parameter ?parameterName ?parameterMandatory " +
                 "?parameterDatatype ?dataPred ?dataObj ?capability ?capName ?capParameter ?capParameterName " +
-                "?capParameterMandatory ?capParameterDatatype ?capDataPred ?capDataObj WHERE {\n");
+                "?capParameterMandatory ?capParameterDatatype ?capDataPred ?capDataObj ?owner WHERE {\n");
 //        query.append("\t?sensor a cim:Resource ;\n"); \\TODO r3 dereference
         query.append("\t?sensor a ?type ;\n");
         query.append("\t\tcim:id ?resId ;\n");
@@ -52,7 +52,7 @@ public class QueryGenerator {
         query.append("\t?platform cim:id ?platformId ;\n");
         query.append("\t\tcim:name ?platformName .\n");
 
-        //PLATFORM CHANGE - can be also SSP
+        //PLATFORM CHANGE - can be also SSP. Enabler, Sdev etc
 //        query.append("\t?platform a mim:Platform;\n");
 //        query.append("\t\tmim:hasService ?service .\n");
 
@@ -114,6 +114,14 @@ public class QueryGenerator {
         query.append("\t?capParameter cim:mandatory ?capParameterMandatory .\n");
         query.append("\t?capParameter cim:hasDatatype ?capParameterDatatype .\n");
         query.append("\t?capParameterDatatype ?capDataPred ?capDataObj .\n");
+        query.append("} \n");
+
+        //SDev info into ?owner field
+        query.append("OPTIONAL { ");
+        query.append("\t?sdev cim:id ?owner .\n" );
+        query.append("\t?sdev a mim:SmartDevice .\n" );
+        query.append("\t?sdev mim:hasService ?sdevService .\n" );
+        query.append("\t?sdevService mim:hasResource ?sensor .\n" );
         query.append("} \n");
 
 //        query.append("OPTIONAL { ");
@@ -260,6 +268,12 @@ public class QueryGenerator {
 
     public QueryGenerator addResourceType(String type) {
         extension.append("\t?sensor a <" + type + "> .\n");
+        return this;
+    }
+
+    public QueryGenerator addSdevOwner( String sdevOwner ) {
+        extension.append("\t?sdev cim:id \""  +sdevOwner + "\" .\n" );
+
         return this;
     }
 

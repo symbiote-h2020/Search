@@ -67,6 +67,10 @@ public class Registry {
         log.debug(String.format("Resource={%s} registered for platform: platformUri={%s}", resourceUri, platformUri));
     }
 
+    public void registerSdevResourceLinkToInterworkingService( String sdevServiceURI, String resourceUri ) {
+        tripleStore.insertGraph("", getResourceMetadata(sdevServiceURI,resourceUri), RDFFormat.Turtle);
+    }
+
 //    /**
 //     * Registers ssp resource of the sdev. Model will be stored in the platform's named graph.
 //     *

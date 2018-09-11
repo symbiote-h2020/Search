@@ -21,6 +21,7 @@ public interface QueryVarName {
     String PROPERTY_DESC = "propDesc";
     String TYPE = "type";
     String VALUE = "value";
+    String OWNER = "owner";
 
     //service inputs
     String PARAMETER = "parameter";

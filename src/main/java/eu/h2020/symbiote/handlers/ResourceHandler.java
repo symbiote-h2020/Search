@@ -12,7 +12,6 @@ import eu.h2020.symbiote.security.accesspolicies.IAccessPolicy;
 import eu.h2020.symbiote.security.accesspolicies.common.AccessPolicyFactory;
 import eu.h2020.symbiote.security.commons.exceptions.custom.InvalidArgumentsException;
 import eu.h2020.symbiote.semantics.ModelHelper;
-import org.apache.commons.cli.Option;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jena.rdf.model.Model;
@@ -43,7 +42,7 @@ public class ResourceHandler implements IResourceEvents {
 
     @Override
     public boolean registerResource(CoreResourceRegisteredOrModifiedEventPayload resources) {
-        Assert.notNull(resources);
+        Assert.notNull(resources, "Could not register null resources");
         log.debug("Resource handler is handling resources for platform: " + resources.getPlatformId());
 
         //Read to get platform and its information service
@@ -94,6 +93,18 @@ public class ResourceHandler implements IResourceEvents {
         }
         storage.getTripleStore().printDataset();
         return true;
+    }
+
+    public void addSdevResourceServiceLink( CoreSspResourceRegisteredOrModifiedEventPayload resources ) {
+        log.debug("Adding sdev resources service link");
+
+        String sdevURI = ModelHelper.getSdevURI(resources.getSdevId());
+
+        String sdevServiceUri = HandlerUtils.generateInterworkingServiceUriForSdev(sdevURI);
+
+        for (CoreResource coreResource : resources.getResources()) {
+            storage.registerSdevResourceLinkToSdevService(sdevServiceUri, ModelHelper.getResourceURI(coreResource.getId()));
+        }
     }
 
     //TODO write performance improvement
