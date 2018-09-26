@@ -45,9 +45,9 @@ public class MappingCreateConsumer extends DefaultConsumer {
         //Try to parse the message
         try {
             InfoModelMappingRequest infoModelMappingRequest = mapper.readValue(msg, InfoModelMappingRequest.class);
-            response = mappingManager.deleteMapping(infoModelMappingRequest);
+            response = mappingManager.registerMapping(infoModelMappingRequest);
         } catch( Exception e ) {
-            log.error( "Error occurred when registering info " + e );
+            log.error( "Error occurred when registering mapping info " + e );
         }
 
 

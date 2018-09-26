@@ -39,7 +39,7 @@ public class MappingFindAllConsumer extends DefaultConsumer {
     @Override
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
         String msg = new String(body);
-        log.debug( "Creating mapping: " + msg );
+        log.debug( "Find all mapping: " + msg );
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -49,7 +49,7 @@ public class MappingFindAllConsumer extends DefaultConsumer {
             GetAllMappings getAllMapping = mapper.readValue(msg, GetAllMappings.class);
             response = mappingManager.findAllMappings(getAllMapping);
         } catch( Exception e ) {
-            log.error( "Error occurred when registering info " + e );
+            log.error( "Error occurred when finding mapping info " + e );
         }
 
 
@@ -60,7 +60,7 @@ public class MappingFindAllConsumer extends DefaultConsumer {
                 .correlationId(properties.getCorrelationId())
                 .build();
         this.getChannel().basicPublish("", properties.getReplyTo(), replyProps, responseBytes);
-        log.debug("-> Mapping created message was sent back");
+        log.debug("-> Mapping find all message was sent back");
 
         this.getChannel().basicAck(envelope.getDeliveryTag(), false);
 

@@ -37,7 +37,7 @@ public class MappingDeleteConsumer extends DefaultConsumer {
     @Override
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
         String msg = new String(body);
-        log.debug( "Creating mapping: " + msg );
+        log.debug( "Deleting mapping: " + msg );
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -45,9 +45,9 @@ public class MappingDeleteConsumer extends DefaultConsumer {
         //Try to parse the message
         try {
             InfoModelMappingRequest infoModelMappingRequest = mapper.readValue(msg, InfoModelMappingRequest.class);
-            response = mappingManager.registerMapping(infoModelMappingRequest);
+            response = mappingManager.deleteMapping(infoModelMappingRequest);
         } catch( Exception e ) {
-            log.error( "Error occurred when registering info " + e );
+            log.error( "Error occurred when deleting mapping info " + e );
         }
 
 
@@ -58,7 +58,7 @@ public class MappingDeleteConsumer extends DefaultConsumer {
                 .correlationId(properties.getCorrelationId())
                 .build();
         this.getChannel().basicPublish("", properties.getReplyTo(), replyProps, responseBytes);
-        log.debug("-> Mapping created message was sent back");
+        log.debug("-> Mapping deleted message was sent back");
 
         this.getChannel().basicAck(envelope.getDeliveryTag(), false);
 
