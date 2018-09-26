@@ -9,6 +9,7 @@ import eu.h2020.symbiote.core.cci.InfoModelMappingRequest;
 import eu.h2020.symbiote.core.cci.InfoModelMappingResponse;
 import eu.h2020.symbiote.core.internal.GetAllMappings;
 import eu.h2020.symbiote.core.internal.GetSingleMapping;
+import eu.h2020.symbiote.core.internal.MappingListResponse;
 import eu.h2020.symbiote.mappings.MappingManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -43,11 +44,12 @@ public class MappingFindOneConsumer extends DefaultConsumer {
 
         ObjectMapper mapper = new ObjectMapper();
 
-        InfoModelMappingResponse response = null;
+        MappingListResponse response = null;
         //Try to parse the message
         try {
-            GetAllMappings getAllMapping = mapper.readValue(msg, GetAllMappings.class);
-            mappingManager.findAllMappings(getAllMapping);
+
+            GetSingleMapping getSingleMapping = mapper.readValue(msg, GetSingleMapping.class);
+            response = mappingManager.findSingleMapping(getSingleMapping);
         } catch( Exception e ) {
             log.error( "Error occurred when registering info " + e );
         }

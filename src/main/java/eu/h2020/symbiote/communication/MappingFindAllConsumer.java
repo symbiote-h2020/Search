@@ -6,7 +6,9 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 import eu.h2020.symbiote.core.cci.InfoModelMappingResponse;
+import eu.h2020.symbiote.core.internal.GetAllMappings;
 import eu.h2020.symbiote.core.internal.GetSingleMapping;
+import eu.h2020.symbiote.core.internal.MappingListResponse;
 import eu.h2020.symbiote.mappings.MappingManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,11 +43,11 @@ public class MappingFindAllConsumer extends DefaultConsumer {
 
         ObjectMapper mapper = new ObjectMapper();
 
-        InfoModelMappingResponse response = null;
+        MappingListResponse response = null;
         //Try to parse the message
         try {
-            GetSingleMapping getSingleMapping = mapper.readValue(msg, GetSingleMapping.class);
-            mappingManager.findSingleMapping(getSingleMapping);
+            GetAllMappings getAllMapping = mapper.readValue(msg, GetAllMappings.class);
+            response = mappingManager.findAllMappings(getAllMapping);
         } catch( Exception e ) {
             log.error( "Error occurred when registering info " + e );
         }
