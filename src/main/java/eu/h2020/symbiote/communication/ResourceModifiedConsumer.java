@@ -54,20 +54,33 @@ public class ResourceModifiedConsumer extends DefaultConsumer {
 
         try {
             ObjectMapper mapper = new ObjectMapper();
-            CoreResourceRegisteredOrModifiedEventPayload resource = mapper.readValue(msg, CoreResourceRegisteredOrModifiedEventPayload.class);
+
 
             long before = System.currentTimeMillis();
 
             Callable<Boolean> callable = () -> {
-                boolean success = handler.updateResource(resource);
+                CoreResourceRegisteredOrModifiedEventPayload coreRes = null;
+                CoreSspResourceRegisteredOrModifiedEventPayload sspRes = null;
 
                 try {
-                    CoreSspResourceRegisteredOrModifiedEventPayload sspRes = mapper.readValue(msg, CoreSspResourceRegisteredOrModifiedEventPayload.class);
+                    coreRes = mapper.readValue(msg, CoreResourceRegisteredOrModifiedEventPayload.class);
+                } catch(Exception e ) {
+                    log.debug("[Update] This is not a core resource");
+                }
+                try {
+                    sspRes = mapper.readValue(msg, CoreSspResourceRegisteredOrModifiedEventPayload.class);
+                } catch(Exception e ) {
+                    log.debug("[Update] This is not a ssp resource");
+                }
+
+                boolean success = false;
+                if( sspRes != null ) {
+                    success = handler.updateResource(sspRes);
                     if (success) {
                         handler.addSdevResourceServiceLink(sspRes);
                     }
-                } catch ( Exception e ) {
-                    //Ignore error
+                } else if( coreRes !=null ) {
+                    success = handler.updateResource(coreRes);
                 }
 
                 long after = System.currentTimeMillis();
@@ -79,10 +92,13 @@ public class ResourceModifiedConsumer extends DefaultConsumer {
             };
             writerExecutorService.submit(callable);
 
-        } catch( JsonParseException | JsonMappingException e ) {
-            log.error("Error occurred when parsing Resource object JSON: " + msg, e);
-        } catch( IOException e ) {
-            log.error("I/O Exception occurred when parsing Resource object" , e);
+//        } catch( JsonParseException | JsonMappingException e ) {
+//            log.error("Error occurred when parsing Resource object JSON: " + msg, e);
+//        } catch( IOException e ) {
+//            log.error("I/O Exception occurred when parsing Resource object" , e);
+//        }
+        } catch( Exception e ) {
+            log.error("Generic occurred when handling rdf resource modification: " + msg, e);
         }
 
         getChannel().basicAck(envelope.getDeliveryTag(),false);
