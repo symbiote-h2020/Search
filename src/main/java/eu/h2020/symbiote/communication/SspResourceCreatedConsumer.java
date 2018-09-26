@@ -60,9 +60,10 @@ public class SspResourceCreatedConsumer extends DefaultConsumer {
             Callable<Boolean> callable = () -> {
                 boolean success = handler.registerResource(resources);
 
-                //Additionally add entrances
-                handler.addSdevResourceServiceLink(resources);
-
+                if( success ) {
+                    //Additionally add entrances
+                    handler.addSdevResourceServiceLink(resources);
+                }
                 long after = System.currentTimeMillis();
                 log.debug((success ?
                         "Registration of the resource in RDF is success"

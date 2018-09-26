@@ -1,5 +1,6 @@
 package eu.h2020.symbiote.query;
 
+import eu.h2020.symbiote.semantics.ontology.MIM;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
 
@@ -23,6 +24,7 @@ public class DeleteSspRequestGenerator extends AbstractDeleteRequest {
         request = UpdateFactory.create();
         request.add(generateInformationServiceDelete(sspId));
         request.add(generateSspDelete(sspId));
+        request.add(generateSdevDelete(sspId));
     }
 
     private String generateSspDelete( String sspId ) {
@@ -30,6 +32,17 @@ public class DeleteSspRequestGenerator extends AbstractDeleteRequest {
         q.append("DELETE { ?ssp ?p ?o } WHERE {\n");
         q.append("\t?ssp ?p ?o ;\n");
         q.append("\t\tcim:id \""+sspId+"\" .\n");
+        q.append("}");
+        return q.toString();
+    }
+
+    private String generateSdevDelete( String sspId ) {
+        StringBuilder q = generateBaseQuery();
+        q.append("DELETE { ?sdev ?p ?o \n");
+        q.append("} WHERE {\n");
+        q.append("\t?sdev ?p ?o .\n");
+        q.append("\t?sdev mim:isConnectedTo ?platform .\n");
+        q.append("\t?platform cim:id \""+sspId+"\" .\n");
         q.append("}");
         return q.toString();
     }

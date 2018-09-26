@@ -59,7 +59,9 @@ public class SspResourceModifiedConsumer extends DefaultConsumer {
 
             Callable<Boolean> callable = () -> {
                 boolean success = handler.updateResource(resource);
-                handler.addSdevResourceServiceLink(resource);
+                if( success ) {
+                    handler.addSdevResourceServiceLink(resource);
+                }
 
                 long after = System.currentTimeMillis();
                 log.debug((success ?

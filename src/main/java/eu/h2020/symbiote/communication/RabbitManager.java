@@ -7,6 +7,7 @@ import eu.h2020.symbiote.handlers.ISearchEvents;
 import eu.h2020.symbiote.handlers.PlatformHandler;
 import eu.h2020.symbiote.handlers.ResourceHandler;
 import eu.h2020.symbiote.handlers.SearchHandler;
+import eu.h2020.symbiote.mappings.MappingManager;
 import eu.h2020.symbiote.ranking.AvailabilityManager;
 import eu.h2020.symbiote.ranking.PopularityManager;
 import org.apache.commons.logging.Log;
@@ -135,6 +136,27 @@ public class RabbitManager {
     @Value("${rabbit.routingKey.ssp.sdev.resource.modified}")
     private String sspSdevResourceModifiedRoutingKey;
 
+    //Mapping keys
+    @Value("${rabbit.exchange.mapping.name}")
+    private String mappingsExchangeName;
+    @Value("${rabbit.exchange.mapping.type}")
+    private String mappingsExchangeType;
+    @Value("${rabbit.exchange.mapping.durable}")
+    private boolean mappingsExchangeDurable;
+    @Value("${rabbit.exchange.mapping.autodelete}")
+    private boolean mappingsExchangeAutodelete;
+    @Value("${rabbit.exchange.mapping.internal}")
+    private boolean mappingsExchangeInternal;
+
+    @Value("${rabbit.routingKey.mapping.getAllMappingsRequested}")
+    private String mappingsGetAllRoutingKey;
+    @Value("${rabbit.routingKey.mapping.getSingleMappingRequested}")
+    private String mappingsGetSingleRoutingKey;
+    @Value("${rabbit.routingKey.mapping.creationRequested}")
+    private String mappingsCreationRequestedRoutingKey;
+    @Value("${rabbit.routingKey.mapping.removalRequested}")
+    private String mappingsRemovalRequestedRoutingKey;
+
     private Connection connection;
 
     /**
@@ -188,6 +210,13 @@ public class RabbitManager {
                     true,
                     false,
                     false,
+                    null);
+
+            channel.exchangeDeclare(this.mappingsExchangeName,
+                    this.mappingsExchangeType,
+                    this.mappingsExchangeDurable,
+                    this.mappingsExchangeAutodelete,
+                    this.mappingsExchangeInternal,
                     null);
 
             //message retrieval
@@ -613,6 +642,54 @@ public class RabbitManager {
 
         channel.basicConsume(queueName, false, consumer);
         log.debug( "Consumer sspResource modified created!!!" );
+    }
+
+    public void registerMappingGetSingleConsumer(MappingManager mappingManager) throws IOException {
+        String queueName = "symbIoTe-Search-mapping-get-single";
+
+        Channel channel = connection.createChannel();
+        channel.queueDeclare(queueName, false, true, true, null);
+        channel.queueBind(queueName, mappingsExchangeName, mappingsGetSingleRoutingKey );
+        MappingFindOneConsumer consumer = new MappingFindOneConsumer(channel,mappingManager);
+
+        channel.basicConsume(queueName, false, consumer);
+        log.debug( "Consumer mappings find one created!!!" );
+    }
+
+    public void registerMappingGetAllConsumer(MappingManager mappingManager) throws IOException {
+        String queueName = "symbIoTe-Search-mapping-get-all";
+
+        Channel channel = connection.createChannel();
+        channel.queueDeclare(queueName, false, true, true, null);
+        channel.queueBind(queueName, mappingsExchangeName, mappingsGetAllRoutingKey );
+        MappingFindAllConsumer consumer = new MappingFindAllConsumer(channel,mappingManager);
+
+        channel.basicConsume(queueName, false, consumer);
+        log.debug( "Consumer mappings find all created!!!" );
+    }
+
+    public void registerMappingCreateConsumer(MappingManager mappingManager) throws IOException {
+        String queueName = "symbIoTe-Search-mapping-create";
+
+        Channel channel = connection.createChannel();
+        channel.queueDeclare(queueName, false, true, true, null);
+        channel.queueBind(queueName, mappingsExchangeName, mappingsCreationRequestedRoutingKey);
+        MappingCreateConsumer consumer = new MappingCreateConsumer(channel,mappingManager);
+
+        channel.basicConsume(queueName, false, consumer);
+        log.debug( "Consumer mappings create created!!!" );
+    }
+
+    public void registerMappingDeleteConsumer(MappingManager mappingManager) throws IOException {
+        String queueName = "symbIoTe-Search-mapping-delete";
+
+        Channel channel = connection.createChannel();
+        channel.queueDeclare(queueName, false, true, true, null);
+        channel.queueBind(queueName, mappingsExchangeName, mappingsRemovalRequestedRoutingKey);
+        MappingDeleteConsumer consumer = new MappingDeleteConsumer(channel,mappingManager);
+
+        channel.basicConsume(queueName, false, consumer);
+        log.debug( "Consumer mappings delete created!!!" );
     }
 
 

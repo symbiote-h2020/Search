@@ -95,7 +95,7 @@ public class ResourceRegistrationTest {
 
         InterworkingServiceInfo infoToBeReturned = new InterworkingServiceInfo("http://iri","http://url",PLATFORM_A_ID);
 
-        when(interworkingServiceInfoRepo.findByInterworkingServiceURL(anyString())).thenReturn(Optional.of(infoToBeReturned));
+        when(interworkingServiceInfoRepo.findByInterworkingServiceURL(anyString())).thenReturn(Arrays.asList(infoToBeReturned));
 
         SearchStorage.clearStorage();
         SearchStorage searchStorage = SearchStorage.getInstance( SearchStorage.TESTCASE_STORAGE_NAME, securityManager, false );

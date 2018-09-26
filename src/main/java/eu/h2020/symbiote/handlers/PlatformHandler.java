@@ -187,11 +187,14 @@ public class PlatformHandler implements IPlatformEvents, ISspEvents {
         serviceList.stream()
                 .map(is -> new InterworkingServiceInfo(HandlerUtils
                         .generateInterworkingServiceUri(systemIri, is.getUrl()),
-                        is.getUrl(), systemId)).forEach(isInfo ->
-                interworkingServiceInfoRepo.save(isInfo));
+                        is.getUrl(), systemId)).forEach(isInfo -> {
+            log.debug("Saving interworking service | systemId: " + isInfo.getPlatformId() + " | serviceUrl: "
+                    + isInfo.getInterworkingServiceURL() + " | serviceIri" + isInfo.getInterworkingServiceIRI());
+            interworkingServiceInfoRepo.save(isInfo);
+        });
     }
 
-    private String getLoadAllInterworkingServicesSPQRL(  ) {
+    private String getLoadAllInterworkingServicesSPQRL() {
         return "PREFIX cim: <http://www.symbiote-h2020.eu/ontology/core#>\n" +
                 "PREFIX mim: <http://www.symbiote-h2020.eu/ontology/meta#>" +
                 "\n" +
@@ -210,22 +213,22 @@ public class PlatformHandler implements IPlatformEvents, ISspEvents {
     public List<InterworkingServiceInfo> readInterworkingServicesFromTriplestore() {
         List<InterworkingServiceInfo> services = new ArrayList<>();
         ResultSet resultSet = this.storage.getTripleStore().executeQuery(getLoadAllInterworkingServicesSPQRL(), null, false);
-        while( resultSet.hasNext()) {
+        while (resultSet.hasNext()) {
             QuerySolution solution = resultSet.next();
             String serviceIRI = solution.get(SOLUTION_SERVICE_IRI).toString();
             String serviceURL = solution.get(SOLUTION_SERVICE_URL).toString();
-            String platformId =solution.get(SOLUTION_PLATFORM_ID).toString();
+            String platformId = solution.get(SOLUTION_PLATFORM_ID).toString();
 
             //TODO delete
             System.out.println("Loaded ii: " + platformId + " | " + serviceIRI + " | " + serviceURL);
 
-            services.add(new InterworkingServiceInfo(serviceIRI,serviceURL,platformId));
+            services.add(new InterworkingServiceInfo(serviceIRI, serviceURL, platformId));
         }
         return services;
     }
 
     public void loadAndSaveInterworkingServicesFromTriplestore() {
-        readInterworkingServicesFromTriplestore().stream().forEach( ii -> interworkingServiceInfoRepo.save(ii));
+        readInterworkingServicesFromTriplestore().stream().forEach(ii -> interworkingServiceInfoRepo.save(ii));
     }
 
     public void printStorage() {

@@ -8,6 +8,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 import eu.h2020.symbiote.core.internal.CoreResourceRegisteredOrModifiedEventPayload;
+import eu.h2020.symbiote.core.internal.CoreSspResourceRegisteredOrModifiedEventPayload;
 import eu.h2020.symbiote.handlers.ResourceHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -60,6 +61,17 @@ public class ResourceCreatedConsumer extends DefaultConsumer {
             CoreResourceRegisteredOrModifiedEventPayload resource = mapper.readValue(msg, CoreResourceRegisteredOrModifiedEventPayload.class);
             Callable<Boolean> callable = () -> {
                 boolean success = handler.registerResource(resource);
+
+                try {
+                    CoreSspResourceRegisteredOrModifiedEventPayload sspRes = mapper.readValue(msg, CoreSspResourceRegisteredOrModifiedEventPayload.class);
+                    log.debug("Registration is running for ssp!");
+                    if( success ) {
+                        handler.addSdevResourceServiceLink(sspRes);
+                    }
+                } catch ( Exception e ) {
+                    //Skip in case of error
+                    log.debug("Non ssp registration - skipping");
+                }
 
                 long after = System.currentTimeMillis();
                 log.debug((success ?

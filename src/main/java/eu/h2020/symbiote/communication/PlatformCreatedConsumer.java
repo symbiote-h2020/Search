@@ -69,7 +69,6 @@ public class PlatformCreatedConsumer extends DefaultConsumer {
             log.error("I/O Exception occurred when parsing Platform object", e);
         }
 
-
         getChannel().basicAck(envelope.getDeliveryTag(), false);
     }
 

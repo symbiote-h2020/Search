@@ -4,6 +4,9 @@ import eu.h2020.symbiote.communication.RabbitManager;
 import eu.h2020.symbiote.filtering.AccessPolicyRepo;
 import eu.h2020.symbiote.filtering.SecurityManager;
 import eu.h2020.symbiote.handlers.*;
+import eu.h2020.symbiote.mappings.MappingManager;
+import eu.h2020.symbiote.model.mim.InterworkingService;
+import eu.h2020.symbiote.model.mim.SmartSpace;
 import eu.h2020.symbiote.ranking.AvailabilityManager;
 import eu.h2020.symbiote.ranking.PopularityManager;
 import eu.h2020.symbiote.ranking.RankingHandler;
@@ -24,6 +27,7 @@ import java.io.File;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -56,6 +60,7 @@ public class SearchApplication {
         private final AccessPolicyRepo accessPolicyRepo;
         private final InterworkingServiceInfoRepo interworkingServiceInfoRepo;
         private final SecurityManager securityManager;
+        private final MappingManager mappingManager;
         private final RankingHandler rankingHandler;
         private final boolean searchMultithread;
         private final boolean securityEnabled;
@@ -72,6 +77,7 @@ public class SearchApplication {
 
         @Autowired
         public CLR(RabbitManager manager, PopularityManager popularityManager, AvailabilityManager availabilityManager, AccessPolicyRepo accessPolicyRepo, InterworkingServiceInfoRepo interworkingServiceInfoRepo, SecurityManager securityManager, RankingHandler rankingHandler,
+                   MappingManager mappingManager,
                    @Value("${search.multithreading}") boolean searchMultithread, @Value("${search.security.enabled}") boolean securityEnabled, @Value("${search.ranking.enabled}") boolean rankingEnabled,
                    @Value("${search.multithreading.coreThreads}") int coreThreads, @Value("${search.multithreading.maxThreads}") int maxThreads, @Value("${search.multithreading.keepAliveInMinutes}") int threadsKeepAlive,
                    @Value("${search.multithreading.writer.coreThreads}") int writerExecutorCoreThreads, @Value("${search.multithreading.writer.maxThreads}") int writerExecutorMaxThreads, @Value("${search.multithreading.writer.keepAliveInMinutes}") int writerExecutorKeepAliveInMinutes) {
@@ -81,6 +87,7 @@ public class SearchApplication {
             this.accessPolicyRepo = accessPolicyRepo;
             this.interworkingServiceInfoRepo = interworkingServiceInfoRepo;
             this.securityManager = securityManager;
+            this.mappingManager = mappingManager;
             this.rankingHandler = rankingHandler;
             this.securityEnabled = securityEnabled;
             this.rankingEnabled = rankingEnabled;
@@ -145,12 +152,38 @@ public class SearchApplication {
             manager.registerSspResourceDeletedConsumer(resourceHandler, writerExecutorService);
             manager.registerSspResourceUpdatedConsumer(resourceHandler, writerExecutorService);
 
+            //Mappings handling crud
+            manager.registerMappingCreateConsumer(mappingManager);
+            manager.registerMappingDeleteConsumer(mappingManager);
+            manager.registerMappingGetAllConsumer(mappingManager);
+            manager.registerMappingGetSingleConsumer(mappingManager);
+
 
             //TODO
             //loading interworking services on startup
 //            platformHandler.loadAndSaveInterworkingServicesFromTriplestore();
-//            System.out.println( "Loaded " + interworkingServiceInfos.size() + " ii services");
 
+            platformHandler.deleteSsp("5b921e51ef6ecf58cca87812");
+            platformHandler.deleteSdev("5b922212ef6ecf58cca87813");
+
+            platformHandler.deleteSsp("SSP_Navigo");
+
+            Thread.sleep(2000);
+            SmartSpace smartSpace = new SmartSpace();
+            smartSpace.setName("SSP_Navigo");
+            smartSpace.setDescription(Arrays.asList("Smart Space at Navigo"));
+            smartSpace.setId("SSP_Navigo");
+            InterworkingService interworkingService = new InterworkingService();
+            interworkingService.setUrl("https://smartspace.navigotoscana.it");
+            interworkingService.setInformationModelId("BIM");
+            smartSpace.setInterworkingServices( Arrays.asList(interworkingService));
+            platformHandler.registerSsp(smartSpace);
+
+
+
+//        deleteNavigoSSP(sspName,"5b921e51ef6ecf58cca87812",sspUrl);
+//        Thread.sleep(5000);
+//        deleteNavigoSSP(sspName,"5b921e51ef6ecf58cca87813",sspUrl);
 
             startBlankCleanupScheduler(resourceHandler);
         }

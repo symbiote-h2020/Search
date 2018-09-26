@@ -3,6 +3,7 @@ package eu.h2020.symbiote.handlers;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -11,7 +12,7 @@ import java.util.Optional;
 @Repository
 public interface InterworkingServiceInfoRepo extends MongoRepository<InterworkingServiceInfo, String> {
 
-    public Optional<InterworkingServiceInfo> findByInterworkingServiceURL( String interworkingServiceURL );
+    public List<InterworkingServiceInfo> findByInterworkingServiceURL(String interworkingServiceURL );
 
     public void deleteByPlatformId( String platformId );
 

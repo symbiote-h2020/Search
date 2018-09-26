@@ -12,6 +12,8 @@ import eu.h2020.symbiote.security.accesspolicies.IAccessPolicy;
 import eu.h2020.symbiote.security.accesspolicies.common.AccessPolicyFactory;
 import eu.h2020.symbiote.security.commons.exceptions.custom.InvalidArgumentsException;
 import eu.h2020.symbiote.semantics.ModelHelper;
+import org.apache.commons.cli.Option;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jena.rdf.model.Model;
@@ -22,6 +24,7 @@ import org.springframework.util.Assert;
 import java.io.StringReader;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Created by Mael on 16/01/2017.
@@ -125,9 +128,10 @@ public class ResourceHandler implements IResourceEvents {
     }
 
     private Optional<String> findServiceURI(String resourceURL, String platformId ) {
+        Optional<String> result;
         if( resourceURL != null && !resourceURL.isEmpty() ) {
-            Optional<InterworkingServiceInfo> ii = this.interworkingServiceInfoRepo.findByInterworkingServiceURL(resourceURL);
-            if( !ii.isPresent() ) {
+            List<InterworkingServiceInfo> ii = this.interworkingServiceInfoRepo.findByInterworkingServiceURL(resourceURL);
+            if( ii.size() == 0 ) {
                 if( resourceURL.endsWith("/") ) {
                     ii = this.interworkingServiceInfoRepo.findByInterworkingServiceURL(resourceURL.substring(0, resourceURL.length() - 1));
                 } else {
@@ -135,7 +139,19 @@ public class ResourceHandler implements IResourceEvents {
                 }
             }
 
-            return ii.isPresent()?Optional.of(ii.get().getInterworkingServiceIRI()):Optional.empty();
+            log.debug("Found " + ii.size() + " interworking services for url " + resourceURL + " for platform " + platformId);
+            if( ii.size()>0 ) {
+                log.debug("The platform id of the first element of interworking service list: " + ii.get(0).getPlatformId());
+                result = Optional.of(ii.get(0).getInterworkingServiceIRI());
+            } else {
+                result = Optional.empty();
+            }
+
+//            List<InterworkingServiceInfo> filterByPlatformId = ii.stream().filter(isi -> StringUtils.equals(platformId, isi.getPlatformId())).collect(Collectors.toList());
+//            log.debug("After filtering by platformId " + filterByPlatformId.size() );
+//            return filterByPlatformId.size()>0?Optional.of(filterByPlatformId.get(0).getInterworkingServiceIRI()): Optional.empty();
+            return result;
+
         }
         return Optional.empty();
 //            orElse( resourceURL.endsWith("/")?

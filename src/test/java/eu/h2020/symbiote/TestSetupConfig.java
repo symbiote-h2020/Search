@@ -18,8 +18,10 @@ import org.apache.jena.rdf.model.ModelFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by Mael on 23/01/2017.
@@ -214,6 +216,23 @@ public class TestSetupConfig {
         return smartSpace;
     }
 
+    public static SmartSpace generateSmartSpace(String sspName, String sspId, List<String> interworkingServiceUrls) {
+        SmartSpace smartSpace = new SmartSpace();
+        smartSpace.setName(sspName);
+        smartSpace.setDescription(Arrays.asList("This is smart space 1"));
+        smartSpace.setId(sspId);
+        List<InterworkingService> iss = new ArrayList<>();
+        for( String url: interworkingServiceUrls ) {
+            InterworkingService interworkingService = new InterworkingService();
+            interworkingService.setUrl(url);
+            interworkingService.setInformationModelId("BIM");
+            iss.add(interworkingService);
+        }
+        smartSpace.setInterworkingServices( iss );
+
+        return smartSpace;
+    }
+
     public static SspRegInfo generateSdev(String sspId, String sdevId, String pluginId, String pluginUrl) {
         SspRegInfo sspRegInfo = new SspRegInfo();
         sspRegInfo.setSspId(sspId);
@@ -222,7 +241,8 @@ public class TestSetupConfig {
         sspRegInfo.setDerivedKey1("deriveKey1");
         sspRegInfo.setHashField("hashSecret");
         sspRegInfo.setPluginId(pluginId);
-        sspRegInfo.setPluginURL(pluginUrl);
+        //TODO remove for real ssp
+//        sspRegInfo.setPluginUrl(pluginUrl);
         return sspRegInfo;
     }
 

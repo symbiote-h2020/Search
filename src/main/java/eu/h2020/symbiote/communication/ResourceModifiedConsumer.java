@@ -8,6 +8,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 import eu.h2020.symbiote.core.internal.CoreResourceRegisteredOrModifiedEventPayload;
+import eu.h2020.symbiote.core.internal.CoreSspResourceRegisteredOrModifiedEventPayload;
 import eu.h2020.symbiote.handlers.ResourceHandler;
 
 import org.apache.commons.logging.Log;
@@ -59,6 +60,15 @@ public class ResourceModifiedConsumer extends DefaultConsumer {
 
             Callable<Boolean> callable = () -> {
                 boolean success = handler.updateResource(resource);
+
+                try {
+                    CoreSspResourceRegisteredOrModifiedEventPayload sspRes = mapper.readValue(msg, CoreSspResourceRegisteredOrModifiedEventPayload.class);
+                    if (success) {
+                        handler.addSdevResourceServiceLink(sspRes);
+                    }
+                } catch ( Exception e ) {
+                    //Ignore error
+                }
 
                 long after = System.currentTimeMillis();
 
