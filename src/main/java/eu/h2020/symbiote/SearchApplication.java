@@ -43,7 +43,9 @@ public class SearchApplication {
 	private static Log log = LogFactory.getLog(SearchApplication.class);
 
 	public static void main(String[] args) {
-		SpringApplication.run(SearchApplication.class, args);
+
+        WaitForPort.waitForServices(WaitForPort.findProperty("SPRING_BOOT_WAIT_FOR_SERVICES"));
+        SpringApplication.run(SearchApplication.class, args);
     }
 
     @Component
