@@ -18,12 +18,11 @@ import eu.h2020.symbiote.security.commons.enums.ValidationStatus;
 import eu.h2020.symbiote.security.commons.exceptions.custom.SecurityHandlerException;
 import eu.h2020.symbiote.security.communication.payloads.SecurityCredentials;
 import eu.h2020.symbiote.security.communication.payloads.SecurityRequest;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
-import org.apache.jena.query.QuerySolution;
-import org.apache.jena.query.ResultSet;
-import org.apache.jena.query.ResultSetFormatter;
+import org.apache.jena.query.*;
 import org.apache.jena.sparql.ARQException;
 import org.apache.jena.sparql.resultset.ResultsFormat;
 
@@ -90,48 +89,10 @@ public class MultiSearchHandler implements ISearchEvents {
     }
 
     @Override
-    public SparqlQueryResponse sparqlSearch(CoreSparqlQueryRequest request) {
-        String resultOfSearch = "";
-        SparqlQueryResponse response = new SparqlQueryResponse();
-
-
-        //TODO change to true for deployment
-        ResultSet resultSet = this.triplestore.executeQuery(request.getBody(), request.getSecurityRequest(), false);
-
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-
-        String formatString = request.getOutputFormat().toString();
-        ResultsFormat format = ResultsFormat.lookup(formatString);
-        try {
-            ResultSetFormatter.output(stream, resultSet, format);
-        } catch (ARQException e) {
-            log.warn("Got unsupported format exception, switching to text output format... " + e.getMessage());
-            //use default formatter in case of unsupported format/other errors
-            ResultSetFormatter.out(stream, resultSet);
-        }
-        try {
-            resultOfSearch = stream.toString("UTF-8");
-//            System.out.println(resultOfSearch);
-        } catch (UnsupportedEncodingException e) {
-            log.error("Error occurred when doing sparqlSearch formatting: " + e.getMessage(), e);
-            response.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
-            response.setMessage("Error occurred when generating result output");
-        }
-
-        response.setBody(resultOfSearch);
-        response.setStatus(HttpStatus.SC_OK);
-        response.setMessage(SUCCESS_MESSAGE);
-
-        if (securityEnabled) {
-            try {
-                response.setServiceResponse(securityManager.generateSecurityResponse());
-            } catch (SecurityHandlerException e) {
-                log.error("Error occurred when generating security response. Setting response to empty string. Message of error: " + e.getMessage(), e);
-                response.setServiceResponse("");
-                response.setMessage("Security response could not be correctly generated");
-            }
-        }
-        return response;
+    public SparqlQueryResponse sparqlSearch(SearchCommunicationHandler comm, CoreSparqlQueryRequest request) {
+        log.debug("["+ comm.getReqId() +"] Scheduling sparql search req" );
+        executorService.submit(new CallableSparqlSearch(comm, request, triplestore));
+        return new SparqlQueryResponse();
     }
 
     private void searchForPropertiesOfResources(List<QueryResourceResult> resources, SecurityRequest request) {
@@ -255,7 +216,7 @@ public class MultiSearchHandler implements ISearchEvents {
 
                 long beforeRank = System.currentTimeMillis();
 
-                if (shouldRank) {
+                if( shouldRank && request.getShould_rank() !=null && request.getShould_rank() ) {
                     log.debug("["+comm.getReqId()+"] Generating ranking for response...");
                     RankingQuery rankingQuery = new RankingQuery(response);
                     rankingQuery.setIncludeDistance(HandlerUtils.isDistanceQuery(request));
@@ -292,4 +253,112 @@ public class MultiSearchHandler implements ISearchEvents {
             return response;
         }
     }
+
+    private class CallableSparqlSearch implements Callable<SparqlQueryResponse> {
+
+        private final CoreSparqlQueryRequest request;
+        private final TripleStore triplestore;
+        private final SearchCommunicationHandler comm;
+
+        public CallableSparqlSearch(SearchCommunicationHandler searchCommunicationhandler, CoreSparqlQueryRequest request, TripleStore triplestore) {
+            this.comm = searchCommunicationhandler;
+            this.request = request;
+            this.triplestore = triplestore;
+        }
+
+        @Override
+        public SparqlQueryResponse call() throws Exception {
+
+            System.out.println("Callable sparql search execution");
+            String resultOfSearch = "";
+            SparqlQueryResponse response = new SparqlQueryResponse();
+
+            if( request.getBaseModel() == null || StringUtils.isEmpty(request.getBaseModel()) ) {
+                System.out.println("Executing sparql");
+                resultOfSearch = runSparqlQuery( response );
+            } else {
+                //Execute mapping queries
+                System.out.println("Executing sparql rewriting query -> nyi");
+            }
+
+            response.setBody(resultOfSearch);
+            response.setStatus(HttpStatus.SC_OK);
+            response.setMessage(SUCCESS_MESSAGE);
+
+            if (securityEnabled) {
+                try {
+                    response.setServiceResponse(securityManager.generateSecurityResponse());
+                } catch (SecurityHandlerException e) {
+                    log.error("Error occurred when generating security response. Setting response to empty string. Message of error: " + e.getMessage(), e);
+                    response.setServiceResponse("");
+                    response.setMessage("Security response could not be correctly generated");
+                }
+            }
+
+            comm.sendResponse(response);
+            return response;
+        }
+
+        private String runSparqlQuery( SparqlQueryResponse response ) {
+            String resultOfSearch = null;
+
+            ResultSet resultSet = this.triplestore.executeQueryOnUnionGraph(request.getBody(), request.getSecurityRequest(), false);
+
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+            String formatString = request.getOutputFormat().toString();
+            ResultsFormat format = ResultsFormat.lookup(formatString);
+            try {
+                ResultSetFormatter.output(stream, resultSet, format);
+            } catch (ARQException e) {
+                log.warn("Got unsupported format exception, switching to text output format... " + e.getMessage());
+                //use default formatter in case of unsupported format/other errors
+                ResultSetFormatter.out(stream, resultSet);
+            }
+            try {
+                resultOfSearch = stream.toString("UTF-8");
+//            System.out.println(resultOfSearch);
+            } catch (UnsupportedEncodingException e) {
+                log.error("Error occurred when doing sparqlSearch formatting: " + e.getMessage(), e);
+                response.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+                response.setMessage("Error occurred when generating result output");
+            }
+
+
+            return resultOfSearch;
+        }
+
+        private String runSparqlRewrittingQuery( SparqlQueryResponse response ) {
+
+            String resultOfSearch = null;
+
+            ResultSet resultSet = this.triplestore.executeQuery(request.getBody(), request.getSecurityRequest(), false);
+
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+            String formatString = request.getOutputFormat().toString();
+            ResultsFormat format = ResultsFormat.lookup(formatString);
+            try {
+                ResultSetRewindable rewindableResults = ResultSetFactory.makeRewindable(resultSet);
+                ResultSetFormatter.output(stream, resultSet, format);
+            } catch (ARQException e) {
+                log.warn("Got unsupported format exception, switching to text output format... " + e.getMessage());
+                //use default formatter in case of unsupported format/other errors
+                ResultSetFormatter.out(stream, resultSet);
+            }
+            try {
+                resultOfSearch = stream.toString("UTF-8");
+//            System.out.println(resultOfSearch);
+            } catch (UnsupportedEncodingException e) {
+                log.error("Error occurred when doing sparqlSearch formatting: " + e.getMessage(), e);
+                response.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+                response.setMessage("Error occurred when generating result output");
+            }
+
+
+            return resultOfSearch;
+
+        }
+    }
+
 }

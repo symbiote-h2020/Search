@@ -17,6 +17,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
 
 import java.io.IOException;
+import java.util.UUID;
 
 /**
  * Consumer of the search requested event. Translates the message as list of query parameters, translates them into
@@ -47,51 +48,48 @@ public class SparqlSearchRequestedConsumer extends DefaultConsumer {
     @Override
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
         String msg = new String(body);
-        log.debug( "Consume sparql search requested message: " + msg );
+        String reqId = UUID.randomUUID().toString();
+        log.debug( "["+reqId+"] Consume sparql search requested message: " + msg );
+
+        SearchCommunicationHandler comm = new SearchCommunicationHandler(reqId, this.getChannel(), consumerTag,envelope,properties);
 
         //Try to parse the message
         try {
             ObjectMapper mapper = new ObjectMapper();
             CoreSparqlQueryRequest searchRequest = mapper.readValue(msg, CoreSparqlQueryRequest.class);
 
+
             SparqlQueryResponse response = null;
              try {
-                 response = handler.sparqlSearch(searchRequest);
+                 response = handler.sparqlSearch(comm, searchRequest);
              } catch( Exception e ) {
                  log.error("Error occurred when performing sparql search: " + e.getMessage(), e);
                  response = new SparqlQueryResponse(HttpStatus.SC_INTERNAL_SERVER_ERROR,"Error occurred during sparql search: " + e.getMessage(),"");
              }
-            //Send the response back to the client
-//            String responseMessage = "msg";
-//            if( response != null && response.getResourceList() != null ) {
-//                responseMessage = "size is " + response.getResourceList().size();
+
+//            //TODO for brievety
+////            log.debug( "Got Sparql response : " + StringUtils.substring(response.getBody(), 0,400 ));
+//            log.debug( "Got Sparql response : " + response.getBody());
+//
+//            if( response.getBody() != null && response.getBody().length() > MAX_SPARQL_SIZE ) {
+//                log.debug( "Size is too big: " + response.getBody().length() );
+//                response.setMessage("Size of the response is too big for communication");
+//                response.setStatus(HttpStatus.SC_NOT_ACCEPTABLE);
+//                response.setBody("");
 //            } else {
-//                responseMessage = "Response is null or empty";
+//                log.debug(response.getBody() != null?"Size of the response ok: " + response.getBody().length():"Got null response");
 //            }
-
-            //TODO for brievety
-//            log.debug( "Got Sparql response : " + StringUtils.substring(response.getBody(), 0,400 ));
-            log.debug( "Got Sparql response : " + response.getBody());
-
-            if( response.getBody().length() > MAX_SPARQL_SIZE ) {
-                log.debug( "Size is too big: " + response.getBody().length() );
-                response.setMessage("Size of the response is too big for communication");
-                response.setStatus(HttpStatus.SC_NOT_ACCEPTABLE);
-                response.setBody("");
-            } else {
-                log.debug("Size of the response ok: " + response.getBody().length());
-            }
-
-            byte[] responseBytes = mapper.writeValueAsBytes(response!=null?response:"[]");
-
-            AMQP.BasicProperties replyProps = new AMQP.BasicProperties
-                    .Builder()
-                    .correlationId(properties.getCorrelationId())
-                    .build();
-            this.getChannel().basicPublish("", properties.getReplyTo(), replyProps, responseBytes);
-            log.debug("-> Message sent back");
-
-            this.getChannel().basicAck(envelope.getDeliveryTag(), false);
+//
+//            byte[] responseBytes = mapper.writeValueAsBytes(response!=null?response:"[]");
+//
+//            AMQP.BasicProperties replyProps = new AMQP.BasicProperties
+//                    .Builder()
+//                    .correlationId(properties.getCorrelationId())
+//                    .build();
+//            this.getChannel().basicPublish("", properties.getReplyTo(), replyProps, responseBytes);
+//            log.debug("-> Message sent back");
+//
+//            this.getChannel().basicAck(envelope.getDeliveryTag(), false);
 
         } catch( JsonParseException | JsonMappingException e ) {
             log.error("Error occurred when parsing Resource object JSON: " + msg, e);

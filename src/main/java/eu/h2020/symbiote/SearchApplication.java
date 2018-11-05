@@ -13,6 +13,10 @@ import eu.h2020.symbiote.ranking.RankingHandler;
 import eu.h2020.symbiote.search.SearchStorage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -40,6 +44,16 @@ import java.util.concurrent.*;
 @EnableDiscoveryClient
 @SpringBootApplication
 public class SearchApplication {
+
+
+    @Value("${rabbit.host}")
+    private String rabbitHost;
+
+    @Value("${rabbit.username}")
+    private String rabbitUsername;
+
+    @Value("${rabbit.password}")
+    private String rabbitPassword;
 
     public static final String DIRECTORY = System.getProperty("user.home") +File.separator+ "coreSearchTriplestore";
 //    public static final String DIRECTORY = "F:\\stressTest\\2";
@@ -76,7 +90,7 @@ public class SearchApplication {
         private final ThreadPoolExecutor writerExecutorService;
 
         @Autowired
-        public CLR(RabbitManager manager, PopularityManager popularityManager, AvailabilityManager availabilityManager, AccessPolicyRepo accessPolicyRepo, InterworkingServiceInfoRepo interworkingServiceInfoRepo, SecurityManager securityManager, RankingHandler rankingHandler,
+        public CLR(RabbitTemplate rabbitTemplate, RabbitManager manager, PopularityManager popularityManager, AvailabilityManager availabilityManager, AccessPolicyRepo accessPolicyRepo, InterworkingServiceInfoRepo interworkingServiceInfoRepo, SecurityManager securityManager, RankingHandler rankingHandler,
                    MappingManager mappingManager,
                    @Value("${search.multithreading}") boolean searchMultithread, @Value("${search.security.enabled}") boolean securityEnabled, @Value("${search.ranking.enabled}") boolean rankingEnabled,
                    @Value("${search.multithreading.coreThreads}") int coreThreads, @Value("${search.multithreading.maxThreads}") int maxThreads, @Value("${search.multithreading.keepAliveInMinutes}") int threadsKeepAlive,
@@ -158,26 +172,30 @@ public class SearchApplication {
             manager.registerMappingGetAllConsumer(mappingManager);
             manager.registerMappingGetSingleConsumer(mappingManager);
 
+            //Information model handling crud
+            manager.registerModelCreateConsumer(platformHandler);
+            manager.registerModelDeleteConsumer(platformHandler);
+            manager.registerModelUpdateConsumer(platformHandler);
 
             //TODO
             //loading interworking services on startup
 //            platformHandler.loadAndSaveInterworkingServicesFromTriplestore();
 
-            platformHandler.deleteSsp("5b921e51ef6ecf58cca87812");
-            platformHandler.deleteSdev("5b922212ef6ecf58cca87813");
-
-            platformHandler.deleteSsp("SSP_Navigo");
-
-            Thread.sleep(2000);
-            SmartSpace smartSpace = new SmartSpace();
-            smartSpace.setName("SSP_Navigo");
-            smartSpace.setDescription(Arrays.asList("Smart Space at Navigo"));
-            smartSpace.setId("SSP_Navigo");
-            InterworkingService interworkingService = new InterworkingService();
-            interworkingService.setUrl("https://smartspace.navigotoscana.it");
-            interworkingService.setInformationModelId("BIM");
-            smartSpace.setInterworkingServices( Arrays.asList(interworkingService));
-            platformHandler.registerSsp(smartSpace);
+//            platformHandler.deleteSsp("5b921e51ef6ecf58cca87812");
+//            platformHandler.deleteSdev("5b922212ef6ecf58cca87813");
+//
+//            platformHandler.deleteSsp("SSP_Navigo");
+//
+//            Thread.sleep(2000);
+//            SmartSpace smartSpace = new SmartSpace();
+//            smartSpace.setName("SSP_Navigo");
+//            smartSpace.setDescription(Arrays.asList("Smart Space at Navigo"));
+//            smartSpace.setId("SSP_Navigo");
+//            InterworkingService interworkingService = new InterworkingService();
+//            interworkingService.setUrl("https://smartspace.navigotoscana.it");
+//            interworkingService.setInformationModelId("BIM");
+//            smartSpace.setInterworkingServices( Arrays.asList(interworkingService));
+//            platformHandler.registerSsp(smartSpace);
 
 
 
@@ -205,6 +223,38 @@ public class SearchApplication {
 
         scheduledExecutorService.scheduleAtFixedRate(callable, l ,86400,TimeUnit.SECONDS);
 
+    }
+
+    @Bean
+    Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
+
+        Jackson2JsonMessageConverter converter = new Jackson2JsonMessageConverter();
+
+        /**
+         * It is necessary to register the GeoJsonModule, otherwise the GeoJsonPoint cannot
+         * be deserialized by Jackson2JsonMessageConverter.
+         */
+        // ObjectMapper mapper = new ObjectMapper();
+        // mapper.registerModule(new GeoJsonModule());
+        // converter.setJsonObjectMapper(mapper);
+        return converter;
+    }
+
+    @Bean
+    public ConnectionFactory connectionFactory() throws Exception {
+        CachingConnectionFactory connectionFactory = new CachingConnectionFactory(rabbitHost);
+        // connectionFactory.setPublisherConfirms(true);
+        // connectionFactory.setPublisherReturns(true);
+        connectionFactory.setUsername(rabbitUsername);
+        connectionFactory.setPassword(rabbitPassword);
+        return connectionFactory;
+    }
+
+    @Bean
+    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory, Jackson2JsonMessageConverter jackson2JsonMessageConverter) {
+        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+        rabbitTemplate.setMessageConverter(jackson2JsonMessageConverter);
+        return rabbitTemplate;
     }
 
     @Bean

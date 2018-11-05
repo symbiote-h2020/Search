@@ -12,24 +12,34 @@ import eu.h2020.symbiote.security.accesspolicies.IAccessPolicy;
 import eu.h2020.symbiote.security.accesspolicies.common.AccessPolicyFactory;
 import eu.h2020.symbiote.security.commons.exceptions.custom.InvalidArgumentsException;
 import eu.h2020.symbiote.semantics.ModelHelper;
+import eu.h2020.symbiote.semantics.ontology.CIM;
 import org.apache.commons.cli.Option;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jena.ontology.Individual;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.query.ParameterizedSparqlString;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.update.UpdateRequest;
 import org.springframework.util.Assert;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
  * Created by Mael on 16/01/2017.
  */
 public class ResourceHandler implements IResourceEvents {
+
+    private static final String TAG_RESOURCE_URI = "?RESOURCE_URI";
 
     private static final Log log = LogFactory.getLog(ResourceHandler.class);
 
@@ -59,7 +69,7 @@ public class ResourceHandler implements IResourceEvents {
 
             String resourceURL = coreResource.getInterworkingServiceURL(); //match this with
 
-            log.debug( "Querying for interworking service URI... resUrl: " + resourceURL + " platformId: " + platformId);
+            log.debug("Querying for interworking service URI... resUrl: " + resourceURL + " platformId: " + platformId);
 //            String registeredServiceURI = findServiceURI(resourceURL,platformId);
 //            if( registeredServiceURI == null ) {
 //                //Try with slash in the end - most common mistake from platforms
@@ -72,33 +82,89 @@ public class ResourceHandler implements IResourceEvents {
 //                }
 //            }
 
-            Optional<String> registeredServiceURI = findServiceURI(resourceURL, platformId);
-            if( !registeredServiceURI.isPresent()) {
+            Optional<InterworkingServiceInfo> registeredService = findService(resourceURL, platformId);
+            if (!registeredService.isPresent()) {
                 //If still couldnt find
                 log.debug("Couldnt find interworking service URL, returning false");
                 return false;
             }
 
 
-            try (StringReader reader = new StringReader(coreResource.getRdf())) {
-                model.read(reader, null, coreResource.getRdfFormat().toString());
-                this.storage.registerResource(ModelHelper.getPlatformURI(platformId), registeredServiceURI.get(), ModelHelper.getResourceURI(coreResource.getId()), model);
-                if( coreResource.getPolicySpecifier() != null ) {
-                    try {
-                        IAccessPolicy singleTokenAccessPolicy = AccessPolicyFactory.getAccessPolicy(coreResource.getPolicySpecifier());
-                        AccessPolicy policy = new AccessPolicy(coreResource.getId(), ModelHelper.getResourceURI(coreResource.getId()), singleTokenAccessPolicy);
-                        this.accessPolicyRepo.save(policy);
-                    } catch (InvalidArgumentsException e) {
-                        log.error("[POLICY NOT SAVED] Error when parsing filtering policy: " + e.getMessage(), e);
+//            try (StringReader reader = new StringReader(coreResource.getRdf())) {
+//                model.read(reader, null, coreResource.getRdfFormat().toString());
+
+            String resourceUri = null;
+            try {
+                OntModel ontModel = ModelHelper.readModel(coreResource.getRdf(), coreResource.getRdfFormat(), false, false);
+                ontModel = ModelHelper.withInf(ontModel);
+
+                //New add pim
+
+//                Model pimModel = this.storage.getTripleStore().getNamedModel(registeredService.get().getInformationModeIri());
+//
+//                OntModel pim = null;
+//                try {
+//                    pim = ModelHelper.asOntModel(pimModel, true, true);
+//                } catch( Exception e ) {
+//                    log.error("Error occurred when asOntModel: " + e.getMessage());
+//                }
+
+                OntModel pim = storage.getNamedGraphAsOntModel(registeredService.get().getInformationModeIri());
+
+
+                if( pim != null ) {
+                    ontModel.addSubModel( pim);
+
+                    //                Set<Individual> individuals = ontModel.listIndividuals(CIM.Resource).toSet();
+
+                    Set<Individual> resourcesDefinedInPIM = ModelHelper.withInf(pim).listIndividuals(CIM.Resource).toSet();
+                    log.debug("After reading pim defined resources");
+//                    Set<Individual> resourceIndividuals = ontModel.listIndividuals(CIM.Resource).toSet();
+                    Set<Individual> resourceIndividuals = ontModel.listIndividuals(CIM.Service).toSet();
+                    log.debug("After reading all resources");
+                    resourceIndividuals.removeAll(resourcesDefinedInPIM);
+                    ontModel.removeSubModel(pim);
+                    if (resourceIndividuals.size() == 1) {
+                        Individual resourceIndv = resourceIndividuals.iterator().next();
+
+                        resourceUri = resourceIndv.getURI();
+                        log.debug("Found following URI of the resource " + resourceUri);
+
+                        GET_RESOURCE_CLOSURE.setIri(TAG_RESOURCE_URI, resourceUri);
+                        try (QueryExecution qexec = QueryExecutionFactory.create(GET_RESOURCE_CLOSURE.asQuery(), ontModel.getRawModel())) {
+                            model = qexec.execConstruct();
+                        }
+
+                    } else {
+                        //What to do here?
+                        log.error("Wrong number of resources in registration! size " + resourceIndividuals.size());
                     }
+                } else {
+                    log.error("Could not load submodel: " + registeredService.get().getInterworkingServiceIRI());
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (resourceUri == null) {
+                resourceUri = ModelHelper.getResourceURI(coreResource.getId());
+            }
+            this.storage.registerResource(ModelHelper.getPlatformURI(platformId), registeredService.get().getInterworkingServiceIRI(), resourceUri, model);
+            if (coreResource.getPolicySpecifier() != null) {
+                try {
+                    IAccessPolicy singleTokenAccessPolicy = AccessPolicyFactory.getAccessPolicy(coreResource.getPolicySpecifier());
+                    AccessPolicy policy = new AccessPolicy(coreResource.getId(), ModelHelper.getResourceURI(coreResource.getId()), singleTokenAccessPolicy);
+                    this.accessPolicyRepo.save(policy);
+                } catch (InvalidArgumentsException e) {
+                    log.error("[POLICY NOT SAVED] Error when parsing filtering policy: " + e.getMessage(), e);
                 }
             }
+//            }
         }
         storage.getTripleStore().printDataset();
         return true;
     }
 
-    public void addSdevResourceServiceLink( CoreSspResourceRegisteredOrModifiedEventPayload resources ) {
+    public void addSdevResourceServiceLink(CoreSspResourceRegisteredOrModifiedEventPayload resources) {
         log.debug("Adding sdev resources service link");
 
         String sdevURI = ModelHelper.getSdevURI(resources.getSdevId());
@@ -115,7 +181,7 @@ public class ResourceHandler implements IResourceEvents {
     // load Map<String,List<II>> -> keys are platformIds
     // update map on platform crud
 
-    private String getSearchInterworkingServiceSPARQL( String resourceURL, String platformId ) {
+    private String getSearchInterworkingServiceSPARQL(String resourceURL, String platformId) {
         return "PREFIX cim: <http://www.symbiote-h2020.eu/ontology/core#>\n" +
                 "PREFIX mim: <http://www.symbiote-h2020.eu/ontology/meta#>" +
                 "\n" +
@@ -127,22 +193,23 @@ public class ResourceHandler implements IResourceEvents {
                 "} ";
     }
 
-    private Optional<String> findServiceURI(String resourceURL, String platformId ) {
-        Optional<String> result;
-        if( resourceURL != null && !resourceURL.isEmpty() ) {
+    private Optional<InterworkingServiceInfo> findService(String resourceURL, String platformId) {
+        Optional<InterworkingServiceInfo> result;
+        if (resourceURL != null && !resourceURL.isEmpty()) {
             List<InterworkingServiceInfo> ii = this.interworkingServiceInfoRepo.findByInterworkingServiceURL(resourceURL);
-            if( ii.size() == 0 ) {
-                if( resourceURL.endsWith("/") ) {
+            if (ii.size() == 0) {
+                if (resourceURL.endsWith("/")) {
                     ii = this.interworkingServiceInfoRepo.findByInterworkingServiceURL(resourceURL.substring(0, resourceURL.length() - 1));
                 } else {
-                    ii = this.interworkingServiceInfoRepo.findByInterworkingServiceURL(resourceURL+"/");
+                    ii = this.interworkingServiceInfoRepo.findByInterworkingServiceURL(resourceURL + "/");
                 }
             }
 
             log.debug("Found " + ii.size() + " interworking services for url " + resourceURL + " for platform " + platformId);
-            if( ii.size()>0 ) {
+            if (ii.size() > 0) {
                 log.debug("The platform id of the first element of interworking service list: " + ii.get(0).getPlatformId());
-                result = Optional.of(ii.get(0).getInterworkingServiceIRI());
+                log.debug("The iri of the first element of interworking service list: " + ii.get(0).getInterworkingServiceIRI());
+                result = Optional.of(ii.get(0));
             } else {
                 result = Optional.empty();
             }
@@ -157,7 +224,7 @@ public class ResourceHandler implements IResourceEvents {
 //            orElse( resourceURL.endsWith("/")?
 //                    this.interworkingServiceInfoRepo.findByInterworkingServiceURL(resourceURL.substring(0,resourceURL.length()-1)):
 //                    this.interworkingServiceInfoRepo.findByInterworkingServiceURL(resourceURL+"/"));
-        }
+    }
 
 //        String registeredServiceURI = findServiceURI(resourceURL,platformId);
 //        if( registeredServiceURI == null ) {
@@ -179,7 +246,7 @@ public class ResourceHandler implements IResourceEvents {
 //        return foundUri
 //    }
 
-    private String findServiceURISPARQL( String resourceURL, String platformId ) {
+    private String findServiceURISPARQL(String resourceURL, String platformId) {
         String registeredServiceURI = null;
         String query = getSearchInterworkingServiceSPARQL(resourceURL, platformId);
 
@@ -241,4 +308,29 @@ public class ResourceHandler implements IResourceEvents {
         this.storage.getTripleStore().executeUpdate(orphanClears);
     }
 
+
+    private static final ParameterizedSparqlString GET_RESOURCE_CLOSURE = new ParameterizedSparqlString(
+            "CONSTRUCT {\n"
+                    + "	?s ?p ?o.\n"
+                    + "}\n"
+                    + "{\n"
+                    + "	SELECT DISTINCT ?s ?p ?o\n"
+                    + "	{\n"
+                    + "		{\n"
+                    + "			SELECT *\n"
+                    + "			{\n"
+                    + "				" + TAG_RESOURCE_URI + " ?p ?o.\n"
+                    + "				BIND( " + TAG_RESOURCE_URI + " as ?s)\n"
+                    + "			}\n"
+                    + "		}\n"
+                    + "		UNION\n"
+                    + "		{\n"
+                    + "			SELECT *\n"
+                    + "			WHERE {\n"
+                    + "				" + TAG_RESOURCE_URI + " (a|!a)+ ?s . \n"
+                    + "				?s ?p ?o.\n"
+                    + "			}\n"
+                    + "		}\n"
+                    + "	}\n"
+                    + "}");
 }

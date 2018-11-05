@@ -14,6 +14,7 @@ import eu.h2020.symbiote.semantics.ModelHelper;
 import eu.h2020.symbiote.semantics.ontology.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jena.ontology.OntModel;
 import org.apache.jena.permissions.Factory;
 import org.apache.jena.query.*;
 import org.apache.jena.query.spatial.*;
@@ -257,8 +258,35 @@ public class TripleStore {
         }
     }
 
+
+
+    public void insertModelGraph( String uri, String rdf, RDFFormat rdfFormat ) {
+        GraphHelper.insertGraph(dataset , uri, rdf, rdfFormat);
+        //Old implementation
+//        dataset.begin(ReadWrite.WRITE);
+//        try {
+//            if (!dataset.containsNamedModel(uri)) {
+//                dataset.addNamedModel(uri, ModelFactory.createDefaultModel());
+//            }
+//            dataset.getNamedModel(uri).add(model);
+//            dataset.getDefaultModel().add(model);
+//            dataset.commit();
+//        } finally {
+//            dataset.end();
+//        }
+    }
+
+    public void removedNamedGraph( String graphUri) {
+        GraphHelper.removeGraph(dataset, graphUri);
+    }
+
+
     public ResultSet executeQuery(String queryString, SecurityRequest securityRequest, boolean useSecureGraph) {
         return executeQueryOnGraph(queryString, "urn:x-arq:DefaultGraph", securityRequest, useSecureGraph);
+    }
+
+    public ResultSet executeQueryOnUnionGraph(String queryString, SecurityRequest securityRequest, boolean useSecureGraph) {
+        return executeQueryOnGraph(queryString, "urn:x-arq:UnionGraph", securityRequest, useSecureGraph);
     }
 
     public ResultSet executeQuery(Query query, SecurityRequest securityRequest, boolean useSecureGraph) {
@@ -356,6 +384,18 @@ public class TripleStore {
         Model result = dataset.getDefaultModel();
         dataset.end();
         return result;
+    }
+
+    public Model getNamedModel( String uri ) {
+        Model modelToReturn = ModelFactory.createDefaultModel();
+
+        dataset.begin(ReadWrite.READ);
+        Model namedModel = dataset.getNamedModel( uri );
+
+        modelToReturn.add(namedModel);
+
+        dataset.end();
+        return modelToReturn;
     }
 
     public void printDataset() {

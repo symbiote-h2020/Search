@@ -1,6 +1,7 @@
 package eu.h2020.symbiote.handlers;
 
 import eu.h2020.symbiote.cloud.model.ssp.SspRegInfo;
+import eu.h2020.symbiote.model.mim.InformationModel;
 import eu.h2020.symbiote.model.mim.InterworkingService;
 import eu.h2020.symbiote.model.mim.Platform;
 import eu.h2020.symbiote.model.mim.SmartSpace;
@@ -24,7 +25,7 @@ import java.util.List;
  * <p>
  * Created by Mael on 11/01/2017.
  */
-public class PlatformHandler implements IPlatformEvents, ISspEvents {
+public class PlatformHandler implements IPlatformEvents, ISspEvents, IModelEvents {
 
     private static final Log log = LogFactory.getLog(PlatformHandler.class);
 
@@ -187,7 +188,7 @@ public class PlatformHandler implements IPlatformEvents, ISspEvents {
         serviceList.stream()
                 .map(is -> new InterworkingServiceInfo(HandlerUtils
                         .generateInterworkingServiceUri(systemIri, is.getUrl()),
-                        is.getUrl(), systemId)).forEach(isInfo -> {
+                        is.getUrl(), systemId,ModelHelper.getInformationModelURI(is.getInformationModelId()))).forEach(isInfo -> {
             log.debug("Saving interworking service | systemId: " + isInfo.getPlatformId() + " | serviceUrl: "
                     + isInfo.getInterworkingServiceURL() + " | serviceIri" + isInfo.getInterworkingServiceIRI());
             interworkingServiceInfoRepo.save(isInfo);
@@ -198,9 +199,10 @@ public class PlatformHandler implements IPlatformEvents, ISspEvents {
         return "PREFIX cim: <http://www.symbiote-h2020.eu/ontology/core#>\n" +
                 "PREFIX mim: <http://www.symbiote-h2020.eu/ontology/meta#>" +
                 "\n" +
-                "SELECT ?service ?serviceURL ?platformId WHERE {\n" +
+                "SELECT ?service ?serviceURL ?platformId ?informationModel WHERE {\n" +
                 "\t?service a mim:InterworkingService;\n" +
-                "\t\t\tmim:url ?serviceURL.\n" +
+                "\t\t\tmim:url ?serviceURL;\n" +
+                "\t\t\tmim:usesInformationModel ?informationModel.\n" +
                 "\t\t?platform cim:id ?platformId;\n" +
                 "\t\t\tmim:hasService ?service.\n" +
                 "} ";
@@ -209,6 +211,7 @@ public class PlatformHandler implements IPlatformEvents, ISspEvents {
     private static final String SOLUTION_SERVICE_IRI = "service";
     private static final String SOLUTION_SERVICE_URL = "serviceURL";
     private static final String SOLUTION_PLATFORM_ID = "platformId";
+    private static final String SOLUTION_INFORMATION_MODEL = "informationModel";
 
     public List<InterworkingServiceInfo> readInterworkingServicesFromTriplestore() {
         List<InterworkingServiceInfo> services = new ArrayList<>();
@@ -218,20 +221,43 @@ public class PlatformHandler implements IPlatformEvents, ISspEvents {
             String serviceIRI = solution.get(SOLUTION_SERVICE_IRI).toString();
             String serviceURL = solution.get(SOLUTION_SERVICE_URL).toString();
             String platformId = solution.get(SOLUTION_PLATFORM_ID).toString();
+            String informationModelIri = solution.get(SOLUTION_INFORMATION_MODEL).toString();
 
             //TODO delete
             System.out.println("Loaded ii: " + platformId + " | " + serviceIRI + " | " + serviceURL);
 
-            services.add(new InterworkingServiceInfo(serviceIRI, serviceURL, platformId));
+            services.add(new InterworkingServiceInfo(serviceIRI, serviceURL, platformId, informationModelIri));
         }
         return services;
     }
 
+
+    //TODO check informationmodelId
     public void loadAndSaveInterworkingServicesFromTriplestore() {
         readInterworkingServicesFromTriplestore().stream().forEach(ii -> interworkingServiceInfoRepo.save(ii));
     }
 
     public void printStorage() {
         this.storage.getTripleStore().printDataset();
+    }
+
+    @Override
+    public void registerInformationModel(InformationModel model) {
+        log.debug("Inserting information model graph " + model.getUri());
+        this.storage.registerModel( model  );
+
+    }
+
+    @Override
+    public void deleteInformationModel(InformationModel model) {
+        log.debug("Removing information model graph " + model.getUri());
+        this.storage.removeNamedGraph( model.getUri() );
+    }
+
+    @Override
+    public void updateInformationModel(InformationModel model) {
+        log.debug("Updating information model graph " + model.getUri());
+        this.storage.removeNamedGraph( model.getUri() );
+        this.storage.registerModel( model );
     }
 }

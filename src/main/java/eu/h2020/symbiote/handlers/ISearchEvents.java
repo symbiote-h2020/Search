@@ -28,9 +28,11 @@ public interface ISearchEvents {
     /**
      * Performs sparql search in the module.
      *
+     * @param comm Handler which dispatches response to the client
      * @param request Request containing SPARQL.
      * @return Response in format specified in the request.
      */
-    SparqlQueryResponse sparqlSearch(CoreSparqlQueryRequest request );
+    SparqlQueryResponse sparqlSearch(SearchCommunicationHandler comm,CoreSparqlQueryRequest request );
+
 
 }

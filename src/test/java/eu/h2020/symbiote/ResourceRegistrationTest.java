@@ -93,7 +93,7 @@ public class ResourceRegistrationTest {
     @Test
     public void testRegisterHandler() {
 
-        InterworkingServiceInfo infoToBeReturned = new InterworkingServiceInfo("http://iri","http://url",PLATFORM_A_ID);
+        InterworkingServiceInfo infoToBeReturned = new InterworkingServiceInfo("http://iri","http://url",PLATFORM_A_ID,"http://modelIri");
 
         when(interworkingServiceInfoRepo.findByInterworkingServiceURL(anyString())).thenReturn(Arrays.asList(infoToBeReturned));
 
