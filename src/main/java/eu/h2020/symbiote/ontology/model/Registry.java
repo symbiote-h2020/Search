@@ -6,6 +6,7 @@
 package eu.h2020.symbiote.ontology.model;
 
 import eu.h2020.symbiote.core.internal.RDFFormat;
+import eu.h2020.symbiote.model.mim.InformationModel;
 import eu.h2020.symbiote.semantics.ModelHelper;
 import eu.h2020.symbiote.semantics.ontology.MIM;
 import org.apache.commons.logging.Log;
@@ -84,7 +85,7 @@ public class Registry {
 //    }
 
     private String getResourceMetadata( String serviceURI, String resourceUri ) {
-        return "<" + serviceURI + "> <" + MIM.hasResource + "> <" +resourceUri + "> .";
+        return "<" + serviceURI + "> <" + MIM.hasResource + "> <" + resourceUri + "> .";
     }
 
 //    private String getSspResourceMetadata( String sdevURI, String resourceUri ) {

@@ -231,7 +231,7 @@ public class TripleStore {
     private void loadBaseModel(String loadUri, String insertUri, Dataset dataset) {
         try {
             Model model = ModelHelper.readModel(loadUri,true,false);
-            insertGraph(null,  model);
+            insertGraph(insertUri,  model);
         } catch (IOException ex) {
             log.error("could not load model '" + loadUri + "'. Reason: " + ex.getMessage());
         }
@@ -244,14 +244,14 @@ public class TripleStore {
     }
 
     public void insertGraph(String uri, Model model) {
-//        dataset.begin(ReadWrite.WRITE);
-//        if (!dataset.containsNamedModel(uri)) {
-//            dataset.addNamedModel(uri, ModelFactory.createDefaultModel());
-//        }
-//        dataset.getNamedModel(uri).add(model);
         dataset.begin(ReadWrite.WRITE);
         try {
-            dataset.getDefaultModel().add(model);
+        if (!dataset.containsNamedModel(uri)) {
+            dataset.addNamedModel(uri, ModelFactory.createDefaultModel());
+        }
+//        dataset.getNamedModel(uri).add(model);
+//        dataset.begin(ReadWrite.WRITE);
+            dataset.getNamedModel(uri).add(model);
             dataset.commit();
         } finally {
             dataset.end();
@@ -282,7 +282,7 @@ public class TripleStore {
 
 
     public ResultSet executeQuery(String queryString, SecurityRequest securityRequest, boolean useSecureGraph) {
-        return executeQueryOnGraph(queryString, "urn:x-arq:DefaultGraph", securityRequest, useSecureGraph);
+        return executeQueryOnGraph(queryString, "urn:x-arq:UnionGraph", securityRequest, useSecureGraph);
     }
 
     public ResultSet executeQueryOnUnionGraph(String queryString, SecurityRequest securityRequest, boolean useSecureGraph) {
@@ -290,7 +290,7 @@ public class TripleStore {
     }
 
     public ResultSet executeQuery(Query query, SecurityRequest securityRequest, boolean useSecureGraph) {
-        return executeQueryOnGraph(query, "urn:x-arq:DefaultGraph", securityRequest, useSecureGraph);
+        return executeQueryOnGraph(query, "urn:x-arq:UnionGraph", securityRequest, useSecureGraph);
     }
 
     public ResultSet executeQueryOnGraph(String queryString, String graphUri, SecurityRequest securityRequest, boolean useSecureGraph) {
@@ -327,6 +327,7 @@ public class TripleStore {
 
 //            Model modelToUse = useSecureGraph ? securedModel:model;
             if (useSecureGraph) {
+                //TODO check for querying named graphs
 //                synchronized (TripleStore.class) {
                     setSecurityRequest(securityRequest);
                     try (QueryExecution qe = QueryExecutionFactory.create(query, securedModel)) {
@@ -336,7 +337,9 @@ public class TripleStore {
 //                }
             } else {
 //            Model mm = ModelFactory.createRDFSModel(dataset.getDefaultModel());
-                try (QueryExecution qe = QueryExecutionFactory.create(query, dataset)) {
+
+                Model modelToQuery = dataset.getNamedModel(graphUri);
+                try (QueryExecution qe = QueryExecutionFactory.create(query, modelToQuery)) {
                     qe.setTimeout(sparqlQueryTimeout);
                     ResultSet resultSet = qe.execSelect();
                     //PRINTING INSTEAD OF RETURNING - comment

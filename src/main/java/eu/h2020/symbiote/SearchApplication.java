@@ -7,12 +7,15 @@ import eu.h2020.symbiote.handlers.*;
 import eu.h2020.symbiote.mappings.MappingManager;
 import eu.h2020.symbiote.model.mim.InterworkingService;
 import eu.h2020.symbiote.model.mim.SmartSpace;
+import eu.h2020.symbiote.ontology.model.TripleStore;
 import eu.h2020.symbiote.ranking.AvailabilityManager;
 import eu.h2020.symbiote.ranking.PopularityManager;
 import eu.h2020.symbiote.ranking.RankingHandler;
 import eu.h2020.symbiote.search.SearchStorage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jena.update.UpdateFactory;
+import org.apache.jena.update.UpdateRequest;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -204,6 +207,10 @@ public class SearchApplication {
 //        deleteNavigoSSP(sspName,"5b921e51ef6ecf58cca87813",sspUrl);
 
             startBlankCleanupScheduler(resourceHandler);
+
+
+            //TODO moveDefaultGraph
+//            moveDefaultGraph(searchStorage.getTripleStore());
         }
     }
 
@@ -223,6 +230,14 @@ public class SearchApplication {
 
         scheduledExecutorService.scheduleAtFixedRate(callable, l ,86400,TimeUnit.SECONDS);
 
+    }
+
+    public static void moveDefaultGraph(TripleStore tripleStore) {
+        System.out.println(">>>>>>>>>> MOVING TO NAMED GRAPH <<<<<<<<<");
+
+        UpdateRequest req = UpdateFactory.create();
+        req.add("MOVE DEFAULT TO <http://www.symbiote-h2020.eu/defaultGraph>");
+        tripleStore.executeUpdate(req);
     }
 
     @Bean

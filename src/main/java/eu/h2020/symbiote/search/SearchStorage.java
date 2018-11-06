@@ -2,6 +2,7 @@ package eu.h2020.symbiote.search;
 
 
 import eu.h2020.symbiote.SearchApplication;
+import eu.h2020.symbiote.core.internal.RDFFormat;
 import eu.h2020.symbiote.filtering.SecurityManager;
 import eu.h2020.symbiote.model.mim.InformationModel;
 import eu.h2020.symbiote.ontology.model.Registry;
@@ -9,6 +10,8 @@ import eu.h2020.symbiote.ontology.model.SearchEngine;
 import eu.h2020.symbiote.ontology.model.TripleStore;
 import eu.h2020.symbiote.semantics.GraphHelper;
 import eu.h2020.symbiote.semantics.ModelHelper;
+import eu.h2020.symbiote.semantics.ontology.CIM;
+import eu.h2020.symbiote.semantics.ontology.MIM;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jena.ontology.OntModel;
@@ -16,6 +19,7 @@ import org.apache.jena.query.Query;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.vocabulary.RDF;
 
 import java.io.IOException;
 import java.util.*;
@@ -161,8 +165,21 @@ public class SearchStorage {
 //        GraphHelper.insertGraph(pimDataset, ModelHelper.getInformationModelURI(model.getId()), model.getRdf(), model.getRdfFormat());
 //        GraphHelper.insertGraph(tripleStore.get, informationModel.getUri(), informationModel.getRdf(), informationModel.getRdfFormat());
 
+        tripleStore.insertGraph(informationModel.getUri(), getInformationModelMetadata(informationModel), RDFFormat.Turtle);
         tripleStore.insertModelGraph( informationModel.getUri(), informationModel.getRdf(), informationModel.getRdfFormat() );
     }
+
+    private String getInformationModelMetadata(InformationModel informationModel) {
+//        "<" + serviceURI + "> <" + MIM.hasResource + "> <" + resourceUri + "> .";
+        String rdf = "<"+informationModel.getUri()+"> <"+ RDF.type+"> <"+MIM.InformationModel+"> . " +
+                "<"+informationModel.getUri()+"> <"+ CIM.id+"> <"+ informationModel.getId() +"> . " +
+                "<"+informationModel.getUri()+"> <"+ CIM.name+"> <"+informationModel.getName()+"> . ";
+
+        log.debug("Adding following information model metadata: " + rdf);
+        return rdf;
+    }
+
+
 
     public void removeNamedGraph( String uri ) {
         tripleStore.removedNamedGraph(uri);
