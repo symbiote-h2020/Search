@@ -1,6 +1,7 @@
 package eu.h2020.symbiote.filtering;
 
 import eu.h2020.symbiote.security.ComponentSecurityHandlerFactory;
+import eu.h2020.symbiote.security.commons.ComponentIdentifiers;
 import eu.h2020.symbiote.security.commons.exceptions.custom.SecurityHandlerException;
 import eu.h2020.symbiote.security.handler.IComponentSecurityHandler;
 import org.apache.commons.logging.Log;
@@ -25,21 +26,19 @@ public class SecurityHandlerComponent {
     public SecurityHandlerComponent(@Value("${aam.deployment.owner.username}") String componentOwnerName,
                                     @Value("${aam.deployment.owner.password}") String componentOwnerPassword,
                                     @Value("${aam.environment.aamAddress}") String aamAddress,
-                                    @Value("${aam.environment.clientId}") String clientId,
+                                    @Value("${platform.id}") String platformId,
                                     @Value("${aam.environment.keystoreName}") String keystoreName,
                                     @Value("${aam.environment.keystorePass}") String keystorePass,
-                                    @Value("${symbIoTe.validation.localaam}") Boolean alwaysUseLocalAAMForValidation,
                                     @Value("${search.security.enabled}") Boolean securityEnabled)
             throws SecurityHandlerException {
         this.securityEnabled = securityEnabled;
         if (securityEnabled) {
             log.info("Creating security handler for component");
-            handler = ComponentSecurityHandlerFactory.getComponentSecurityHandler(aamAddress,
+            handler = ComponentSecurityHandlerFactory.getComponentSecurityHandler(
                     keystoreName,
                     keystorePass,
-                    clientId,
+                    ComponentIdentifiers.CORE_SEARCH + '@' + platformId,
                     aamAddress,
-                    alwaysUseLocalAAMForValidation,
                     componentOwnerName,
                     componentOwnerPassword);
         } else {
