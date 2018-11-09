@@ -75,7 +75,7 @@ public class SearchHandler implements ISearchEvents {
 
             long afterQGeneration = System.currentTimeMillis();
 
-            ResultSet results = this.triplestore.executeQuery(q.toString(),request.getSecurityRequest(),false);
+            ResultSet results = this.triplestore.executeQueryOnUnionGraph(q.toString(),request.getSecurityRequest(),false);
 
             long afterInitialQuery = System.currentTimeMillis();
 
@@ -221,7 +221,7 @@ public class SearchHandler implements ISearchEvents {
         String propertiesQuery = q.toString();
 
         log.debug(propertiesQuery);
-        ResultSet resultSet = this.triplestore.executeQuery(propertiesQuery,request,false);
+        ResultSet resultSet = this.triplestore.executeQueryOnUnionGraph(propertiesQuery,request,false);
 
         Map<String,List<Property>> resourcesPropertiesMap = new HashMap<>();
 

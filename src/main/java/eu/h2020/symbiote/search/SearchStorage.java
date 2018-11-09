@@ -165,15 +165,18 @@ public class SearchStorage {
 //        GraphHelper.insertGraph(pimDataset, ModelHelper.getInformationModelURI(model.getId()), model.getRdf(), model.getRdfFormat());
 //        GraphHelper.insertGraph(tripleStore.get, informationModel.getUri(), informationModel.getRdf(), informationModel.getRdfFormat());
 
+        log.info("Registering information model metadata " + informationModel.getUri() );
         tripleStore.insertGraph(informationModel.getUri(), getInformationModelMetadata(informationModel), RDFFormat.Turtle);
+        log.info("Registering information model rdf " + informationModel.getUri() );
         tripleStore.insertModelGraph( informationModel.getUri(), informationModel.getRdf(), informationModel.getRdfFormat() );
+        log.info("Finished registering models" );
     }
 
     private String getInformationModelMetadata(InformationModel informationModel) {
 //        "<" + serviceURI + "> <" + MIM.hasResource + "> <" + resourceUri + "> .";
         String rdf = "<"+informationModel.getUri()+"> <"+ RDF.type+"> <"+MIM.InformationModel+"> . " +
-                "<"+informationModel.getUri()+"> <"+ CIM.id+"> <"+ informationModel.getId() +"> . " +
-                "<"+informationModel.getUri()+"> <"+ CIM.name+"> <"+informationModel.getName()+"> . ";
+                "<"+informationModel.getUri()+"> <"+ CIM.id+"> \""+ informationModel.getId() +"\" . " +
+                "<"+informationModel.getUri()+"> <"+ CIM.name+"> \""+informationModel.getName()+"\" . ";
 
         log.debug("Adding following information model metadata: " + rdf);
         return rdf;

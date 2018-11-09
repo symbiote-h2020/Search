@@ -101,7 +101,7 @@ public class MultiSearchHandler implements ISearchEvents {
 
         ResourceAndObservedPropertyQueryGenerator q = new ResourceAndObservedPropertyQueryGenerator(resourceIds);
 
-        ResultSet resultSet = this.triplestore.executeQuery(q.toString(), request, false);
+        ResultSet resultSet = this.triplestore.executeQueryOnUnionGraph(q.toString(), request, false);
 
         Map<String, List<Property>> resourcesPropertiesMap = new HashMap<>();
 
@@ -157,7 +157,7 @@ public class MultiSearchHandler implements ISearchEvents {
 
                 long afterQGeneration = System.currentTimeMillis();
 
-                ResultSet results = this.triplestore.executeQuery(q.toString(), request.getSecurityRequest(), false);
+                ResultSet results = this.triplestore.executeQueryOnUnionGraph(q.toString(), request.getSecurityRequest(), false);
 
                 long afterInitialQuery = System.currentTimeMillis();
 
@@ -305,6 +305,7 @@ public class MultiSearchHandler implements ISearchEvents {
             log.debug("Running on union graph");
             ResultSet resultSet = this.triplestore.executeQueryOnUnionGraph(request.getBody(), request.getSecurityRequest(), false);
 
+
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
             String formatString = request.getOutputFormat().toString();
@@ -333,6 +334,7 @@ public class MultiSearchHandler implements ISearchEvents {
 
             String resultOfSearch = null;
 
+            //TODO default or union
             ResultSet resultSet = this.triplestore.executeQuery(request.getBody(), request.getSecurityRequest(), false);
 
             ByteArrayOutputStream stream = new ByteArrayOutputStream();

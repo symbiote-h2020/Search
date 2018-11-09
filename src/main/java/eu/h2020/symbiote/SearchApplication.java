@@ -1,6 +1,9 @@
 package eu.h2020.symbiote;
 
 import eu.h2020.symbiote.communication.RabbitManager;
+import eu.h2020.symbiote.communication.SearchCommunicationHandler;
+import eu.h2020.symbiote.core.internal.CoreQueryRequest;
+import eu.h2020.symbiote.core.internal.CoreSparqlQueryRequest;
 import eu.h2020.symbiote.filtering.AccessPolicyRepo;
 import eu.h2020.symbiote.filtering.SecurityManager;
 import eu.h2020.symbiote.handlers.*;
@@ -211,6 +214,23 @@ public class SearchApplication {
 
             //TODO moveDefaultGraph
 //            moveDefaultGraph(searchStorage.getTripleStore());
+            //TODO testquery
+//            testQuery(searchHandler);
+        }
+
+        private void testQuery(ISearchEvents searchHandler) {
+            log.debug("Testing query");
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            SearchCommunicationHandler comm = new SearchCommunicationHandler("1",null,null,null,null);
+
+            CoreSparqlQueryRequest req = new CoreSparqlQueryRequest();
+            req.setBody("PREFIX cim: <http://www.symbiote-h2020.eu/ontology/core#> PREFIX mim: <http://www.symbiote-h2020.eu/ontology/meta#> SELECT * FROM <http://www.symbiote-h2020.eu/ontology/internal/models/5bab4c3b4f5ab06e05ecf0af> WHERE { ?s ?p ?o .}");
+            searchHandler.sparqlSearch(comm,req);
+            log.debug("Search started");
         }
     }
 

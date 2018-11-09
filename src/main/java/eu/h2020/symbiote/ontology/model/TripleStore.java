@@ -282,15 +282,18 @@ public class TripleStore {
 
 
     public ResultSet executeQuery(String queryString, SecurityRequest securityRequest, boolean useSecureGraph) {
-        return executeQueryOnGraph(queryString, "urn:x-arq:UnionGraph", securityRequest, useSecureGraph);
+//        return executeQueryOnGraph(queryString, "urn:x-arq:UnionGraph", securityRequest, useSecureGraph);
+        return executeQueryOnGraph(queryString, "urn:x-arq:DefaultGraph", securityRequest, useSecureGraph);
     }
 
     public ResultSet executeQueryOnUnionGraph(String queryString, SecurityRequest securityRequest, boolean useSecureGraph) {
         return executeQueryOnGraph(queryString, "urn:x-arq:UnionGraph", securityRequest, useSecureGraph);
+//        return executeQueryOnGraph(queryString, "urn:x-arq:DefaultGraph", securityRequest, useSecureGraph);
     }
 
     public ResultSet executeQuery(Query query, SecurityRequest securityRequest, boolean useSecureGraph) {
         return executeQueryOnGraph(query, "urn:x-arq:UnionGraph", securityRequest, useSecureGraph);
+//        return executeQueryOnGraph(query, "urn:x-arq:DefaultGraph", securityRequest, useSecureGraph);
     }
 
     public ResultSet executeQueryOnGraph(String queryString, String graphUri, SecurityRequest securityRequest, boolean useSecureGraph) {
@@ -309,7 +312,7 @@ public class TripleStore {
 
     public ResultSet executeQueryOnGraph(Query query, String graphUri, SecurityRequest securityRequest, boolean useSecureGraph) {
         dataset.begin(ReadWrite.READ);
-        ResultSet result;
+        ResultSet result = null;
         try {
             //TODO not sure if synchronization here is needed
 //        synchronized( TripleStore.class ) {
@@ -337,10 +340,13 @@ public class TripleStore {
 //                }
             } else {
 //            Model mm = ModelFactory.createRDFSModel(dataset.getDefaultModel());
-
-                Model modelToQuery = dataset.getNamedModel(graphUri);
-                try (QueryExecution qe = QueryExecutionFactory.create(query, modelToQuery)) {
-                    qe.setTimeout(sparqlQueryTimeout);
+//            Model modelToQuery = ModelFactory.createRDFSModel(dataset.getUnionModel());
+//                Model modelToQuery = dataset.getUnionModel();
+//                Model model = ModelFactory.createDefaultModel().read(in, "");
+//                Model m = ModelFactory.createDefaultModel().add(dataset.getDefaultModel());
+                try (QueryExecution qe = QueryExecutionFactory.create(query, dataset)) {
+//                    qe.setTimeout(sparqlQueryTimeout);
+                    long in = System.currentTimeMillis();
                     ResultSet resultSet = qe.execSelect();
                     //PRINTING INSTEAD OF RETURNING - comment
 //                    log.debug("Copying resultSet, hasNext: " + resultSet.hasNext());
@@ -360,8 +366,14 @@ public class TripleStore {
 //                        }
 //                        System.out.println("");
 //                    }
+//                    log.debug("finished printing in " + ( System.currentTimeMillis() - in ) + "ms");
+                    //                    //TODO end commenting
 
+//                    QuerySolution next = resultSet.next();
+//                    next.varNames();
+                    log.debug("Before copy results");
                     result = ResultSetFactory.copyResults(resultSet);
+                    log.debug("After copy results");
 
                 }
             }

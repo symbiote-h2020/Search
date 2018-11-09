@@ -215,7 +215,7 @@ public class PlatformHandler implements IPlatformEvents, ISspEvents, IModelEvent
 
     public List<InterworkingServiceInfo> readInterworkingServicesFromTriplestore() {
         List<InterworkingServiceInfo> services = new ArrayList<>();
-        ResultSet resultSet = this.storage.getTripleStore().executeQuery(getLoadAllInterworkingServicesSPQRL(), null, false);
+        ResultSet resultSet = this.storage.getTripleStore().executeQueryOnUnionGraph(getLoadAllInterworkingServicesSPQRL(), null, false);
         while (resultSet.hasNext()) {
             QuerySolution solution = resultSet.next();
             String serviceIRI = solution.get(SOLUTION_SERVICE_IRI).toString();

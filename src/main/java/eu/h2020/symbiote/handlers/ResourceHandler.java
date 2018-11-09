@@ -245,26 +245,26 @@ public class ResourceHandler implements IResourceEvents {
 //
 //        return foundUri
 //    }
-
-    private String findServiceURISPARQL(String resourceURL, String platformId) {
-        String registeredServiceURI = null;
-        String query = getSearchInterworkingServiceSPARQL(resourceURL, platformId);
-
-        List<String> response = this.storage.query(ModelHelper.getPlatformURI(platformId), query);
-
-        if (response != null && response.size() == 1) {
-            log.debug("response: " + response.get(0));
-            registeredServiceURI = response.get(0).substring(response.get(0).indexOf("=") + 2);
-            log.debug("Found resource URL: " + registeredServiceURI);
-        } else {
-            log.error(response == null ? "Response is null" : "Response size differs, got size: " + response.size());
-        }
-
-        if (registeredServiceURI == null) {
-            log.error("Could not properly find interworking service for url " + resourceURL);
-        }
-        return registeredServiceURI;
-    }
+//
+//    private String findServiceURISPARQL(String resourceURL, String platformId) {
+//        String registeredServiceURI = null;
+//        String query = getSearchInterworkingServiceSPARQL(resourceURL, platformId);
+//
+//        List<String> response = this.storage.query(ModelHelper.getPlatformURI(platformId), query);
+//
+//        if (response != null && response.size() == 1) {
+//            log.debug("response: " + response.get(0));
+//            registeredServiceURI = response.get(0).substring(response.get(0).indexOf("=") + 2);
+//            log.debug("Found resource URL: " + registeredServiceURI);
+//        } else {
+//            log.error(response == null ? "Response is null" : "Response size differs, got size: " + response.size());
+//        }
+//
+//        if (registeredServiceURI == null) {
+//            log.error("Could not properly find interworking service for url " + resourceURL);
+//        }
+//        return registeredServiceURI;
+//    }
 
     @Override
     public boolean updateResource(CoreResourceRegisteredOrModifiedEventPayload resources) {
