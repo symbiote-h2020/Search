@@ -283,7 +283,8 @@ public class TripleStore {
 
     public ResultSet executeQuery(String queryString, SecurityRequest securityRequest, boolean useSecureGraph) {
 //        return executeQueryOnGraph(queryString, "urn:x-arq:UnionGraph", securityRequest, useSecureGraph);
-        return executeQueryOnGraph(queryString, "urn:x-arq:DefaultGraph", securityRequest, useSecureGraph);
+//        return executeQueryOnGraph(queryString, "urn:x-arq:DefaultGraph", securityRequest, useSecureGraph);
+        return executeQueryOnDataset(QueryFactory.create(queryString, Syntax.syntaxARQ), securityRequest, useSecureGraph);
     }
 
     public ResultSet executeQueryOnUnionGraph(String queryString, SecurityRequest securityRequest, boolean useSecureGraph) {
@@ -343,8 +344,8 @@ public class TripleStore {
 //            Model modelToQuery = ModelFactory.createRDFSModel(dataset.getUnionModel());
 //                Model modelToQuery = dataset.getUnionModel();
 //                Model model = ModelFactory.createDefaultModel().read(in, "");
-//                Model m = ModelFactory.createDefaultModel().add(dataset.getDefaultModel());
-                try (QueryExecution qe = QueryExecutionFactory.create(query, dataset)) {
+                Model m = dataset.getNamedModel(graphUri);
+                try (QueryExecution qe = QueryExecutionFactory.create(query, m)) {
 //                    qe.setTimeout(sparqlQueryTimeout);
                     long in = System.currentTimeMillis();
                     ResultSet resultSet = qe.execSelect();
@@ -378,6 +379,32 @@ public class TripleStore {
                 }
             }
 //        }
+        } finally {
+            dataset.end();
+        }
+        return result;
+    }
+
+    public ResultSet executeQueryOnDataset(Query query, SecurityRequest securityRequest, boolean useSecureGraph) {
+        dataset.begin(ReadWrite.READ);
+        ResultSet result = null;
+        try {
+            if (useSecureGraph) {
+                //TODO check for querying named graphs
+                setSecurityRequest(securityRequest);
+                try (QueryExecution qe = QueryExecutionFactory.create(query, securedModel)) {
+                    qe.setTimeout(sparqlQueryTimeout);
+                    result = ResultSetFactory.copyResults(qe.execSelect());
+                }
+            } else {
+                try (QueryExecution qe = QueryExecutionFactory.create(query, dataset)) {
+                    long in = System.currentTimeMillis();
+                    ResultSet resultSet = qe.execSelect();
+                    log.debug("Before copy results");
+                    result = ResultSetFactory.copyResults(resultSet);
+                    log.debug("After copy results");
+                }
+            }
         } finally {
             dataset.end();
         }

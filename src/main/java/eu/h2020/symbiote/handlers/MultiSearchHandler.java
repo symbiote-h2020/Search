@@ -302,7 +302,7 @@ public class MultiSearchHandler implements ISearchEvents {
         private String runSparqlQuery( SparqlQueryResponse response ) {
             String resultOfSearch = null;
 
-            log.debug("Running on union graph");
+            log.debug("Running sparql query");
             ResultSet resultSet = this.triplestore.executeQuery(request.getBody(), request.getSecurityRequest(), false);
 
 
