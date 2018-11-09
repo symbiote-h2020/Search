@@ -303,7 +303,7 @@ public class MultiSearchHandler implements ISearchEvents {
             String resultOfSearch = null;
 
             log.debug("Running on union graph");
-            ResultSet resultSet = this.triplestore.executeQueryOnUnionGraph(request.getBody(), request.getSecurityRequest(), false);
+            ResultSet resultSet = this.triplestore.executeQuery(request.getBody(), request.getSecurityRequest(), false);
 
 
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
