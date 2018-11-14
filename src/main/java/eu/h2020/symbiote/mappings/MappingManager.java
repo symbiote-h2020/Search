@@ -6,9 +6,12 @@ import eu.h2020.symbiote.core.internal.GetAllMappings;
 import eu.h2020.symbiote.core.internal.GetSingleMapping;
 import eu.h2020.symbiote.core.internal.MappingListResponse;
 import eu.h2020.symbiote.model.mim.OntologyMapping;
+import eu.h2020.symbiote.query.DeleteMappingRequestGenerator;
+import eu.h2020.symbiote.search.SearchStorage;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jena.update.UpdateRequest;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,7 +38,7 @@ public class MappingManager {
         this.mappingRepository = mappingRepository;
     }
 
-    public InfoModelMappingResponse registerMapping(InfoModelMappingRequest infoModelMappingRequest) {
+    public InfoModelMappingResponse registerMapping(InfoModelMappingRequest infoModelMappingRequest, SearchStorage searchStorage) {
         InfoModelMappingResponse response = null;
 
         String ontologyMappingId = String.valueOf(ObjectId.get());
@@ -46,6 +49,7 @@ public class MappingManager {
 
         //Saving
         OntologyMappingInternal saved = mappingRepository.save(new OntologyMappingInternal(body.getId(),body));
+        searchStorage.registerMapping(infoModelMappingRequest);
 
         response = new InfoModelMappingResponse(HttpStatus.OK.value(), "Model registered correctly", saved.getOntologyMapping());
 
@@ -53,7 +57,7 @@ public class MappingManager {
     }
 
 
-    public InfoModelMappingResponse deleteMapping(InfoModelMappingRequest infoModelMappingRequest) {
+    public InfoModelMappingResponse deleteMapping(InfoModelMappingRequest infoModelMappingRequest, SearchStorage searchStorage) {
         InfoModelMappingResponse response;
 
         if (infoModelMappingRequest != null && infoModelMappingRequest.getBody() != null) {
@@ -61,6 +65,8 @@ public class MappingManager {
             try {
                 mappingRepository.delete(infoModelMappingRequest.getBody().getId());
                 response = new InfoModelMappingResponse(HttpStatus.OK.value(), "Model deleted correctly", infoModelMappingRequest.getBody());
+                DeleteMappingRequestGenerator updateRequest = new DeleteMappingRequestGenerator(infoModelMappingRequest.getBody().getId());
+                searchStorage.getTripleStore().executeUpdate(updateRequest.generateRequest());
             } catch (Exception e) {
                 log.error("Error occurred during deleting of the mapping : " + e.getMessage(), e);
                 response = new InfoModelMappingResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Error occurred during deleting of the mapping : " + e.getMessage(), infoModelMappingRequest.getBody());

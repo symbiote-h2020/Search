@@ -2,8 +2,11 @@ package eu.h2020.symbiote.search;
 
 
 import eu.h2020.symbiote.SearchApplication;
+import eu.h2020.symbiote.core.cci.InfoModelMappingRequest;
+import eu.h2020.symbiote.core.cci.InfoModelMappingResponse;
 import eu.h2020.symbiote.core.internal.RDFFormat;
 import eu.h2020.symbiote.filtering.SecurityManager;
+import eu.h2020.symbiote.handlers.HandlerUtils;
 import eu.h2020.symbiote.model.mim.InformationModel;
 import eu.h2020.symbiote.ontology.model.Registry;
 import eu.h2020.symbiote.ontology.model.SearchEngine;
@@ -166,23 +169,30 @@ public class SearchStorage {
 //        GraphHelper.insertGraph(tripleStore.get, informationModel.getUri(), informationModel.getRdf(), informationModel.getRdfFormat());
 
         log.info("Registering information model metadata " + informationModel.getUri() );
-        tripleStore.insertGraph(informationModel.getUri(), getInformationModelMetadata(informationModel), RDFFormat.Turtle);
+        tripleStore.insertGraph(TripleStore.DEFAULT_GRAPH, getInformationModelMetadata(informationModel), RDFFormat.Turtle);
         log.info("Registering information model rdf " + informationModel.getUri() );
         tripleStore.insertModelGraph( informationModel.getUri(), informationModel.getRdf(), informationModel.getRdfFormat() );
         log.info("Finished registering models" );
     }
 
+
+    public void registerMapping(InfoModelMappingRequest mapping ) {
+        log.info("Generating and inserting metada about information model mapping");
+        Model model = HandlerUtils.generateModelFromMapping(mapping.getBody());
+        tripleStore.insertGraph(TripleStore.DEFAULT_GRAPH, model);
+    }
+
     private String getInformationModelMetadata(InformationModel informationModel) {
+        String entityUri = ModelHelper.getInformationModelURI(informationModel.getId());
 //        "<" + serviceURI + "> <" + MIM.hasResource + "> <" + resourceUri + "> .";
-        String rdf = "<"+informationModel.getUri()+"> <"+ RDF.type+"> <"+MIM.InformationModel+"> . " +
-                "<"+informationModel.getUri()+"> <"+ CIM.id+"> \""+ informationModel.getId() +"\" . " +
-                "<"+informationModel.getUri()+"> <"+ CIM.name+"> \""+informationModel.getName()+"\" . ";
+        String rdf = "<"+entityUri+"> <"+ RDF.type+"> <"+MIM.InformationModel+"> . " +
+                "<"+entityUri+"> <"+ CIM.id+"> \""+ informationModel.getId() +"\" . " +
+                "<"+entityUri+"> <"+ CIM.name+"> \""+informationModel.getName()+"\" . " +
+                "<"+entityUri+"> <"+ MIM.hasDefinition+"> <"+informationModel.getUri()+"> . ";
 
         log.debug("Adding following information model metadata: " + rdf);
         return rdf;
     }
-
-
 
     public void removeNamedGraph( String uri ) {
         tripleStore.removedNamedGraph(uri);

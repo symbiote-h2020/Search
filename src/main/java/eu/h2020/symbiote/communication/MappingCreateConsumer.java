@@ -8,6 +8,7 @@ import com.rabbitmq.client.Envelope;
 import eu.h2020.symbiote.core.cci.InfoModelMappingRequest;
 import eu.h2020.symbiote.core.cci.InfoModelMappingResponse;
 import eu.h2020.symbiote.mappings.MappingManager;
+import eu.h2020.symbiote.search.SearchStorage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -20,6 +21,7 @@ public class MappingCreateConsumer extends DefaultConsumer {
 
     private static Log log = LogFactory.getLog(MappingCreateConsumer.class);
     private MappingManager mappingManager;
+    private SearchStorage searchStorage;
 
     /**
      * Constructs a new instance and records its association to the passed-in channel.
@@ -29,9 +31,10 @@ public class MappingCreateConsumer extends DefaultConsumer {
      * @param mappingManager    mapping manager
      */
     public MappingCreateConsumer(Channel channel,
-                                 MappingManager mappingManager) {
+                                 MappingManager mappingManager, SearchStorage searchStorage ) {
         super(channel);
         this.mappingManager = mappingManager;
+        this.searchStorage = searchStorage;
     }
 
     @Override
@@ -45,7 +48,7 @@ public class MappingCreateConsumer extends DefaultConsumer {
         //Try to parse the message
         try {
             InfoModelMappingRequest infoModelMappingRequest = mapper.readValue(msg, InfoModelMappingRequest.class);
-            response = mappingManager.registerMapping(infoModelMappingRequest);
+            response = mappingManager.registerMapping(infoModelMappingRequest,searchStorage);
         } catch( Exception e ) {
             log.error( "Error occurred when registering mapping info " + e );
         }

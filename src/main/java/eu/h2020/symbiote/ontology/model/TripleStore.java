@@ -49,6 +49,8 @@ public class TripleStore {
     private static final String MIM_ID = "MIM";
     private static final String QU_ID = "QU";
 
+    public static final String DEFAULT_GRAPH = "http://www.symbiote-h2020.eu/ontology/internal/meta";
+
     private final static boolean SHOULD_PRINT_DATASET = false;
 
     private SecurityManager securityManager;

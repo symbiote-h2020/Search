@@ -61,6 +61,8 @@ public class SearchApplication {
     @Value("${rabbit.password}")
     private String rabbitPassword;
 
+
+
     public static final String DIRECTORY = System.getProperty("user.home") +File.separator+ "coreSearchTriplestore";
 //    public static final String DIRECTORY = "F:\\stressTest\\2";
 
@@ -173,8 +175,8 @@ public class SearchApplication {
             manager.registerSspResourceUpdatedConsumer(resourceHandler, writerExecutorService);
 
             //Mappings handling crud
-            manager.registerMappingCreateConsumer(mappingManager);
-            manager.registerMappingDeleteConsumer(mappingManager);
+            manager.registerMappingCreateConsumer(mappingManager,searchStorage);
+            manager.registerMappingDeleteConsumer(mappingManager,searchStorage);
             manager.registerMappingGetAllConsumer(mappingManager);
             manager.registerMappingGetSingleConsumer(mappingManager);
 

@@ -269,17 +269,19 @@ public class MultiSearchHandler implements ISearchEvents {
         @Override
         public SparqlQueryResponse call() throws Exception {
 
-            System.out.println("Callable sparql search execution");
+            log.debug("Callable sparql search execution");
             String resultOfSearch = "";
             SparqlQueryResponse response = new SparqlQueryResponse();
 
             if( request.getBaseModel() == null || StringUtils.isEmpty(request.getBaseModel()) ) {
-                System.out.println("Executing sparql");
+                log.debug("Executing sparql");
                 resultOfSearch = runSparqlQuery( response );
             } else {
                 //Execute mapping queries
-                System.out.println("Executing sparql rewriting query -> nyi");
+                log.debug("Executing sparql rewriting query -> nyi");
             }
+
+            log.debug("Got response from sparql query: " + StringUtils.substring(resultOfSearch,0,10000) + " ....");
 
             response.setBody(resultOfSearch);
             response.setStatus(HttpStatus.SC_OK);

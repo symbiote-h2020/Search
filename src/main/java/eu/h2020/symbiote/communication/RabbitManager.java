@@ -10,6 +10,7 @@ import eu.h2020.symbiote.handlers.SearchHandler;
 import eu.h2020.symbiote.mappings.MappingManager;
 import eu.h2020.symbiote.ranking.AvailabilityManager;
 import eu.h2020.symbiote.ranking.PopularityManager;
+import eu.h2020.symbiote.search.SearchStorage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.amqp.AmqpException;
@@ -681,25 +682,25 @@ public class RabbitManager {
         log.debug( "Consumer mappings find all created!!!" );
     }
 
-    public void registerMappingCreateConsumer(MappingManager mappingManager) throws IOException {
+    public void registerMappingCreateConsumer(MappingManager mappingManager, SearchStorage searchStorage) throws IOException {
         String queueName = "symbIoTe-Search-mapping-create";
 
         Channel channel = connection.createChannel(false);
         channel.queueDeclare(queueName, false, true, true, null);
         channel.queueBind(queueName, mappingsExchangeName, mappingsCreationRequestedRoutingKey);
-        MappingCreateConsumer consumer = new MappingCreateConsumer(channel,mappingManager);
+        MappingCreateConsumer consumer = new MappingCreateConsumer(channel,mappingManager,searchStorage);
 
         channel.basicConsume(queueName, false, consumer);
         log.debug( "Consumer mappings create created!!!" );
     }
 
-    public void registerMappingDeleteConsumer(MappingManager mappingManager) throws IOException {
+    public void registerMappingDeleteConsumer(MappingManager mappingManager, SearchStorage searchStorage ) throws IOException {
         String queueName = "symbIoTe-Search-mapping-delete";
 
         Channel channel = connection.createChannel(false);
         channel.queueDeclare(queueName, false, true, true, null);
         channel.queueBind(queueName, mappingsExchangeName, mappingsRemovalRequestedRoutingKey);
-        MappingDeleteConsumer consumer = new MappingDeleteConsumer(channel,mappingManager);
+        MappingDeleteConsumer consumer = new MappingDeleteConsumer(channel,mappingManager,searchStorage );
 
         channel.basicConsume(queueName, false, consumer);
         log.debug( "Consumer mappings delete created!!!" );

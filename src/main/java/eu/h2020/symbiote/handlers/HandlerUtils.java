@@ -1,12 +1,14 @@
 package eu.h2020.symbiote.handlers;
 
 import eu.h2020.symbiote.cloud.model.ssp.SspRegInfo;
+import eu.h2020.symbiote.core.cci.InfoModelMappingRequest;
 import eu.h2020.symbiote.core.ci.QueryResourceResult;
 import eu.h2020.symbiote.core.ci.QueryResponse;
 import eu.h2020.symbiote.core.ci.ResourceType;
 import eu.h2020.symbiote.core.internal.CoreQueryRequest;
 import eu.h2020.symbiote.model.cim.*;
 import eu.h2020.symbiote.model.mim.InterworkingService;
+import eu.h2020.symbiote.model.mim.OntologyMapping;
 import eu.h2020.symbiote.model.mim.Platform;
 import eu.h2020.symbiote.model.mim.SmartSpace;
 import eu.h2020.symbiote.query.QueryGenerator;
@@ -79,6 +81,7 @@ public class HandlerUtils {
 
 
         for (InterworkingService service : platform.getInterworkingServices()) {
+            log.debug("Linking platform's service to infromationModelUri " + ModelHelper.getInformationModelURI(service.getInformationModelId()));
             Resource interworkingServiceResource = model.createResource(generateInterworkingServiceUri(ModelHelper.getPlatformURI(platform.getId()), service.getUrl()))
                     .addProperty(RDF.type, MIM.InterworkingService)
                     .addProperty(MIM.usesInformationModel, model.createResource(ModelHelper.getInformationModelURI(service.getInformationModelId())))
@@ -197,6 +200,49 @@ public class HandlerUtils {
 
 
 //        }
+//        Model serviceModel = generateInterworkingService(platform);
+//        model.add(serviceModel);
+
+        model.write(System.out, "TURTLE");
+        return model;
+    }
+
+    /**
+     * Generates a model containing RDF statements equivalent to information model mappings.
+     *
+     * @param mapping Mapping to be translated
+     * @return Model containing RDF statements.
+     */
+    public static Model generateModelFromMapping(OntologyMapping mapping) {
+        log.debug("Generating model from mapping");
+        // create an empty Model
+        Model model = ModelFactory.createDefaultModel();
+        model.setNsPrefix("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+        model.setNsPrefix("rdfs", "http://www.w3.org/2000/01/rdf-schema#");
+        model.setNsPrefix("owl", "http://www.w3.org/2002/07/owl#");
+        model.setNsPrefix("xsd", "http://www.w3.org/2001/XMLSchema#");
+        model.setNsPrefix("core", "http://www.symbiote-h2020.eu/ontology/core#");
+        model.setNsPrefix("meta", "http://www.symbiote-h2020.eu/ontology/meta#");
+
+        // construct proper Mapping entry
+        Resource mappingResource = model.createResource(ModelHelper.getMappingURI(mapping.getId()))
+                .addProperty(RDF.type, MIM.Mapping)
+                .addProperty(CIM.id, mapping.getId());
+        if( mapping.getName() != null ) {
+            mappingResource.addProperty(CIM.name, mapping.getName());
+        }
+
+        if( mapping.getDefinition() != null ) {
+            mappingResource.addProperty(MIM.hasDefinition,mapping.getDefinition());
+        }
+
+        if( mapping.getSourceModelId() != null ) {
+            mappingResource.addProperty(MIM.hasSourceModel,ModelHelper.getInformationModelURI(mapping.getSourceModelId()));
+        }
+        if( mapping.getDestinationModelId() != null ) {
+            mappingResource.addProperty(MIM.hasDestinationModel,ModelHelper.getInformationModelURI(mapping.getDestinationModelId()));
+        }
+
 //        Model serviceModel = generateInterworkingService(platform);
 //        model.add(serviceModel);
 
