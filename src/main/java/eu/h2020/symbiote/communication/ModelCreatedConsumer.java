@@ -72,4 +72,10 @@ public class ModelCreatedConsumer extends DefaultConsumer {
             log.error("Generic error ocurred when handling delivery", e);
         }
     }
+//    @Override
+//    public void handleDelivery(String consumerTag, Envelope envelope,
+//                               AMQP.BasicProperties properties, byte[] body)
+//            throws IOException {
+//        throw new IOException("testerror");
+//    }
 }

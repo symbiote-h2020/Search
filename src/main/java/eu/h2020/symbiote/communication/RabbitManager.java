@@ -22,6 +22,8 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeoutException;
 
@@ -36,6 +38,8 @@ public class RabbitManager {
     public static final String MONITORING_ROUTING_KEY = "monitoring";
     private static Log log = LogFactory.getLog(RabbitManager.class);
 
+    private Map<String,Object> queueArgs;
+
 //    @Value("${rabbit.host}")
 //    private String rabbitHost;
 //
@@ -44,6 +48,9 @@ public class RabbitManager {
 //
 //    @Value("${rabbit.password}")
 //    private String rabbitPassword;
+
+    @Value("${spring.rabbitmq.template.reply-timeout}")
+    private Integer rabbitMessageTimeout;
 
     @Value("${rabbit.exchange.platform.name}")
     private String platformExchangeName;
@@ -186,6 +193,10 @@ public class RabbitManager {
         //FIXME check if there is better exception handling in @postconstruct method
         Channel channel = null;
 
+        //setting up ttl args
+        queueArgs = new HashMap<>();
+        queueArgs.put("x-message-ttl", rabbitMessageTimeout);
+
         try {
             org.springframework.amqp.rabbit.connection.ConnectionFactory factory = this.rabbitTemplate.getConnectionFactory();
 
@@ -292,7 +303,7 @@ public class RabbitManager {
         String queueName = "symbIoTe-Search-platform-created";
 
         Channel channel = connection.createChannel(false);
-        channel.queueDeclare(queueName, false, true, true, null);
+        channel.queueDeclare(queueName, false, true, true, queueArgs);
         channel.queueBind(queueName, platformExchangeName, platformCreatedRoutingKey);
         PlatformCreatedConsumer consumer = new PlatformCreatedConsumer(channel, platformHandler, executor );
 
@@ -311,7 +322,7 @@ public class RabbitManager {
         String queueName = "symbIoTe-Search-platform-deleted";
 
         Channel channel = connection.createChannel(false);
-        channel.queueDeclare(queueName, false, true, true, null);
+        channel.queueDeclare(queueName, false, true, true, queueArgs);
         channel.queueBind(queueName, platformExchangeName, platformDeletedRoutingKey);
         PlatformDeletedConsumer consumer = new PlatformDeletedConsumer(channel,platformHandler, executor );
 
@@ -330,7 +341,7 @@ public class RabbitManager {
         String queueName = "symbIoTe-Search-platform-updated";
 
         Channel channel = connection.createChannel(false);
-        channel.queueDeclare(queueName, false, true, true, null);
+        channel.queueDeclare(queueName, false, true, true, queueArgs);
         channel.queueBind(queueName, platformExchangeName, platformModifiedRoutingKey);
         PlatformModifiedConsumer consumer = new PlatformModifiedConsumer(channel, platformHandler, executor );
 
@@ -349,7 +360,7 @@ public class RabbitManager {
         String queueName = "symbIoTe-Search-resource-created";
 
         Channel channel = connection.createChannel(false);
-        channel.queueDeclare(queueName, false, true, true, null);
+        channel.queueDeclare(queueName, false, true, true, queueArgs);
         channel.queueBind(queueName, resourceExchangeName, resourceCreatedRoutingKey);
         ResourceCreatedConsumer consumer = new ResourceCreatedConsumer(channel, resourceHandler, executor );
 
@@ -368,7 +379,7 @@ public class RabbitManager {
         String queueName = "symbIoTe-Search-resource-deleted";
 
         Channel channel = connection.createChannel(false);
-        channel.queueDeclare(queueName, false, true, true, null);
+        channel.queueDeclare(queueName, false, true, true, queueArgs);
         channel.queueBind(queueName, resourceExchangeName, resourceDeletedRoutingKey);
         ResourceDeletedConsumer consumer = new ResourceDeletedConsumer(channel,resourceDeleteHandler, executor );
 
@@ -387,7 +398,7 @@ public class RabbitManager {
         String queueName = "symbIoTe-Search-resource-updated";
 
         Channel channel = connection.createChannel(false);
-        channel.queueDeclare(queueName, false, true, true, null);
+        channel.queueDeclare(queueName, false, true, true, queueArgs);
         channel.queueBind(queueName, resourceExchangeName, resourceModifiedRoutingKey);
         ResourceModifiedConsumer consumer = new ResourceModifiedConsumer(channel, resourceHandler, executor );
 
@@ -407,7 +418,7 @@ public class RabbitManager {
         String queueName = "symbIoTe-Search-search-requested";
 
         Channel channel = connection.createChannel(false);
-        channel.queueDeclare(queueName, false, true, true, null);
+        channel.queueDeclare(queueName, false, true, true, queueArgs);
         channel.queueBind(queueName, resourceExchangeName, resourceSearchRequestedRoutingKey );
 
         SearchRequestedConsumer consumer = new SearchRequestedConsumer(channel, searchHandler );
@@ -427,7 +438,7 @@ public class RabbitManager {
         String queueName = "symbIoTe-Search-search-requested";
 
         Channel channel = connection.createChannel(false);
-        channel.queueDeclare(queueName, false, true, true, null);
+        channel.queueDeclare(queueName, false, true, true, queueArgs);
         channel.queueBind(queueName, resourceExchangeName, resourceSearchRequestedRoutingKey );
 
         SingleThreadSearchRequestedConsumer consumer = new SingleThreadSearchRequestedConsumer(channel, searchHandler );
@@ -447,7 +458,7 @@ public class RabbitManager {
         String queueName = "symbIoTe-Search-sparqlSearch-requested";
 
         Channel channel = connection.createChannel(false);
-        channel.queueDeclare(queueName, false, true, true, null);
+        channel.queueDeclare(queueName, false, true, true, queueArgs);
         channel.queueBind(queueName, resourceExchangeName, resourceSparqlSearchRequestedRoutingKey );
 
         SparqlSearchRequestedConsumer consumer = new SparqlSearchRequestedConsumer(channel, searchHandler );
@@ -460,7 +471,7 @@ public class RabbitManager {
         String queueName = "symbIoTe-Search-popularity-updated";
 
         Channel channel = connection.createChannel(false);
-        channel.queueDeclare(queueName, false, true, true, null);
+        channel.queueDeclare(queueName, false, true, true, queueArgs);
         channel.queueBind(queueName, exchangeSearchName, popularityUpdatesRoutingKey );
 
         PopularityUpdatesConsumer consumer = new PopularityUpdatesConsumer(channel,popularityManager);
@@ -473,7 +484,7 @@ public class RabbitManager {
         String queueName = "symbIoTe-Search-availability-updated";
 
         Channel channel = connection.createChannel(false);
-        channel.queueDeclare(queueName, false, true, true, null);
+        channel.queueDeclare(queueName, false, true, true, queueArgs);
         channel.queueBind(queueName, MONITORING_EXCHANGE, MONITORING_ROUTING_KEY);
 
         AvailabilityUpdatesConsumer consumer = new AvailabilityUpdatesConsumer(channel,availabilityManager);
@@ -497,7 +508,7 @@ public class RabbitManager {
         String queueName = "symbIoTe-Search-ssp-created";
 
         Channel channel = connection.createChannel(false);
-        channel.queueDeclare(queueName, false, true, true, null);
+        channel.queueDeclare(queueName, false, true, true, queueArgs);
         channel.queueBind(queueName, sspExchangeName, sspCreatedRoutingKey);
         SspCreatedConsumer consumer = new SspCreatedConsumer(channel, platformHandler, executor );
 
@@ -516,7 +527,7 @@ public class RabbitManager {
         String queueName = "symbIoTe-Search-ssp-deleted";
 
         Channel channel = connection.createChannel(false);
-        channel.queueDeclare(queueName, false, true, true, null);
+        channel.queueDeclare(queueName, false, true, true, queueArgs);
         channel.queueBind(queueName, sspExchangeName, sspRemovedRoutingKey);
         SspDeletedConsumer consumer = new SspDeletedConsumer(channel,platformHandler, executor );
 
@@ -535,7 +546,7 @@ public class RabbitManager {
         String queueName = "symbIoTe-Search-ssp-updated";
 
         Channel channel = connection.createChannel(false);
-        channel.queueDeclare(queueName, false, true, true, null);
+        channel.queueDeclare(queueName, false, true, true, queueArgs);
         channel.queueBind(queueName, sspExchangeName, sspModifiedRoutingKey);
         SspModifiedConsumer consumer = new SspModifiedConsumer(channel, platformHandler, executor );
 
@@ -555,7 +566,7 @@ public class RabbitManager {
         String queueName = "symbIoTe-Search-sdev-created";
 
         Channel channel = connection.createChannel(false);
-        channel.queueDeclare(queueName, false, true, true, null);
+        channel.queueDeclare(queueName, false, true, true, queueArgs);
         channel.queueBind(queueName, sspExchangeName, sspSdevCreatedRoutingKey);
         SdevCreatedConsumer consumer = new SdevCreatedConsumer(channel, platformHandler, executor );
 
@@ -574,7 +585,7 @@ public class RabbitManager {
         String queueName = "symbIoTe-Search-sdev-deleted";
 
         Channel channel = connection.createChannel(false);
-        channel.queueDeclare(queueName, false, true, true, null);
+        channel.queueDeclare(queueName, false, true, true, queueArgs);
         channel.queueBind(queueName, sspExchangeName, sspSdevRemovedRoutingKey);
         SdevDeletedConsumer consumer = new SdevDeletedConsumer(channel,platformHandler, executor );
 
@@ -593,7 +604,7 @@ public class RabbitManager {
         String queueName = "symbIoTe-Search-sdev-updated";
 
         Channel channel = connection.createChannel(false);
-        channel.queueDeclare(queueName, false, true, true, null);
+        channel.queueDeclare(queueName, false, true, true, queueArgs);
         channel.queueBind(queueName, sspExchangeName, sspSdevModifiedRoutingKey);
         SdevModifiedConsumer consumer = new SdevModifiedConsumer(channel, platformHandler, executor );
 
@@ -612,7 +623,7 @@ public class RabbitManager {
         String queueName = "symbIoTe-Search-ssp-resource-created";
 
         Channel channel = connection.createChannel(false);
-        channel.queueDeclare(queueName, false, true, true, null);
+        channel.queueDeclare(queueName, false, true, true, queueArgs);
         channel.queueBind(queueName, resourceExchangeName, sspSdevResourceCreatedRoutingKey);
         SspResourceCreatedConsumer consumer = new SspResourceCreatedConsumer(channel, resourceHandler, executor );
 
@@ -631,7 +642,7 @@ public class RabbitManager {
         String queueName = "symbIoTe-Search-ssp-resource-deleted";
 
         Channel channel = connection.createChannel(false);
-        channel.queueDeclare(queueName, false, true, true, null);
+        channel.queueDeclare(queueName, false, true, true, queueArgs);
         channel.queueBind(queueName, resourceExchangeName, sspSdevResourceRemoveddRoutingKey);
         ResourceDeletedConsumer consumer = new ResourceDeletedConsumer(channel,resourceHandler, executor );
 
@@ -650,7 +661,7 @@ public class RabbitManager {
         String queueName = "symbIoTe-Search-ssp-resource-updated";
 
         Channel channel = connection.createChannel(false);
-        channel.queueDeclare(queueName, false, true, true, null);
+        channel.queueDeclare(queueName, false, true, true, queueArgs);
         channel.queueBind(queueName, resourceExchangeName, sspSdevResourceModifiedRoutingKey);
         SspResourceModifiedConsumer consumer = new SspResourceModifiedConsumer(channel, resourceHandler, executor );
 
@@ -662,7 +673,7 @@ public class RabbitManager {
         String queueName = "symbIoTe-Search-mapping-get-single";
 
         Channel channel = connection.createChannel(false);
-        channel.queueDeclare(queueName, false, true, true, null);
+        channel.queueDeclare(queueName, false, true, true, queueArgs);
         channel.queueBind(queueName, mappingsExchangeName, mappingsGetSingleRoutingKey );
         MappingFindOneConsumer consumer = new MappingFindOneConsumer(channel,mappingManager);
 
@@ -674,7 +685,7 @@ public class RabbitManager {
         String queueName = "symbIoTe-Search-mapping-get-all";
 
         Channel channel = connection.createChannel(false);
-        channel.queueDeclare(queueName, false, true, true, null);
+        channel.queueDeclare(queueName, false, true, true, queueArgs);
         channel.queueBind(queueName, mappingsExchangeName, mappingsGetAllRoutingKey );
         MappingFindAllConsumer consumer = new MappingFindAllConsumer(channel,mappingManager);
 
@@ -686,7 +697,7 @@ public class RabbitManager {
         String queueName = "symbIoTe-Search-mapping-create";
 
         Channel channel = connection.createChannel(false);
-        channel.queueDeclare(queueName, false, true, true, null);
+        channel.queueDeclare(queueName, false, true, true, queueArgs);
         channel.queueBind(queueName, mappingsExchangeName, mappingsCreationRequestedRoutingKey);
         MappingCreateConsumer consumer = new MappingCreateConsumer(channel,mappingManager,searchStorage);
 
@@ -698,7 +709,7 @@ public class RabbitManager {
         String queueName = "symbIoTe-Search-mapping-delete";
 
         Channel channel = connection.createChannel(false);
-        channel.queueDeclare(queueName, false, true, true, null);
+        channel.queueDeclare(queueName, false, true, true, queueArgs);
         channel.queueBind(queueName, mappingsExchangeName, mappingsRemovalRequestedRoutingKey);
         MappingDeleteConsumer consumer = new MappingDeleteConsumer(channel,mappingManager,searchStorage );
 
@@ -710,7 +721,7 @@ public class RabbitManager {
         String queueName = "symbIoTe-Search-model-create";
 
         Channel channel = connection.createChannel(false);
-        channel.queueDeclare(queueName, false, true, true, null);
+        channel.queueDeclare(queueName, false, true, true, queueArgs);
         channel.queueBind(queueName, platformExchangeName, informationModelCreatedRoutingKey);
         ModelCreatedConsumer consumer = new ModelCreatedConsumer(channel,platformHandler);
 
@@ -722,7 +733,7 @@ public class RabbitManager {
         String queueName = "symbIoTe-Search-model-update";
 
         Channel channel = connection.createChannel(false);
-        channel.queueDeclare(queueName, false, true, true, null);
+        channel.queueDeclare(queueName, false, true, true, queueArgs);
         channel.queueBind(queueName, platformExchangeName, informationModelModifiedRoutingKey);
         ModelModifiedConsumer consumer = new ModelModifiedConsumer(channel,platformHandler);
 
@@ -734,7 +745,7 @@ public class RabbitManager {
         String queueName = "symbIoTe-Search-model-delete";
 
         Channel channel = connection.createChannel(false);
-        channel.queueDeclare(queueName, false, true, true, null);
+        channel.queueDeclare(queueName, false, true, true, queueArgs);
         channel.queueBind(queueName, platformExchangeName, informationModelRemovedRoutingKey);
         ModelDeletedConsumer consumer = new ModelDeletedConsumer(channel,platformHandler);
 

@@ -247,8 +247,10 @@ public class TripleStore {
 
     public void insertGraph(String uri, Model model) {
         dataset.begin(ReadWrite.WRITE);
+        log.debug("Inserting graph into " + uri);
         try {
         if (!dataset.containsNamedModel(uri)) {
+            log.debug("creating named model " + uri);
             dataset.addNamedModel(uri, ModelFactory.createDefaultModel());
         }
 //        dataset.getNamedModel(uri).add(model);
@@ -256,6 +258,7 @@ public class TripleStore {
             dataset.getNamedModel(uri).add(model);
             dataset.commit();
         } finally {
+            log.debug("Closing dataset");
             dataset.end();
         }
     }
@@ -278,9 +281,15 @@ public class TripleStore {
 //        }
     }
 
+//    public void removedNamedGraph( String graphUri) {
+//        GraphHelper.removeGraph(dataset, graphUri);
+//    }
+
     public void removedNamedGraph( String graphUri) {
-        GraphHelper.removeGraph(dataset, graphUri);
+        UpdateRequest grapDropRequest = UpdateFactory.create("DROP GRAPH <" +graphUri+">");
+        executeUpdate(grapDropRequest);
     }
+
 
 
     public ResultSet executeQuery(String queryString, SecurityRequest securityRequest, boolean useSecureGraph) {
