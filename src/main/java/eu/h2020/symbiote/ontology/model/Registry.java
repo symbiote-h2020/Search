@@ -72,13 +72,13 @@ public class Registry {
      * @param resourceModel Model describing the resource.
      */
     public void registerResource(String platformUri, String serviceURI, String resourceUri, Model resourceModel) {
-        tripleStore.insertGraph(platformUri, resourceModel);
+        tripleStore.insertGraph(TripleStore.DEFAULT_GRAPH, resourceModel);
         tripleStore.insertGraph(TripleStore.DEFAULT_GRAPH, getResourceMetadata(serviceURI,resourceUri), RDFFormat.Turtle);
         log.debug(String.format("Resource={%s} registered for platform: platformUri={%s}", resourceUri, platformUri));
     }
 
     public void registerSdevResourceLinkToInterworkingService( String sdevServiceURI, String resourceUri ) {
-        tripleStore.insertGraph("", getResourceMetadata(sdevServiceURI,resourceUri), RDFFormat.Turtle);
+        tripleStore.insertGraph(TripleStore.DEFAULT_GRAPH, getResourceMetadata(sdevServiceURI,resourceUri), RDFFormat.Turtle);
     }
 
 //    /**
