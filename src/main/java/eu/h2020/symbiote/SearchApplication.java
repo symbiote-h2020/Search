@@ -4,10 +4,12 @@ import eu.h2020.symbiote.communication.RabbitManager;
 import eu.h2020.symbiote.communication.SearchCommunicationHandler;
 import eu.h2020.symbiote.core.internal.CoreQueryRequest;
 import eu.h2020.symbiote.core.internal.CoreSparqlQueryRequest;
+import eu.h2020.symbiote.core.internal.RDFFormat;
 import eu.h2020.symbiote.filtering.AccessPolicyRepo;
 import eu.h2020.symbiote.filtering.SecurityManager;
 import eu.h2020.symbiote.handlers.*;
 import eu.h2020.symbiote.mappings.MappingManager;
+import eu.h2020.symbiote.model.mim.InformationModel;
 import eu.h2020.symbiote.model.mim.InterworkingService;
 import eu.h2020.symbiote.model.mim.SmartSpace;
 import eu.h2020.symbiote.ontology.model.TripleStore;
@@ -15,6 +17,9 @@ import eu.h2020.symbiote.ranking.AvailabilityManager;
 import eu.h2020.symbiote.ranking.PopularityManager;
 import eu.h2020.symbiote.ranking.RankingHandler;
 import eu.h2020.symbiote.search.SearchStorage;
+import eu.h2020.symbiote.semantics.ModelHelper;
+import eu.h2020.symbiote.semantics.ontology.BIM;
+import eu.h2020.symbiote.semantics.ontology.CIM;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jena.update.UpdateFactory;
@@ -218,7 +223,25 @@ public class SearchApplication {
 //            moveDefaultGraph(searchStorage.getTripleStore());
             //TODO testquery
 //            testQuery(searchHandler);
+            //TODO check model helper
+//            log.debug("Loading CIM model test");
+//            ModelHelper.readModel(CIM.getURI());
+
+//            deleteResourcesFromGraphs(searchStorage.getTripleStore());
+
+            searchStorage.getTripleStore().addBIMasPIM();
         }
+
+//        private void deleteResourcesFromGraphs(TripleStore tripleStore) {
+//            UpdateRequest req = UpdateFactory.create();
+//            req.add(generateResourceRemoval("5bfc0bfe4f5ab04324f1cc25","http://www.symbiote-h2020.eu/ontology/internal/platforms/SSP_Navigo"));
+//            req.add(generateResourceRemoval("5bc9ab084f5ab05629acc62a","http://www.symbiote-h2020.eu/defaultGraph"));
+//            req.add(generateResourceRemoval("5bc9ab074f5ab05629acc628","http://www.symbiote-h2020.eu/defaultGraph"));
+//            req.add(generateResourceRemoval("5bc9ab084f5ab05629acc62c","http://www.symbiote-h2020.eu/defaultGraph"));
+//            req.add(generateResourceRemoval("5bc9aadb4f5ab05629acc624","http://www.symbiote-h2020.eu/defaultGraph"));
+//            req.add(generateResourceRemoval("5bc9ab064f5ab05629acc626","http://www.symbiote-h2020.eu/defaultGraph"));
+//            tripleStore.executeUpdate(req);
+//        }
 
         private void testQuery(ISearchEvents searchHandler) {
             log.debug("Testing query");
@@ -234,6 +257,34 @@ public class SearchApplication {
             searchHandler.sparqlSearch(comm,req);
             log.debug("Search started");
         }
+
+
+        private String generateResourceRemoval(String resourceId, String graph) {
+            StringBuilder q = new StringBuilder();
+            q.append("PREFIX cim: <http://www.symbiote-h2020.eu/ontology/core#> \n");
+            q.append("PREFIX mim: <http://www.symbiote-h2020.eu/ontology/meta#> \n");
+            q.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n");
+            q.append("WITH <" + graph + "> ");
+            q.append("DELETE { ?sensor ?p ?o . \n");
+//        q.append(" \t?o ?p1 ?o1 . \n");
+            q.append(" \t?service mim:hasResource ?sensor . \n");
+            q.append(" \t?foi ?foip ?foio . \n");
+
+            q.append("} WHERE {\n");
+            q.append("\t?sensor ?p ?o ;\n");
+            q.append("\t\tcim:id \"" + resourceId + "\" .\n");
+            q.append("\t?service mim:hasResource ?sensor .\n");
+
+            q.append("OPTIONAL {");
+            q.append("\t?foi a cim:FeatureOfInterest .\n");
+            q.append("\t?sensor cim:hasFeatureOfInterest ?foi .\n");
+            q.append("\t?foi ?foip ?foio .\n");
+            q.append("}");
+
+            q.append("}");
+            return q.toString();
+        }
+
     }
 
     public static SearchStorage getDefaultStorage(SecurityManager securityManager, boolean securityEnabled) {

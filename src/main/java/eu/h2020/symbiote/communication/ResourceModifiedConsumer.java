@@ -11,6 +11,7 @@ import eu.h2020.symbiote.core.internal.CoreResourceRegisteredOrModifiedEventPayl
 import eu.h2020.symbiote.core.internal.CoreSspResourceRegisteredOrModifiedEventPayload;
 import eu.h2020.symbiote.handlers.ResourceHandler;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -69,6 +70,9 @@ public class ResourceModifiedConsumer extends DefaultConsumer {
                 }
                 try {
                     sspRes = mapper.readValue(msg, CoreSspResourceRegisteredOrModifiedEventPayload.class);
+                    if(StringUtils.isEmpty(sspRes.getSdevId())) {
+                        sspRes= null;
+                    }
                 } catch(Exception e ) {
                     log.debug("[Update] This is not a ssp resource");
                 }

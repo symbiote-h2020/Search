@@ -133,16 +133,16 @@ public class ResourceRegistrationTest {
         }
     }
 
-    private void fireQueryAll(SearchStorage storage) {
-        Query informationServiceQuery;
-        SelectBuilder sb = new SelectBuilder()
-                .addVar( "*" )
-                .addWhere( "?s", "?p", "?o" );
-
-        Query q = sb.build() ;
-        List<String> results = storage.query("", q);
-        System.out.println( "SearchRequest results: ");
-        System.out.println( results );
-    }
+//    private void fireQueryAll(SearchStorage storage) {
+//        Query informationServiceQuery;
+//        SelectBuilder sb = new SelectBuilder()
+//                .addVar( "*" )
+//                .addWhere( "?s", "?p", "?o" );
+//
+//        Query q = sb.build() ;
+//        List<String> results = storage.query("", q);
+//        System.out.println( "SearchRequest results: ");
+//        System.out.println( results );
+//    }
 
 }

@@ -13,6 +13,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
 
 import java.math.BigInteger;
 
@@ -72,9 +74,26 @@ public class Registry {
      * @param resourceModel Model describing the resource.
      */
     public void registerResource(String platformUri, String serviceURI, String resourceUri, Model resourceModel) {
+        log.debug("Inserting info to default graph");
+
+        //TODO delete long debugging
+        //printModel(resourceModel);
+
         tripleStore.insertGraph(TripleStore.DEFAULT_GRAPH, resourceModel);
+
         tripleStore.insertGraph(TripleStore.DEFAULT_GRAPH, getResourceMetadata(serviceURI,resourceUri), RDFFormat.Turtle);
         log.debug(String.format("Resource={%s} registered for platform: platformUri={%s}", resourceUri, platformUri));
+    }
+
+    private void printModel(Model resourceModel) {
+        log.debug("Printing model to be added..");
+        log.debug("========================================================");
+        StmtIterator stmtIterator = resourceModel.listStatements();
+        while( stmtIterator.hasNext() ) {
+            Statement next = stmtIterator.next();
+            log.debug( " " + next.getSubject().toString() + "  |  " + next.getPredicate().toString() + "  |  " + next.getObject().toString() );
+        }
+        log.debug("========================================================");
     }
 
     public void registerSdevResourceLinkToInterworkingService( String sdevServiceURI, String resourceUri ) {

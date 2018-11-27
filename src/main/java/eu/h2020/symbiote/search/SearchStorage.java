@@ -168,11 +168,7 @@ public class SearchStorage {
 //        GraphHelper.insertGraph(pimDataset, ModelHelper.getInformationModelURI(model.getId()), model.getRdf(), model.getRdfFormat());
 //        GraphHelper.insertGraph(tripleStore.get, informationModel.getUri(), informationModel.getRdf(), informationModel.getRdfFormat());
 
-        log.info("Registering information model metadata " + informationModel.getUri() );
-        tripleStore.insertGraph(TripleStore.DEFAULT_GRAPH, getInformationModelMetadata(informationModel), RDFFormat.Turtle);
-        log.info("Registering information model rdf " + informationModel.getUri() );
-        tripleStore.insertModelGraph( informationModel.getUri(), informationModel.getRdf(), informationModel.getRdfFormat() );
-        log.info("Finished registering models" );
+        tripleStore.registerInformationModel(informationModel);
     }
 
 
@@ -182,32 +178,15 @@ public class SearchStorage {
         tripleStore.insertGraph(TripleStore.DEFAULT_GRAPH, model);
     }
 
-    private String getInformationModelMetadata(InformationModel informationModel) {
-        String entityUri = ModelHelper.getInformationModelURI(informationModel.getId());
-//        "<" + serviceURI + "> <" + MIM.hasResource + "> <" + resourceUri + "> .";
-        String rdf = "<"+entityUri+"> <"+ RDF.type+"> <"+MIM.InformationModel+"> . " +
-                "<"+entityUri+"> <"+ CIM.id+"> \""+ informationModel.getId() +"\" . " +
-                "<"+entityUri+"> <"+ CIM.name+"> \""+informationModel.getName()+"\" . " +
-                "<"+entityUri+"> <"+ MIM.hasDefinition+"> <"+informationModel.getUri()+"> . ";
-
-        log.debug("Adding following information model metadata: " + rdf);
-        return rdf;
-    }
-
     public void removeNamedGraph( String uri ) {
         tripleStore.removedNamedGraph(uri);
     }
 
     public OntModel getNamedGraphAsOntModel( String uri ) {
-        Model pimModel = tripleStore.getNamedModel(uri);
+        log.debug("Getting named ont model by uri " + uri);
+        OntModel pimModel = tripleStore.getNamedOntModel(uri);
 
-        OntModel pim = null;
-        try {
-            pim = ModelHelper.asOntModel(pimModel, true, true);
-        } catch( Exception e ) {
-            log.error("Error occurred when asOntModel: " + e.getMessage());
-        }
-        return pim;
+        return pimModel;
     }
 
     public List<String> query
@@ -221,25 +200,25 @@ public class SearchStorage {
         return result;
     }
 
-    public List<String> query(String modelGraphUri, Query query) {
-        List<String> result = null;
-        try {
-            result = query(searchEngine, modelGraphUri, query);
-        } catch (IOException e) {
-            log.error("Error during executing query", e);
-        }
-        return result;
-    }
+//    public List<String> query(String modelGraphUri, Query query) {
+//        List<String> result = null;
+//        try {
+//            result = query(searchEngine, modelGraphUri, query);
+//        } catch (IOException e) {
+//            log.error("Error during executing query", e);
+//        }
+//        return result;
+//    }
 
-    private static List<String> query(SearchEngine searchEngine, String modelGraphUri, Query sparql) throws IOException {
-
-        log.info(String.format("executing query: modelId={}, sparql=\n{}", modelGraphUri, sparql));
-        ResultSet result = searchEngine.search(sparql);
-        List<String> results = generateOutputFromResultSet(result);
-
-        log.info("----- result finish ----");
-        return results;
-    }
+//    private static List<String> query(SearchEngine searchEngine, String modelGraphUri, Query sparql) throws IOException {
+//
+//        log.info(String.format("executing query: modelId={}, sparql=\n{}", modelGraphUri, sparql));
+//        ResultSet result = searchEngine.search(sparql);
+//        List<String> results = generateOutputFromResultSet(result);
+//
+//        log.info("----- result finish ----");
+//        return results;
+//    }
 
     private static List<String> query(SearchEngine searchEngine, String modelGraphUri, String sparql) throws IOException {
 

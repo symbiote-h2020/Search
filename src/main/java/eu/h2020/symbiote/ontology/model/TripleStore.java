@@ -8,6 +8,7 @@ package eu.h2020.symbiote.ontology.model;
 import eu.h2020.symbiote.core.internal.RDFFormat;
 import eu.h2020.symbiote.filtering.FilteringEvaluator;
 import eu.h2020.symbiote.filtering.SecurityManager;
+import eu.h2020.symbiote.model.mim.InformationModel;
 import eu.h2020.symbiote.security.communication.payloads.SecurityRequest;
 import eu.h2020.symbiote.semantics.GraphHelper;
 import eu.h2020.symbiote.semantics.ModelHelper;
@@ -17,14 +18,15 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.permissions.Factory;
 import org.apache.jena.query.*;
-import org.apache.jena.query.spatial.*;
+import org.apache.jena.query.spatial.EntityDefinition;
+import org.apache.jena.query.spatial.SpatialDatasetFactory;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.sparql.util.QueryExecUtils;
 import org.apache.jena.tdb.TDBFactory;
 import org.apache.jena.update.UpdateAction;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
+import org.apache.jena.vocabulary.RDF;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
@@ -32,12 +34,11 @@ import org.apache.lucene.store.RAMDirectory;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 
 /**
  * Class representing a triplestore - connected to in-memory or disk (TDB) jena repository. Creates a spatial index
  * based on Lucene
- *
+ * <p>
  * Contains useful methods to access datastore: inserting graphs (save), querying graphs (read).
  *
  * @author jab
@@ -57,7 +58,7 @@ public class TripleStore {
     private boolean filteringEnabled;
     private final String currentDirectory;
     private final Dataset dataset;
-//    private final Dataset modelsDataset;
+    //    private final Dataset modelsDataset;
     private static final String BASE_REPO = "base";
     private static final String SPATIAL_REPO = "spatial";
     private final Model securedModel;
@@ -74,7 +75,7 @@ public class TripleStore {
     private static final Log log = LogFactory.getLog(TripleStore.class);
 
     //For tests only - in memory
-    public TripleStore(SecurityManager securitymanager, boolean filteringEnabled ) {
+    public TripleStore(SecurityManager securitymanager, boolean filteringEnabled) {
         this.filteringEnabled = filteringEnabled;
         this.securityManager = securitymanager;
 
@@ -94,16 +95,16 @@ public class TripleStore {
         model = ModelFactory.createRDFSModel(dataset.getDefaultModel());
 
 
-        if( filteringEnabled ) {
-            evaluator = new FilteringEvaluator(model,securityManager);
+        if (filteringEnabled) {
+            evaluator = new FilteringEvaluator(model, securityManager);
             evaluator.setPrincipal("test");
-            securedModel = Factory.getInstance(evaluator,"http://symbiote-h2020.eu/secureModel",model);
+            securedModel = Factory.getInstance(evaluator, "http://symbiote-h2020.eu/secureModel", model);
         } else {
             securedModel = model;
         }
     }
 
-    public TripleStore( String directory, SecurityManager securitymanager, boolean filteringEnabled ) {
+    public TripleStore(String directory, SecurityManager securitymanager, boolean filteringEnabled) {
         this.filteringEnabled = filteringEnabled;
         this.securityManager = securitymanager;
         boolean newRepo = false;
@@ -111,20 +112,20 @@ public class TripleStore {
 
         EntityDefinition entDef = new EntityDefinition("entityField", "geoField");
 
-        File dir = new File( directory + (directory.endsWith("/")?"":"/") + SPATIAL_REPO );
+        File dir = new File(directory + (directory.endsWith("/") ? "" : "/") + SPATIAL_REPO);
 
-        if( !dir.exists() ) {
+        if (!dir.exists()) {
             dir.mkdirs();
         }
 
         String baseRepoLocation = directory + (directory.endsWith("/") ? "" : "/") + BASE_REPO;
-        File baseDir = new File( baseRepoLocation );
-        if( !baseDir.exists() ) {
+        File baseDir = new File(baseRepoLocation);
+        if (!baseDir.exists()) {
             baseDir.mkdirs();
 
             newRepo = true;
         }
-        Dataset baseDataset= TDBFactory.createDataset(baseRepoLocation);
+        Dataset baseDataset = TDBFactory.createDataset(baseRepoLocation);
         Directory realDir = null;
         try {
             realDir = FSDirectory.open(dir.toPath());
@@ -137,7 +138,7 @@ public class TripleStore {
 //
 //        SpatialIndex spatialIndex = datasetGraph.getSpatialIndex();
 
-        if( newRepo ) {
+        if (newRepo) {
 //            try {
 //                String cim_data = IOUtils.toString(TripleStore.class
 //                        .getResourceAsStream(CIM_FILE));
@@ -162,6 +163,7 @@ public class TripleStore {
 
 
             //TODO comment for local
+            log.debug("Loading models for new repo...");
             loadModels();
         }
 
@@ -175,14 +177,13 @@ public class TripleStore {
 //        System.out.println( " AFTER UPDATE !");
 
         model = ModelFactory.createRDFSModel(dataset.getDefaultModel());
-        if( filteringEnabled ) {
-            evaluator = new FilteringEvaluator(model,securityManager);
+        if (filteringEnabled) {
+            evaluator = new FilteringEvaluator(model, securityManager);
             evaluator.setPrincipal("test");
-            securedModel = Factory.getInstance(evaluator,"http://symbiote-h2020.eu/secureModel",model);
+            securedModel = Factory.getInstance(evaluator, "http://symbiote-h2020.eu/secureModel", model);
         } else {
             securedModel = model;
         }
-
 
 
     }
@@ -193,15 +194,18 @@ public class TripleStore {
 
     private void loadModels() {
 //        try {
+        loadBaseModel(CIM.getURI());
+        loadBaseModel(MIM.getURI());
+        loadBaseModel(BIM.getURI());
+        loadBaseModel(BIM_PROPERTY.getURI());
 
-            loadBaseModel(CIM.getURI(), ModelHelper.getInformationModelURI(CIM_ID), dataset);
-            loadBaseModel(MIM.getURI(), ModelHelper.getInformationModelURI(MIM_ID), dataset);
-            loadBaseModel(BIM.getURI(), ModelHelper.getInformationModelURI(BIM_ID), dataset);
-            loadBaseModel(BIM_PROPERTY.getURI(), ModelHelper.getInformationModelURI("BIM_PROPERTY"),dataset);
+        // should not be neccesarry if BIM is loaded with imports
+        loadBaseModel(QU.getURI());
+        loadBaseModel(BIM_QU_ALIGN.getURI());
 
-            // should not be neccesarry if BIM is loaded with imports
-            loadBaseModel(QU.getURI(), ModelHelper.getInformationModelURI(QU_ID), dataset);
-            loadBaseModel(BIM_QU_ALIGN.getURI(), ModelHelper.getInformationModelURI("BIM_QU"), dataset);
+        //Add BIM as an information model
+        addBIMasPIM();
+
 
 //            String cimRdf = IOUtils.toString(URI.create(CIM.getURI()), Charset.defaultCharset());
 //
@@ -230,14 +234,32 @@ public class TripleStore {
 //        }
     }
 
-    private void loadBaseModel(String loadUri, String insertUri, Dataset dataset) {
+    public void addBIMasPIM() {
+        InformationModel informationModel = new InformationModel();
+        informationModel.setId("BIM");
+        informationModel.setName("BIM");
+        informationModel.setUri(BIM.getURI());
+
+        insertGraph(TripleStore.DEFAULT_GRAPH, getInformationModelMetadata(informationModel), RDFFormat.Turtle);
+    }
+
+    private void loadBaseModel(String loadUri) {
         try {
-            Model model = ModelHelper.readModel(loadUri,true,false);
-            insertGraph(insertUri,  model);
+            Model model = ModelHelper.readModel(loadUri, true, true);
+            insertGraph(loadUri, model);
         } catch (IOException ex) {
             log.error("could not load model '" + loadUri + "'. Reason: " + ex.getMessage());
         }
     }
+
+//    private void loadBaseModel2(String loadUri, String insertUri, Dataset dataset) {
+//        try {
+//            Model model = ModelHelper.readModel(loadUri, true, false);
+//            insertGraph(insertUri, model);
+//        } catch (IOException ex) {
+//            log.error("could not load model '" + loadUri + "'. Reason: " + ex.getMessage());
+//        }
+//    }
 
     public void insertGraph(String uri, String rdf, RDFFormat format) {
         Model model = ModelFactory.createDefaultModel();
@@ -249,10 +271,10 @@ public class TripleStore {
         dataset.begin(ReadWrite.WRITE);
         log.debug("Inserting graph into " + uri);
         try {
-        if (!dataset.containsNamedModel(uri)) {
-            log.debug("creating named model " + uri);
-            dataset.addNamedModel(uri, ModelFactory.createDefaultModel());
-        }
+            if (!dataset.containsNamedModel(uri)) {
+                log.debug("creating named model " + uri);
+                dataset.addNamedModel(uri, ModelFactory.createDefaultModel());
+            }
 //        dataset.getNamedModel(uri).add(model);
 //        dataset.begin(ReadWrite.WRITE);
             dataset.getNamedModel(uri).add(model);
@@ -264,9 +286,8 @@ public class TripleStore {
     }
 
 
-
-    public void insertModelGraph( String uri, String rdf, RDFFormat rdfFormat ) {
-        GraphHelper.insertGraph(dataset , uri, rdf, rdfFormat);
+    public void insertModelGraph(String uri, String rdf, RDFFormat rdfFormat) {
+        GraphHelper.insertGraph(dataset, uri, rdf, rdfFormat);
         //Old implementation
 //        dataset.begin(ReadWrite.WRITE);
 //        try {
@@ -285,11 +306,10 @@ public class TripleStore {
 //        GraphHelper.removeGraph(dataset, graphUri);
 //    }
 
-    public void removedNamedGraph( String graphUri) {
-        UpdateRequest grapDropRequest = UpdateFactory.create("DROP GRAPH <" +graphUri+">");
+    public void removedNamedGraph(String graphUri) {
+        UpdateRequest grapDropRequest = UpdateFactory.create("DROP GRAPH <" + graphUri + ">");
         executeUpdate(grapDropRequest);
     }
-
 
 
     public ResultSet executeQuery(String queryString, SecurityRequest securityRequest, boolean useSecureGraph) {
@@ -299,20 +319,21 @@ public class TripleStore {
     }
 
     public ResultSet executeQueryOnUnionGraph(String queryString, SecurityRequest securityRequest, boolean useSecureGraph) {
-        return executeQueryOnGraph(queryString, "urn:x-arq:UnionGraph", securityRequest, useSecureGraph);
+        return executeQueryOnGraph(queryString, TripleStore.DEFAULT_GRAPH, securityRequest, useSecureGraph);
+//        return executeQueryOnGraph(queryString, "urn:x-arq:UnionGraph", securityRequest, useSecureGraph);
 //        return executeQueryOnGraph(queryString, "urn:x-arq:DefaultGraph", securityRequest, useSecureGraph);
     }
 
-    public ResultSet executeQuery(Query query, SecurityRequest securityRequest, boolean useSecureGraph) {
-        return executeQueryOnGraph(query, "urn:x-arq:UnionGraph", securityRequest, useSecureGraph);
-//        return executeQueryOnGraph(query, "urn:x-arq:DefaultGraph", securityRequest, useSecureGraph);
-    }
+//    public ResultSet executeQuery(Query query, SecurityRequest securityRequest, boolean useSecureGraph) {
+//        return executeQueryOnGraph(query, TripleStore.DEFAULT_GRAPH, securityRequest, useSecureGraph);
+////        return executeQueryOnGraph(query, "urn:x-arq:DefaultGraph", securityRequest, useSecureGraph);
+//    }
 
     public ResultSet executeQueryOnGraph(String queryString, String graphUri, SecurityRequest securityRequest, boolean useSecureGraph) {
         return executeQueryOnGraph(QueryFactory.create(queryString, Syntax.syntaxARQ), graphUri, securityRequest, useSecureGraph);
     }
 
-    public void executeUpdate( UpdateRequest request ) {
+    public void executeUpdate(UpdateRequest request) {
         dataset.begin(ReadWrite.WRITE);
         try {
             UpdateAction.execute(request, dataset);
@@ -344,11 +365,11 @@ public class TripleStore {
             if (useSecureGraph) {
                 //TODO check for querying named graphs
 //                synchronized (TripleStore.class) {
-                    setSecurityRequest(securityRequest);
-                    try (QueryExecution qe = QueryExecutionFactory.create(query, securedModel)) {
-                        qe.setTimeout(sparqlQueryTimeout);
-                        result = ResultSetFactory.copyResults(qe.execSelect());
-                    }
+                setSecurityRequest(securityRequest);
+                try (QueryExecution qe = QueryExecutionFactory.create(query, securedModel)) {
+                    qe.setTimeout(sparqlQueryTimeout);
+                    result = ResultSetFactory.copyResults(qe.execSelect());
+                }
 //                }
             } else {
 //            Model mm = ModelFactory.createRDFSModel(dataset.getDefaultModel());
@@ -424,10 +445,11 @@ public class TripleStore {
 
     /**
      * Helper method for properly setting security request in both cases: when security is on and off
+     *
      * @param securityRequest
      */
     private void setSecurityRequest(SecurityRequest securityRequest) {
-        if( evaluator != null ) {
+        if (evaluator != null) {
             evaluator.setSecurityRequest(securityRequest);
         }
     }
@@ -439,20 +461,23 @@ public class TripleStore {
         return result;
     }
 
-    public Model getNamedModel( String uri ) {
-        Model modelToReturn = ModelFactory.createDefaultModel();
+    public OntModel getNamedOntModel(String uri) {
+        OntModel modelToReturn = null;
 
         dataset.begin(ReadWrite.READ);
-        Model namedModel = dataset.getNamedModel( uri );
-
-        modelToReturn.add(namedModel);
+        Model namedModel = dataset.getNamedModel(uri);
+        try {
+            modelToReturn = ModelHelper.asOntModel(namedModel, true, true);
+        } catch (Exception e) {
+            log.error("Error occurred when asOntModel: " + e.getMessage());
+        }
 
         dataset.end();
         return modelToReturn;
     }
 
     public void printDataset() {
-        if( SHOULD_PRINT_DATASET ) {
+        if (SHOULD_PRINT_DATASET) {
             dataset.begin(ReadWrite.READ);
             Model result = dataset.getDefaultModel();
             result.write(System.out, "TURTLE");
@@ -460,4 +485,22 @@ public class TripleStore {
         }
     }
 
+    public void registerInformationModel(InformationModel informationModel) {
+        log.info("Registering information model metadata " + informationModel.getUri() );
+        insertGraph(TripleStore.DEFAULT_GRAPH, getInformationModelMetadata(informationModel), RDFFormat.Turtle);
+        log.info("Registering information model rdf " + informationModel.getUri() );
+        insertModelGraph( informationModel.getUri(), informationModel.getRdf(), informationModel.getRdfFormat() );
+        log.info("Finished registering model" );
+    }
+
+    private String getInformationModelMetadata(InformationModel informationModel) {
+        String entityUri = ModelHelper.getInformationModelURI(informationModel.getId());
+        String rdf = "<"+entityUri+"> <"+ RDF.type+"> <"+MIM.InformationModel+"> . " +
+                "<"+entityUri+"> <"+ CIM.id+"> \""+ informationModel.getId() +"\" . " +
+                "<"+entityUri+"> <"+ CIM.name+"> \""+informationModel.getName()+"\" . " +
+                "<"+entityUri+"> <"+ MIM.hasDefinition+"> <"+informationModel.getUri()+"> . ";
+
+        log.debug("Adding following information model metadata: " + rdf);
+        return rdf;
+    }
 }

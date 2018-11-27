@@ -1,13 +1,12 @@
 package eu.h2020.symbiote.query;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import eu.h2020.symbiote.ontology.model.TripleStore;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
 
 /**
  * Generator of the delete update operation.
- *
+ * <p>
  * Created by Mael on 26/01/2017.
  */
 public class DeleteResourceRequestGenerator extends AbstractDeleteRequest {
@@ -20,32 +19,33 @@ public class DeleteResourceRequestGenerator extends AbstractDeleteRequest {
      *
      * @param resourceId Id of the resource to be deleted.
      */
-    public DeleteResourceRequestGenerator(String resourceId ) {
+    public DeleteResourceRequestGenerator(String resourceId) {
         request = UpdateFactory.create();
         request.add(generateResourceRemoval(resourceId));
     }
 
-    private String generateServiceToResourceLinkRemoval( String resourceId ) {
+    private String generateServiceToResourceLinkRemoval(String resourceId) {
         StringBuilder q = generateBaseQuery();
         q.append("DELETE { ?service mim:hasResource ?sensor } WHERE {\n");
         q.append("\t?service mim:hasResource ?sensor .\n");
-        q.append("\t?sensor cim:id \""+resourceId+"\" .\n");
+        q.append("\t?sensor cim:id \"" + resourceId + "\" .\n");
         q.append("}");
         return q.toString();
     }
 
-    private String generateLocationRemoval( String resourceId ) {
+    private String generateLocationRemoval(String resourceId) {
         StringBuilder q = generateBaseQuery();
         q.append("DELETE { ?location ?p ?o } WHERE {\n");
         q.append("\t?location ?p ?o .\n");
         q.append("\t?sensor cim:locatedAt ?location ;\n");
-        q.append("\t\tcim:id \""+resourceId+"\" .\n");
+        q.append("\t\tcim:id \"" + resourceId + "\" .\n");
         q.append("}");
         return q.toString();
     }
 
-    private String generateResourceRemoval( String resourceId ) {
+    private String generateResourceRemoval(String resourceId) {
         StringBuilder q = generateBaseQuery();
+        q.append("WITH <" + TripleStore.DEFAULT_GRAPH + "> ");
         q.append("DELETE { ?sensor ?p ?o . \n");
 //        q.append(" \t?o ?p1 ?o1 . \n");
         q.append(" \t?service mim:hasResource ?sensor . \n");

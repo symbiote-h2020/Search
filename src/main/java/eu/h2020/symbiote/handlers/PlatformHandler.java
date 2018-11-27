@@ -75,6 +75,8 @@ public class PlatformHandler implements IPlatformEvents, ISspEvents, IModelEvent
         storage.registerPlatform(platform.getId(), platformModel);
         storage.getTripleStore().printDataset();
 
+        log.debug("Saving interworking services for platform " + platform.getId() + " | services: " + (platform.getInterworkingServices()==null?
+        "services are null":"size is " +platform.getInterworkingServices().size()));
         //Save interworking services in the repo when registering new platform
         saveInterworkingServicesInfoForPlatform(platform.getId(),
                 ModelHelper.getPlatformURI(platform.getId()), platform.getInterworkingServices());
@@ -185,14 +187,16 @@ public class PlatformHandler implements IPlatformEvents, ISspEvents, IModelEvent
     }
 
     public void saveInterworkingServicesInfoForPlatform(String systemId, String systemIri, List<InterworkingService> serviceList) {
-        serviceList.stream()
-                .map(is -> new InterworkingServiceInfo(HandlerUtils
-                        .generateInterworkingServiceUri(systemIri, is.getUrl()),
-                        is.getUrl(), systemId,ModelHelper.getInformationModelURI(is.getInformationModelId()))).forEach(isInfo -> {
-            log.debug("Saving interworking service | systemId: " + isInfo.getPlatformId() + " | serviceUrl: "
-                    + isInfo.getInterworkingServiceURL() + " | serviceIri" + isInfo.getInterworkingServiceIRI());
-            interworkingServiceInfoRepo.save(isInfo);
-        });
+        if( serviceList != null ) {
+            serviceList.stream()
+                    .map(is -> new InterworkingServiceInfo(HandlerUtils
+                            .generateInterworkingServiceUri(systemIri, is.getUrl()),
+                            is.getUrl(), systemId, ModelHelper.getInformationModelURI(is.getInformationModelId()))).forEach(isInfo -> {
+                log.debug("Saving interworking service | systemId: " + isInfo.getPlatformId() + " | serviceUrl: "
+                        + isInfo.getInterworkingServiceURL() + " | serviceIri" + isInfo.getInterworkingServiceIRI());
+                interworkingServiceInfoRepo.save(isInfo);
+            });
+        }
     }
 
     private String getLoadAllInterworkingServicesSPQRL() {

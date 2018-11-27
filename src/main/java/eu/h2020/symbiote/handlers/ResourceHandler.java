@@ -3,8 +3,10 @@ package eu.h2020.symbiote.handlers;
 import eu.h2020.symbiote.core.internal.CoreResource;
 import eu.h2020.symbiote.core.internal.CoreResourceRegisteredOrModifiedEventPayload;
 import eu.h2020.symbiote.core.internal.CoreSspResourceRegisteredOrModifiedEventPayload;
+import eu.h2020.symbiote.core.internal.RDFFormat;
 import eu.h2020.symbiote.filtering.AccessPolicy;
 import eu.h2020.symbiote.filtering.AccessPolicyRepo;
+import eu.h2020.symbiote.ontology.model.TripleStore;
 import eu.h2020.symbiote.query.CleanupBlankOrphansRequestGenerator;
 import eu.h2020.symbiote.query.DeleteResourceRequestGenerator;
 import eu.h2020.symbiote.search.SearchStorage;
@@ -12,7 +14,9 @@ import eu.h2020.symbiote.security.accesspolicies.IAccessPolicy;
 import eu.h2020.symbiote.security.accesspolicies.common.AccessPolicyFactory;
 import eu.h2020.symbiote.security.commons.exceptions.custom.InvalidArgumentsException;
 import eu.h2020.symbiote.semantics.ModelHelper;
+import eu.h2020.symbiote.semantics.ontology.BIM;
 import eu.h2020.symbiote.semantics.ontology.CIM;
+import eu.h2020.symbiote.semantics.ontology.MIM;
 import org.apache.commons.cli.Option;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -22,16 +26,13 @@ import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.*;
 import org.apache.jena.update.UpdateRequest;
 import org.springframework.util.Assert;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -89,66 +90,19 @@ public class ResourceHandler implements IResourceEvents {
                 return false;
             }
 
+            Map<String, Model> resourcesInRdf = findResourcesInRdf(coreResource.getRdf(), coreResource.getRdfFormat(), registeredService.get().getInformationModeIri());
 
-//            try (StringReader reader = new StringReader(coreResource.getRdf())) {
-//                model.read(reader, null, coreResource.getRdfFormat().toString());
-
-            String resourceUri = null;
-            try {
-                OntModel ontModel = ModelHelper.readModel(coreResource.getRdf(), coreResource.getRdfFormat(), false, false);
-                ontModel = ModelHelper.withInf(ontModel);
-
-                //New add pim
-
-//                Model pimModel = this.storage.getTripleStore().getNamedModel(registeredService.get().getInformationModeIri());
-//
-//                OntModel pim = null;
-//                try {
-//                    pim = ModelHelper.asOntModel(pimModel, true, true);
-//                } catch( Exception e ) {
-//                    log.error("Error occurred when asOntModel: " + e.getMessage());
-//                }
-
-                OntModel pim = storage.getNamedGraphAsOntModel(registeredService.get().getInformationModeIri());
-
-
-                if( pim != null ) {
-                    ontModel.addSubModel( pim);
-
-                    //                Set<Individual> individuals = ontModel.listIndividuals(CIM.Resource).toSet();
-
-                    Set<Individual> resourcesDefinedInPIM = ModelHelper.withInf(pim).listIndividuals(CIM.Resource).toSet();
-                    log.debug("After reading pim defined resources");
-//                    Set<Individual> resourceIndividuals = ontModel.listIndividuals(CIM.Resource).toSet();
-                    Set<Individual> resourceIndividuals = ontModel.listIndividuals(CIM.Service).toSet();
-                    log.debug("After reading all resources");
-                    resourceIndividuals.removeAll(resourcesDefinedInPIM);
-                    ontModel.removeSubModel(pim);
-                    if (resourceIndividuals.size() == 1) {
-                        Individual resourceIndv = resourceIndividuals.iterator().next();
-
-                        resourceUri = resourceIndv.getURI();
-                        log.debug("Found following URI of the resource " + resourceUri);
-
-                        GET_RESOURCE_CLOSURE.setIri(TAG_RESOURCE_URI, resourceUri);
-                        try (QueryExecution qexec = QueryExecutionFactory.create(GET_RESOURCE_CLOSURE.asQuery(), ontModel.getRawModel())) {
-                            model = qexec.execConstruct();
-                        }
-
-                    } else {
-                        //What to do here?
-                        log.error("Wrong number of resources in registration! size " + resourceIndividuals.size());
-                    }
-                } else {
-                    log.error("Could not load submodel: " + registeredService.get().getInterworkingServiceIRI());
+            if (resourcesInRdf.size() != 1) {
+                try (StringReader reader = new StringReader(coreResource.getRdf())) {
+                    model.read(reader,null,coreResource.getRdfFormat().toString());
+                    resourcesInRdf.put(ModelHelper.getResourceURI(coreResource.getId()),model);
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
             }
-            if (resourceUri == null) {
-                resourceUri = ModelHelper.getResourceURI(coreResource.getId());
-            }
-            this.storage.registerResource(ModelHelper.getPlatformURI(platformId), registeredService.get().getInterworkingServiceIRI(), resourceUri, model);
+
+            String resourceUri = resourcesInRdf.keySet().iterator().next();
+            Model modelToSave = resourcesInRdf.get(resourceUri);
+
+            this.storage.registerResource(ModelHelper.getPlatformURI(platformId), registeredService.get().getInterworkingServiceIRI(), resourceUri , modelToSave);
             if (coreResource.getPolicySpecifier() != null) {
                 try {
                     IAccessPolicy singleTokenAccessPolicy = AccessPolicyFactory.getAccessPolicy(coreResource.getPolicySpecifier());
@@ -162,6 +116,103 @@ public class ResourceHandler implements IResourceEvents {
         }
         storage.getTripleStore().printDataset();
         return true;
+    }
+
+    public Map<String,Model> findResourcesInRdf(String rdf, RDFFormat rdfFormat, String informationModeIri) {
+        log.debug("Searching for resource in rdf");
+        Map<String,Model> result = new HashMap<>();
+        try {
+            OntModel ontModel = ModelHelper.readModel(rdf, rdfFormat , false, false);
+//            if( ontModel.getDocumentManager().getProcessImports() ) {
+//                log.debug("Turning on manual process imports");
+//                ontModel.getDocumentManager().setProcessImports(true);
+//            } else {
+//                log.debug("Process imports are on");
+//            }
+            ontModel = ModelHelper.withInf(ontModel);
+
+            //New add pim
+
+//                Model pimModel = this.storage.getTripleStore().getNamedModel(registeredService.get().getInformationModeIri());
+//
+//                OntModel pim = null;
+//                try {
+//                    pim = ModelHelper.asOntModel(pimModel, true, true);
+//                } catch( Exception e ) {
+//                    log.error("Error occurred when asOntModel: " + e.getMessage());
+//                }
+
+            //Get information model definition for information model entity
+            Set<Individual> infoModels = storage.getNamedGraphAsOntModel(TripleStore.DEFAULT_GRAPH).listIndividuals(MIM.InformationModel).toSet();
+            List<Individual> rightInfoModels = infoModels.stream().filter(infoModelIndividual -> infoModelIndividual.getURI().equals(informationModeIri)).collect(Collectors.toList());
+
+            log.debug("Checking graph containing information model, found: " + rightInfoModels.size() + " for InfoModelIRI: " + informationModeIri );
+
+            String pimGraphUri = BIM.getURI();
+
+            if( rightInfoModels. size() == 1 ) {
+                Individual pimIndividual = rightInfoModels.get(0);
+                log.debug("Trying to read definition graph uri");
+                Resource modelGraph = storage.getNamedGraphAsOntModel(TripleStore.DEFAULT_GRAPH).getResource(pimIndividual.getURI()).getProperty(MIM.hasDefinition).getResource();
+                log.debug("Found graphUri: " + modelGraph.getURI());
+                pimGraphUri = modelGraph.getURI();
+            }
+
+
+            OntModel pim = storage.getNamedGraphAsOntModel(pimGraphUri);
+//            OntModel pim = storage.getNamedGraphAsOntModel("http://iosb.fraunhofer.de/ilt/ontologies/educampus");
+            printModel("pimModel",pim);
+
+            if( pim != null ) {
+                ontModel.addSubModel( pim);
+
+                //Set<Individual> individuals = ontModel.listIndividuals(CIM.Resource).toSet();
+
+                Set<Individual> resourcesDefinedInPIM = ModelHelper.withInf(pim).listIndividuals(CIM.Resource).toSet();
+                log.debug("After reading pim defined resources");
+                Set<Individual> resourceIndividuals = ontModel.listIndividuals(CIM.Resource).toSet();
+//                    Set<Individual> resourceIndividuals = ontModel.listIndividuals(CIM.Service).toSet();
+                log.debug("After reading all resources");
+                resourceIndividuals.removeAll(resourcesDefinedInPIM);
+                ontModel.removeSubModel(pim);
+                if (resourceIndividuals.size() == 1) {
+                    Individual resourceIndv = resourceIndividuals.iterator().next();
+
+                    String resourceUri = resourceIndv.getURI();
+                    log.debug("Found following URI of the resource " + resourceUri);
+
+                    //TODO
+
+                    GET_RESOURCE_CLOSURE.setIri(TAG_RESOURCE_URI, resourceUri);
+                    try (QueryExecution qexec = QueryExecutionFactory.create(GET_RESOURCE_CLOSURE.asQuery(), ontModel.getRawModel())) {
+                        Model model = qexec.execConstruct();
+                        result.put(resourceUri,model);
+                    }
+
+                } else {
+                    //What to do here?
+                    log.error("Wrong number of resources in registration! size " + resourceIndividuals.size());
+                }
+            } else {
+                log.error("Could not load submodel: " + informationModeIri);
+            }
+        } catch (IOException e) {
+            log.error(e);
+        }
+        log.debug("Returning resources in rdf: " + result.size());
+        return result;
+
+    }
+
+    private void printModel(String modelName, OntModel resourceModel) {
+        log.debug("Printing model " + modelName);
+        log.debug("========================================================");
+        StmtIterator stmtIterator = resourceModel.listStatements();
+        while( stmtIterator.hasNext() ) {
+            Statement next = stmtIterator.next();
+            log.debug( " " + next.getSubject().toString() + "  |  " + next.getPredicate().toString() + "  |  " + next.getObject().toString() );
+        }
+        log.debug("========================================================");
     }
 
     public void addSdevResourceServiceLink(CoreSspResourceRegisteredOrModifiedEventPayload resources) {
