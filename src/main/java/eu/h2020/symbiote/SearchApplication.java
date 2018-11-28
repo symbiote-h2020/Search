@@ -229,7 +229,8 @@ public class SearchApplication {
 
 //            deleteResourcesFromGraphs(searchStorage.getTripleStore());
 
-            searchStorage.getTripleStore().addBIMasPIM();
+            //TODO add BIM as PIM
+//            searchStorage.getTripleStore().addBIMasPIM();
         }
 
 //        private void deleteResourcesFromGraphs(TripleStore tripleStore) {

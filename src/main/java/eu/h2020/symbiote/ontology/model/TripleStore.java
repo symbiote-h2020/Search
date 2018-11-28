@@ -51,6 +51,7 @@ public class TripleStore {
     private static final String QU_ID = "QU";
 
     public static final String DEFAULT_GRAPH = "http://www.symbiote-h2020.eu/ontology/internal/meta";
+    public static final String UNION_GRAPH = "urn:x-arq:UnionGraph";
 
     private final static boolean SHOULD_PRINT_DATASET = false;
 
