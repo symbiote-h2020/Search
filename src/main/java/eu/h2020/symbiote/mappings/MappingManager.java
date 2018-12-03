@@ -112,4 +112,8 @@ public class MappingManager {
 
         return response;
     }
+
+    public List<OntologyMappingInternal> findByOntologyMappingSourceModelId(String sourceModelId) {
+        return mappingRepository.findByOntologyMappingSourceModelId(sourceModelId);
+    }
 }

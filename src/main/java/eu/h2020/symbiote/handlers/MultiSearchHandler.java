@@ -7,6 +7,9 @@ import eu.h2020.symbiote.core.ci.SparqlQueryResponse;
 import eu.h2020.symbiote.core.internal.CoreQueryRequest;
 import eu.h2020.symbiote.core.internal.CoreSparqlQueryRequest;
 import eu.h2020.symbiote.filtering.SecurityManager;
+import eu.h2020.symbiote.mappings.MappingManager;
+import eu.h2020.symbiote.mappings.MappingRepository;
+import eu.h2020.symbiote.mappings.OntologyMappingInternal;
 import eu.h2020.symbiote.model.cim.Property;
 import eu.h2020.symbiote.ontology.model.TripleStore;
 import eu.h2020.symbiote.query.QueryGenerator;
@@ -18,12 +21,18 @@ import eu.h2020.symbiote.security.commons.enums.ValidationStatus;
 import eu.h2020.symbiote.security.commons.exceptions.custom.SecurityHandlerException;
 import eu.h2020.symbiote.security.communication.payloads.SecurityCredentials;
 import eu.h2020.symbiote.security.communication.payloads.SecurityRequest;
+import eu.h2020.symbiote.semantics.mapping.model.Mapping;
+import eu.h2020.symbiote.semantics.mapping.model.MappingConfig;
+import eu.h2020.symbiote.semantics.mapping.model.UnsupportedMappingException;
+import eu.h2020.symbiote.semantics.mapping.parser.ParseException;
+import eu.h2020.symbiote.semantics.mapping.sparql.SparqlMapper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
 import org.apache.jena.query.*;
 import org.apache.jena.sparql.ARQException;
+import org.apache.jena.sparql.resultset.ResultSetMem;
 import org.apache.jena.sparql.resultset.ResultsFormat;
 
 import java.io.ByteArrayOutputStream;
@@ -56,18 +65,21 @@ public class MultiSearchHandler implements ISearchEvents {
     private final int executorKeepAliveInMinutes;
 
     private final ThreadPoolExecutor executorService;
+    private final MappingManager mappingManager;
 
     /**
      * Create a handler of the platform events for specified storage.
      *
      * @param triplestore Triplestore on which the events should be executed.
      */
-    public MultiSearchHandler(TripleStore triplestore, boolean securityEnabled, SecurityManager securityManager, RankingHandler rankingHandler, boolean shouldRank,
-        int executorCoreThreads, int executorMaxThreads, int executorKeepAliveInMinutes) {
+    public MultiSearchHandler(TripleStore triplestore, boolean securityEnabled, SecurityManager securityManager, RankingHandler rankingHandler,
+                              MappingManager mappingManager, boolean shouldRank,
+                              int executorCoreThreads, int executorMaxThreads, int executorKeepAliveInMinutes) {
         this.triplestore = triplestore;
         this.securityEnabled = securityEnabled;
         this.securityManager = securityManager;
         this.rankingHandler = rankingHandler;
+        this.mappingManager = mappingManager;
         this.shouldRank = shouldRank;
 
         this.executorCoreThreads = executorCoreThreads;
@@ -281,6 +293,7 @@ public class MultiSearchHandler implements ISearchEvents {
             } else {
                 //Execute mapping queries
                 log.debug("Executing sparql rewriting query -> nyi");
+                resultOfSearch = runSparqlRewrittingQuery( response );
             }
 
             log.debug("Got response from sparql query: " + StringUtils.substring(resultOfSearch,0,10000) + " ....");
@@ -335,23 +348,77 @@ public class MultiSearchHandler implements ISearchEvents {
         }
 
         private String runSparqlRewrittingQuery( SparqlQueryResponse response ) {
-
             String resultOfSearch = null;
 
+            log.debug( "Running sparql query with rewritting");
+
             //TODO default or union
-            ResultSet resultSet = this.triplestore.executeQuery(request.getBody(), request.getSecurityRequest(), false);
+
+            Query initialQuery = QueryFactory.create(request.getBody(), Syntax.syntaxARQ);
+
+            String sourceModelId = request.getBaseModel();
+//            String sourceModelId = "model1";
+
+            List<OntologyMappingInternal> mappingsFromSource = mappingManager.findByOntologyMappingSourceModelId(sourceModelId);
+
+            if( mappingsFromSource == null ) {
+                log.error( "Null mappings found for source model with id " + sourceModelId);
+            }
+            log.debug( "Found " + mappingsFromSource.size() + " mappings for model with id " + sourceModelId );
+
+            List<ResultSet> results = new ArrayList<>();
+
+            //Run original query
+            results.add(this.triplestore.executeQueryOnDataset(initialQuery, request.getSecurityRequest(), false));
+
+            for ( OntologyMappingInternal mappingInternal: mappingsFromSource ) {
+                log.debug("Using mapping " + mappingInternal.getId() + " from model "+ mappingInternal.getOntologyMapping().getSourceModelId() + " to " + mappingInternal.getOntologyMapping().getDestinationModelId() );
+                SparqlMapper sparqlMapper = new SparqlMapper();
+                MappingConfig config = new MappingConfig.Builder().build();
+                log.debug("Config for mapping built, now parsing mapping definition:");
+                try {
+                    log.debug(mappingInternal.getOntologyMapping().getDefinition());
+                    Mapping mapping = Mapping.parse(mappingInternal.getOntologyMapping().getDefinition());
+
+                    log.debug("Mapping parsed successfully, got " + (mapping.getMappingRules()!= null?mapping.getMappingRules().size() + " mapping rullings":"null mapping rullings"));
+
+                    Query mappedQuery = sparqlMapper.map(initialQuery, mapping, config);
+
+                    log.debug("Got mapped query: " + mappedQuery.toString() );
+
+
+                    //Run the mapped query
+                    ResultSet resultSet = this.triplestore.executeQueryOnDataset(mappedQuery, request.getSecurityRequest(), false);
+                    log.debug("Mapped query ran successfully" );
+
+                    //Add results of mapped queries to result set
+                    results.add(resultSet);
+
+                } catch (ParseException e) {
+                    log.error("Could not parse mapping for mappingId : " + mappingInternal.getId() + " msg: " + e.getMessage(), e );
+                } catch (UnsupportedMappingException e) {
+                    log.error("Error occurred when creating mapped query : " + e.getMessage(),e);
+                } catch (Exception e ) {
+                    log.error("Unspecified error occurred: " + e.getMessage(), e);
+                }
+
+
+            }
+
+            ResultSetMem completeResults = new ResultSetMem(results.toArray(new ResultSet[results.size()]));
+
+//            ResultSet resultSet = this.triplestore.executeQuery(request.getBody(), request.getSecurityRequest(), false);
 
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
             String formatString = request.getOutputFormat().toString();
             ResultsFormat format = ResultsFormat.lookup(formatString);
             try {
-                ResultSetRewindable rewindableResults = ResultSetFactory.makeRewindable(resultSet);
-                ResultSetFormatter.output(stream, resultSet, format);
+                ResultSetFormatter.output(stream, completeResults, format);
             } catch (ARQException e) {
                 log.warn("Got unsupported format exception, switching to text output format... " + e.getMessage());
                 //use default formatter in case of unsupported format/other errors
-                ResultSetFormatter.out(stream, resultSet);
+                ResultSetFormatter.out(stream, completeResults);
             }
             try {
                 resultOfSearch = stream.toString("UTF-8");

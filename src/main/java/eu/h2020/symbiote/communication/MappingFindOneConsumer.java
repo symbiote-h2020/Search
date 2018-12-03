@@ -5,9 +5,6 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
-import eu.h2020.symbiote.core.cci.InfoModelMappingRequest;
-import eu.h2020.symbiote.core.cci.InfoModelMappingResponse;
-import eu.h2020.symbiote.core.internal.GetAllMappings;
 import eu.h2020.symbiote.core.internal.GetSingleMapping;
 import eu.h2020.symbiote.core.internal.MappingListResponse;
 import eu.h2020.symbiote.mappings.MappingManager;
@@ -28,8 +25,8 @@ public class MappingFindOneConsumer extends DefaultConsumer {
      * Constructs a new instance and records its association to the passed-in channel.
      * Managers beans passed as parameters because of lack of possibility to inject it to consumer.
      *
-     * @param channel         the channel to which this consumer is attached
-     * @param mappingManager    mapping manager
+     * @param channel        the channel to which this consumer is attached
+     * @param mappingManager mapping manager
      */
     public MappingFindOneConsumer(Channel channel,
                                   MappingManager mappingManager) {
@@ -40,7 +37,7 @@ public class MappingFindOneConsumer extends DefaultConsumer {
     @Override
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
         String msg = new String(body);
-        log.debug( "Find one mapping: " + msg );
+        log.debug("Find one mapping: " + msg);
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -50,21 +47,24 @@ public class MappingFindOneConsumer extends DefaultConsumer {
 
             GetSingleMapping getSingleMapping = mapper.readValue(msg, GetSingleMapping.class);
             response = mappingManager.findSingleMapping(getSingleMapping);
-        } catch( Exception e ) {
-            log.error( "Error occurred when find one mapping info " + e );
+        } catch (Exception e) {
+            log.error("Error occurred when find one mapping info " + e);
         }
 
+        try {
+            byte[] responseBytes = mapper.writeValueAsBytes(response != null ? response : "[]");
 
-        byte[] responseBytes = mapper.writeValueAsBytes(response != null ? response : "[]");
-
-        AMQP.BasicProperties replyProps = new AMQP.BasicProperties
-                .Builder()
-                .correlationId(properties.getCorrelationId())
-                .build();
-        this.getChannel().basicPublish("", properties.getReplyTo(), replyProps, responseBytes);
-        log.debug("-> Find one mapping message was sent back");
-
-        this.getChannel().basicAck(envelope.getDeliveryTag(), false);
+            AMQP.BasicProperties replyProps = new AMQP.BasicProperties
+                    .Builder()
+                    .correlationId(properties.getCorrelationId())
+                    .build();
+            this.getChannel().basicPublish("", properties.getReplyTo(), replyProps, responseBytes);
+            log.debug("-> Find one mapping message was sent back");
+        } catch (Exception e) {
+            log.error("Message error occurred when sending response to find one mapping: " + e.getMessage(), e);
+        } finally {
+            this.getChannel().basicAck(envelope.getDeliveryTag(), false);
+        }
 
     }
 }

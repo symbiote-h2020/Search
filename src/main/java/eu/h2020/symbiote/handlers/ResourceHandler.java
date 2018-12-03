@@ -161,7 +161,7 @@ public class ResourceHandler implements IResourceEvents {
 
             OntModel pim = storage.getNamedGraphAsOntModel(pimGraphUri);
 //            OntModel pim = storage.getNamedGraphAsOntModel("http://iosb.fraunhofer.de/ilt/ontologies/educampus");
-            printModel("pimModel",pim);
+//            printModel("pimModel",pim);
 
             if( pim != null ) {
                 ontModel.addSubModel( pim);

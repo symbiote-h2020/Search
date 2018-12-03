@@ -9,6 +9,7 @@ import eu.h2020.symbiote.filtering.AccessPolicyRepo;
 import eu.h2020.symbiote.filtering.SecurityManager;
 import eu.h2020.symbiote.handlers.*;
 import eu.h2020.symbiote.mappings.MappingManager;
+import eu.h2020.symbiote.mappings.MappingRepository;
 import eu.h2020.symbiote.model.mim.InformationModel;
 import eu.h2020.symbiote.model.mim.InterworkingService;
 import eu.h2020.symbiote.model.mim.SmartSpace;
@@ -20,6 +21,7 @@ import eu.h2020.symbiote.search.SearchStorage;
 import eu.h2020.symbiote.semantics.ModelHelper;
 import eu.h2020.symbiote.semantics.ontology.BIM;
 import eu.h2020.symbiote.semantics.ontology.CIM;
+import eu.h2020.symbiote.semantics.ontology.MIM;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jena.update.UpdateFactory;
@@ -153,7 +155,7 @@ public class SearchApplication {
             ISearchEvents searchHandler;
             if( searchMultithread ) {
                 searchHandler = new MultiSearchHandler(searchStorage.getTripleStore(), securityEnabled, securityManager,
-                        rankingHandler, rankingEnabled, coreThreads, maxThreads, threadsKeepAlive );
+                        rankingHandler, mappingManager, rankingEnabled, coreThreads, maxThreads, threadsKeepAlive );
                 manager.registerResourceSearchConsumer(searchHandler);
             } else {
                 searchHandler = new SearchHandler(searchStorage.getTripleStore(), securityEnabled, securityManager, rankingHandler, rankingEnabled );
@@ -231,6 +233,9 @@ public class SearchApplication {
 
             //TODO add BIM as PIM
 //            searchStorage.getTripleStore().addBIMasPIM();
+
+//            searchStorage.getTripleStore().loadBaseModel(CIM.getURI());
+//            searchStorage.getTripleStore().loadBaseModel(MIM.getURI());
         }
 
 //        private void deleteResourcesFromGraphs(TripleStore tripleStore) {

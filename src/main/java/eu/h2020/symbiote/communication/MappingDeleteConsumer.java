@@ -54,16 +54,20 @@ public class MappingDeleteConsumer extends DefaultConsumer {
         }
 
 
-        byte[] responseBytes = mapper.writeValueAsBytes(response != null ? response : "[]");
+        try {
+            byte[] responseBytes = mapper.writeValueAsBytes(response != null ? response : "[]");
 
-        AMQP.BasicProperties replyProps = new AMQP.BasicProperties
-                .Builder()
-                .correlationId(properties.getCorrelationId())
-                .build();
-        this.getChannel().basicPublish("", properties.getReplyTo(), replyProps, responseBytes);
-        log.debug("-> Mapping deleted message was sent back");
-
-        this.getChannel().basicAck(envelope.getDeliveryTag(), false);
+            AMQP.BasicProperties replyProps = new AMQP.BasicProperties
+                    .Builder()
+                    .correlationId(properties.getCorrelationId())
+                    .build();
+            this.getChannel().basicPublish("", properties.getReplyTo(), replyProps, responseBytes);
+            log.debug("-> Mapping deleted message was sent back");
+        } catch( Exception e ) {
+            log.error("Message error occurred when sending response to mapping deleted: " + e.getMessage(), e);
+        } finally {
+            this.getChannel().basicAck(envelope.getDeliveryTag(), false);
+        }
 
     }
 }

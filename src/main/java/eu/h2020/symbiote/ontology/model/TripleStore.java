@@ -45,11 +45,6 @@ import java.io.IOException;
  */
 public class TripleStore {
 
-    private static final String CIM_ID = "CIM";
-    private static final String BIM_ID = "BIM";
-    private static final String MIM_ID = "MIM";
-    private static final String QU_ID = "QU";
-
     public static final String DEFAULT_GRAPH = "http://www.symbiote-h2020.eu/ontology/internal/meta";
     public static final String UNION_GRAPH = "urn:x-arq:UnionGraph";
 
@@ -244,7 +239,7 @@ public class TripleStore {
         insertGraph(TripleStore.DEFAULT_GRAPH, getInformationModelMetadata(informationModel), RDFFormat.Turtle);
     }
 
-    private void loadBaseModel(String loadUri) {
+    public void loadBaseModel(String loadUri) {
         try {
             Model model = ModelHelper.readModel(loadUri, true, true);
             insertGraph(loadUri, model);

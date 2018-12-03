@@ -54,16 +54,21 @@ public class MappingCreateConsumer extends DefaultConsumer {
         }
 
 
-        byte[] responseBytes = mapper.writeValueAsBytes(response != null ? response : "[]");
+        try {
+            byte[] responseBytes = mapper.writeValueAsBytes(response != null ? response : "[]");
 
-        AMQP.BasicProperties replyProps = new AMQP.BasicProperties
-                .Builder()
-                .correlationId(properties.getCorrelationId())
-                .build();
-        this.getChannel().basicPublish("", properties.getReplyTo(), replyProps, responseBytes);
-        log.debug("-> Mapping created message was sent back");
+            AMQP.BasicProperties replyProps = new AMQP.BasicProperties
+                    .Builder()
+                    .correlationId(properties.getCorrelationId())
+                    .build();
+            this.getChannel().basicPublish("", properties.getReplyTo(), replyProps, responseBytes);
+            log.debug("-> Mapping created message was sent back");
+        } catch( Exception e ) {
+            log.error("Message error occurred when sending response to mapping created: " + e.getMessage(), e);
+        } finally {
+            this.getChannel().basicAck(envelope.getDeliveryTag(), false);
+        }
 
-        this.getChannel().basicAck(envelope.getDeliveryTag(), false);
 
     }
 }

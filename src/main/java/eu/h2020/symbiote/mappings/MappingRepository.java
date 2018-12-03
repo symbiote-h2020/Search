@@ -22,4 +22,6 @@ public interface MappingRepository extends MongoRepository<OntologyMappingIntern
 
     @Override
     public List<OntologyMappingInternal> findAll();
+
+    public List<OntologyMappingInternal> findByOntologyMappingSourceModelId( String sourceModelId );
 }
