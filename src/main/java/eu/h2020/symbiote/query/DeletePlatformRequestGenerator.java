@@ -1,5 +1,6 @@
 package eu.h2020.symbiote.query;
 
+import eu.h2020.symbiote.ontology.model.TripleStore;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jena.update.UpdateFactory;
@@ -29,6 +30,7 @@ public class DeletePlatformRequestGenerator extends AbstractDeleteRequest {
 
     private String generatePlatformDelete( String platformId ) {
         StringBuilder q = generateBaseQuery();
+        q.append("WITH <" + TripleStore.DEFAULT_GRAPH + "> ");
         q.append("DELETE { ?platform ?p ?o } WHERE {\n");
         q.append("\t?platform ?p ?o ;\n");
         q.append("\t\tcim:id \""+platformId+"\" .\n");

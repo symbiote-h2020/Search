@@ -26,17 +26,25 @@ import eu.h2020.symbiote.semantics.mapping.model.MappingConfig;
 import eu.h2020.symbiote.semantics.mapping.model.UnsupportedMappingException;
 import eu.h2020.symbiote.semantics.mapping.parser.ParseException;
 import eu.h2020.symbiote.semantics.mapping.sparql.SparqlMapper;
+import eu.h2020.symbiote.semantics.ontology.CIM;
+import eu.h2020.symbiote.semantics.ontology.MIM;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
+import org.apache.jena.iri.IRI;
+import org.apache.jena.iri.IRIFactory;
+import org.apache.jena.ontology.Individual;
 import org.apache.jena.query.*;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.sparql.ARQException;
 import org.apache.jena.sparql.resultset.ResultSetMem;
 import org.apache.jena.sparql.resultset.ResultsFormat;
 
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
@@ -356,10 +364,54 @@ public class MultiSearchHandler implements ISearchEvents {
 
             Query initialQuery = QueryFactory.create(request.getBody(), Syntax.syntaxARQ);
 
+            List<OntologyMappingInternal> mappingsFromSource = new ArrayList<>();
+
             String sourceModelId = request.getBaseModel();
 //            String sourceModelId = "model1";
+            if( request.getBaseModel() != null && !request.getBaseModel().startsWith("http")) {
+                //Assume its not an iri of the model
+                mappingsFromSource.addAll(mappingManager.findByOntologyMappingSourceModelId(sourceModelId));
+            }
 
-            List<OntologyMappingInternal> mappingsFromSource = mappingManager.findByOntologyMappingSourceModelId(sourceModelId);
+            if( mappingsFromSource.size() == 0 ) {
+                //Could not find models by threating sourceModel as ID - trying as an IRI
+                Set<Individual> infoModels = this.triplestore.getNamedOntModel(TripleStore.DEFAULT_GRAPH).listIndividuals(MIM.InformationModel).toSet();
+                List<String> rightInfoModelIds = infoModels.stream().filter(infoModelIndividual -> {
+//                    infoModelIndividual.getURI().equals(sourceModelId);
+                    log.debug("Before checking for info models defitnions " + infoModelIndividual.getURI() );
+                    Resource definition = this.triplestore.getNamedOntModel(TripleStore.DEFAULT_GRAPH).getResource(infoModelIndividual.getURI()).getProperty(MIM.hasDefinition).getResource();
+                    log.debug("Checking if definition from model: " + definition.getURI() + " equals " + sourceModelId);
+                    return definition.getURI().equals(sourceModelId);
+                }).map( infoModelIndividual -> {
+                    log.debug("Before checking mapping: " +infoModelIndividual.getURI() );
+                    Statement property = this.triplestore.getNamedOntModel(TripleStore.DEFAULT_GRAPH).getResource(infoModelIndividual.getURI()).getProperty(CIM.id);
+                    log.debug("Mapping: " + property.toString() );
+                    try {
+                        String s = property.getLiteral().toString();
+                        log.debug("For " + infoModelIndividual.getURI() + " got: " + s );
+                        return s;
+                    } catch( Exception e ) {
+                        log.error("Got error: " + e.getMessage(),e);
+                        return null;
+                    }
+                }).collect(Collectors.toList());
+
+                log.debug("Found " + rightInfoModelIds.size() + " infoModelIds by using " + sourceModelId + " as an IRI");
+
+                if( rightInfoModelIds.size() == 1) {
+                    log.debug("Checking db for info model with id: " + rightInfoModelIds.get(0));
+                    mappingsFromSource.addAll(mappingManager.findByOntologyMappingSourceModelId(rightInfoModelIds.get(0)));
+                } else {
+                    log.debug("Size is wrong");
+                }
+
+//                Resource modelGraph = storage.getNamedGraphAsOntModel(TripleStore.DEFAULT_GRAPH).getResource(pimIndividual.getURI()).getProperty(MIM.hasDefinition).getResource();
+//                log.debug("Found graphUri: " + modelGraph.getURI());
+//                pimGraphUri = modelGraph.getURI();
+
+            }
+
+
 
             if( mappingsFromSource == null ) {
                 log.error( "Null mappings found for source model with id " + sourceModelId);
@@ -385,7 +437,6 @@ public class MultiSearchHandler implements ISearchEvents {
                     Query mappedQuery = sparqlMapper.map(initialQuery, mapping, config);
 
                     log.debug("Got mapped query: " + mappedQuery.toString() );
-
 
                     //Run the mapped query
                     ResultSet resultSet = this.triplestore.executeQueryOnDataset(mappedQuery, request.getSecurityRequest(), false);

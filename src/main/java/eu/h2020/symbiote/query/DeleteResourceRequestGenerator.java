@@ -24,24 +24,24 @@ public class DeleteResourceRequestGenerator extends AbstractDeleteRequest {
         request.add(generateResourceRemoval(resourceId));
     }
 
-    private String generateServiceToResourceLinkRemoval(String resourceId) {
-        StringBuilder q = generateBaseQuery();
-        q.append("DELETE { ?service mim:hasResource ?sensor } WHERE {\n");
-        q.append("\t?service mim:hasResource ?sensor .\n");
-        q.append("\t?sensor cim:id \"" + resourceId + "\" .\n");
-        q.append("}");
-        return q.toString();
-    }
-
-    private String generateLocationRemoval(String resourceId) {
-        StringBuilder q = generateBaseQuery();
-        q.append("DELETE { ?location ?p ?o } WHERE {\n");
-        q.append("\t?location ?p ?o .\n");
-        q.append("\t?sensor cim:locatedAt ?location ;\n");
-        q.append("\t\tcim:id \"" + resourceId + "\" .\n");
-        q.append("}");
-        return q.toString();
-    }
+//    private String generateServiceToResourceLinkRemoval(String resourceId) {
+//        StringBuilder q = generateBaseQuery();
+//        q.append("DELETE { ?service mim:hasResource ?sensor } WHERE {\n");
+//        q.append("\t?service mim:hasResource ?sensor .\n");
+//        q.append("\t?sensor cim:id \"" + resourceId + "\" .\n");
+//        q.append("}");
+//        return q.toString();
+//    }
+//
+//    private String generateLocationRemoval(String resourceId) {
+//        StringBuilder q = generateBaseQuery();
+//        q.append("DELETE { ?location ?p ?o } WHERE {\n");
+//        q.append("\t?location ?p ?o .\n");
+//        q.append("\t?sensor cim:locatedAt ?location ;\n");
+//        q.append("\t\tcim:id \"" + resourceId + "\" .\n");
+//        q.append("}");
+//        return q.toString();
+//    }
 
     private String generateResourceRemoval(String resourceId) {
         StringBuilder q = generateBaseQuery();

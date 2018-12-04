@@ -1,5 +1,6 @@
 package eu.h2020.symbiote.query;
 
+import eu.h2020.symbiote.ontology.model.TripleStore;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
 
@@ -27,6 +28,7 @@ public class DeleteSdevRequestGenerator extends AbstractDeleteRequest {
 
     private String generateSdevDelete( String sdevId ) {
         StringBuilder q = generateBaseQuery();
+        q.append("WITH <" + TripleStore.DEFAULT_GRAPH + "> ");
         q.append("DELETE { ?sdev ?p ?o } WHERE {\n");
         q.append("\t?sdev ?p ?o ;\n");
         q.append("\t\tcim:id \""+sdevId+"\" .\n");

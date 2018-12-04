@@ -1,5 +1,6 @@
 package eu.h2020.symbiote.query;
 
+import eu.h2020.symbiote.ontology.model.TripleStore;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
 
@@ -26,6 +27,7 @@ public class DeleteMappingRequestGenerator extends AbstractDeleteRequest {
 
     private String generateMappingDelete( String mappingId ) {
         StringBuilder q = generateBaseQuery();
+        q.append("WITH <" + TripleStore.DEFAULT_GRAPH + "> ");
         q.append("DELETE { ?s ?p ?o } WHERE {\n");
         q.append("\t?s ?p ?o ;\n");
         q.append("\t\tcim:id \""+mappingId+"\" .\n");
