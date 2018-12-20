@@ -291,8 +291,12 @@ public class HandlerUtils {
         }
         if (request.getResource_type() != null && !request.getResource_type().isEmpty()) {
             try {
-                ResourceType type = ResourceType.getTypeForName(request.getResource_type());
-                q.addResourceType(type.getUri());
+                if( request.getResource_type().startsWith("http")) {
+                    q.addResourceType(request.getResource_type());
+                } else {
+                    ResourceType type = ResourceType.getTypeForName(request.getResource_type());
+                    q.addResourceType(type.getUri());
+                }
             } catch (Exception e) {
                 log.warn("Wrong resource type specified: " + request.getResource_type());
             }
