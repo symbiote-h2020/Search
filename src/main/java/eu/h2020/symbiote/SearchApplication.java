@@ -2,9 +2,7 @@ package eu.h2020.symbiote;
 
 import eu.h2020.symbiote.communication.RabbitManager;
 import eu.h2020.symbiote.communication.SearchCommunicationHandler;
-import eu.h2020.symbiote.core.internal.CoreQueryRequest;
-import eu.h2020.symbiote.core.internal.CoreSparqlQueryRequest;
-import eu.h2020.symbiote.core.internal.RDFFormat;
+import eu.h2020.symbiote.core.internal.*;
 import eu.h2020.symbiote.filtering.AccessPolicyRepo;
 import eu.h2020.symbiote.filtering.SecurityManager;
 import eu.h2020.symbiote.handlers.*;
@@ -22,6 +20,8 @@ import eu.h2020.symbiote.semantics.ModelHelper;
 import eu.h2020.symbiote.semantics.ontology.BIM;
 import eu.h2020.symbiote.semantics.ontology.CIM;
 import eu.h2020.symbiote.semantics.ontology.MIM;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jena.update.UpdateFactory;
@@ -41,6 +41,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -234,6 +236,10 @@ public class SearchApplication {
             //TODO add BIM as PIM
 //            searchStorage.getTripleStore().addBIMasPIM();
 
+//            registerResourceM1(resourceHandler);
+//            registerResourceM2(resourceHandler);
+
+//            registerMappingTestResource(resourceHandler);
 //            searchStorage.getTripleStore().loadBaseModel(CIM.getURI());
 //            searchStorage.getTripleStore().loadBaseModel(MIM.getURI());
         }
@@ -263,6 +269,48 @@ public class SearchApplication {
             searchHandler.sparqlSearch(comm,req);
             log.debug("Search started");
         }
+
+//        private void registerResourceM1( ResourceHandler resourceHandler ) {
+//            CoreResourceRegisteredOrModifiedEventPayload resource = new CoreResourceRegisteredOrModifiedEventPayload();
+//
+//            resource.setPlatformId("psnc_PlatformM1");
+//
+//            CoreResource coreRes = new CoreResource();
+//            coreRes.setRdfFormat(RDFFormat.JSONLD);
+//            try {
+//                coreRes.setRdf(FileUtils.readFileToString(new File("/home/mael/resm1.json"), Charset.defaultCharset()));
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//            coreRes.setId("psnc_p1res1");
+//            coreRes.setInterworkingServiceURL("https://www.psnc.eu/platformM1");
+//            coreRes.setName("psnc_p1res1");
+//            coreRes.setType(CoreResourceType.STATIONARY_SENSOR);
+//            resource.setResources(Arrays.asList(coreRes));
+//
+//            resourceHandler.registerResource(resource);
+//        }
+//
+//        private void registerResourceM2( ResourceHandler resourceHandler ) {
+//            CoreResourceRegisteredOrModifiedEventPayload resource = new CoreResourceRegisteredOrModifiedEventPayload();
+//
+//            resource.setPlatformId("psnc_PlatformM2");
+//
+//            CoreResource coreRes = new CoreResource();
+//            coreRes.setRdfFormat(RDFFormat.JSONLD);
+//            try {
+//                coreRes.setRdf(FileUtils.readFileToString(new File("/home/mael/resm2.json"), Charset.defaultCharset()));
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//            coreRes.setId("psnc_p2res2");
+//            coreRes.setInterworkingServiceURL("https://www.psnc.eu/platformM2");
+//            coreRes.setName("psnc_p2res2");
+//            coreRes.setType(CoreResourceType.STATIONARY_SENSOR);
+//            resource.setResources(Arrays.asList(coreRes));
+//
+//            resourceHandler.registerResource(resource);
+//        }
 
 
         private String generateResourceRemoval(String resourceId, String graph) {

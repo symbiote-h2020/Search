@@ -41,7 +41,7 @@
     "@type" : "core:Actuator",
     "hasCapability" : "_:b0",
     "id" : "actuator1",
-    "locatedAt" : "http://www.symbiote-h2020.eu/ontology/internal/platforms/Platform1/location/59ad0b5f8d116620906557f2",
+    "locatedAt" : "http://www.symbiote-h2020.eu/ontology/internal/platforms/Platform/location/59ad0b5f8d116620906557f2",
     "description" : "This is actuator 1",
     "name" : "Actuator 1"
   }, {

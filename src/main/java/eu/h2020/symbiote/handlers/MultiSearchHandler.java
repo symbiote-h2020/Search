@@ -378,10 +378,17 @@ public class MultiSearchHandler implements ISearchEvents {
                 Set<Individual> infoModels = this.triplestore.getNamedOntModel(TripleStore.DEFAULT_GRAPH).listIndividuals(MIM.InformationModel).toSet();
                 List<String> rightInfoModelIds = infoModels.stream().filter(infoModelIndividual -> {
 //                    infoModelIndividual.getURI().equals(sourceModelId);
-                    log.debug("Before checking for info models defitnions " + infoModelIndividual.getURI() );
-                    Resource definition = this.triplestore.getNamedOntModel(TripleStore.DEFAULT_GRAPH).getResource(infoModelIndividual.getURI()).getProperty(MIM.hasDefinition).getResource();
-                    log.debug("Checking if definition from model: " + definition.getURI() + " equals " + sourceModelId);
-                    return definition.getURI().equals(sourceModelId);
+//                    log.debug("Before checking for info models defitnions " + infoModelIndividual.getURI() );
+//                    log.debug("-res " + infoModelIndividual.getProperty(MIM.hasDefinition).getResource().toString());
+//                    log.debug("-pred " + infoModelIndividual.getProperty(MIM.hasDefinition).getPredicate().toString());
+//                    log.debug("-obj " + infoModelIndividual.getProperty(MIM.hasDefinition).getObject().toString());
+//                    log.debug("propValue " + infoModelIndividual.getPropertyValue(MIM.hasDefinition).toString());
+                    String modelIri = infoModelIndividual.getProperty(MIM.hasDefinition).getObject().asResource().toString();
+
+
+//                    Resource definition = this.triplestore.getNamedOntModel(TripleStore.DEFAULT_GRAPH).getResource(infoModelIndividual.getURI()).getProperty(MIM.hasDefinition).getResource();
+                    log.debug("Checking if initial definition " + sourceModelId + " equals either " + infoModelIndividual.getURI() + " or " + modelIri);
+                    return infoModelIndividual.getURI().equals(sourceModelId) || modelIri.equals(sourceModelId);
                 }).map( infoModelIndividual -> {
                     log.debug("Before checking mapping: " +infoModelIndividual.getURI() );
                     Statement property = this.triplestore.getNamedOntModel(TripleStore.DEFAULT_GRAPH).getResource(infoModelIndividual.getURI()).getProperty(CIM.id);
