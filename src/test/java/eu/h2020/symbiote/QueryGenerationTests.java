@@ -83,7 +83,7 @@ public class QueryGenerationTests {
     @Test
     public void testSearchAll() {
         String query = new QueryGenerator().toString();
-        ResultSet resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        ResultSet resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         int size = countResultSetSizeByGeneratingResponseFromResultSet(resultSet);
         assertEquals("Platform query should return " + 4 + " but got " + size, 4, size);
     }
@@ -91,7 +91,7 @@ public class QueryGenerationTests {
     @Test
     public void testSearchByPlatformId() {
         String query = new QueryGenerator().addPlatformId("1").toString();
-        ResultSet resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        ResultSet resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         int size = countResultSetSizeByGeneratingResponseFromResultSet(resultSet);
         assertEquals("Platform query should return " + 3 + " but got " + size, 3, size);
     }
@@ -101,7 +101,7 @@ public class QueryGenerationTests {
 
         //Not existing platform
         String query = new QueryGenerator().addPlatformId("123456").toString();
-        ResultSet resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        ResultSet resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         int size = countResultSetSizeByGeneratingResponseFromResultSet(resultSet);
         assertEquals("Platform query should return " + 0 + " but got " + size, 0, size);
     }
@@ -111,7 +111,7 @@ public class QueryGenerationTests {
         String query = new QueryGenerator()
                 .addPlatformName("Platform A")
                 .toString();
-        ResultSet resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        ResultSet resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         int size = countResultSetSizeByGeneratingResponseFromResultSet(resultSet);
         assertEquals("Resource query should return " + 3 + " but got " + size, 3, size);
     }
@@ -119,7 +119,7 @@ public class QueryGenerationTests {
     @Test
     public void testSearchByPlatformName_notExistingPlatform() {
         String query = new QueryGenerator().addPlatformName("Platform 12345").toString();
-        ResultSet resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        ResultSet resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         int size = countResultSetSizeByGeneratingResponseFromResultSet(resultSet);
         assertEquals("Platform query should return " + 0 + " but got " + size, 0, size);
     }
@@ -127,13 +127,13 @@ public class QueryGenerationTests {
     @Test
     public void testSearchByLikePlatformName() {
         String query = new QueryGenerator().addLikePlatformName("Plat", "CONTAINS").toString();
-        ResultSet resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        ResultSet resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         int size = countResultSetSizeByGeneratingResponseFromResultSet(resultSet);
         assertEquals("Platform query should return " + 4 + " but got " + size, 4, size);
 
         //Platform 2
         query = new QueryGenerator().addLikePlatformName("form B", "CONTAINS").toString();
-        resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         size = countResultSetSizeByGeneratingResponseFromResultSet(resultSet);
         assertEquals("Platform query should return " + 1 + " but got " + size, 1, size);
     }
@@ -142,7 +142,7 @@ public class QueryGenerationTests {
     public void testSearchByLikePlatformName_notExistingPlatform() {
         //Not existing platform
         String query = new QueryGenerator().addLikePlatformName("Platform 12345", "CONTAINS").toString();
-        ResultSet resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        ResultSet resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         int size = countResultSetSizeByGeneratingResponseFromResultSet(resultSet);
         assertEquals("Platform query should return " + 0 + " but got " + size, 0, size);
     }
@@ -154,42 +154,42 @@ public class QueryGenerationTests {
         String query = new QueryGenerator()
                 .addResourceName(RESOURCE_STATIONARY_LABEL)
                 .toString();
-        ResultSet resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        ResultSet resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         int size = countResultSetSizeByGeneratingResponseFromResultSet(resultSet);
         assertEquals("Resource query should return " + 1 + " but got " + size, 1, size);
 
         query = new QueryGenerator()
                 .addResourceName(RESOURCE_MOBILE_LABEL)
                 .toString();
-        resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         size = countResultSetSizeByGeneratingResponseFromResultSet(resultSet);
         assertEquals("Resource query should return " + 1 + " but got " + size, 1, size);
 
         query = new QueryGenerator()
                 .addResourceName(RESOURCE_SERVICE_LABEL)
                 .toString();
-        resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         size = countResultSetSizeByGeneratingResponseFromResultSet(resultSet);
         assertEquals("Resource query should return " + 1 + " but got " + size, 1, size);
 
 //        query = new QueryGenerator()
 //                .addResourceName(RESOURCE_ACTUATING_SERVICE_LABEL)
 //                .toString();
-//        resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+//        resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
 //        size = countResultSetSizeByGeneratingResponseFromResultSet(resultSet);
 //        assertEquals("Resource query should return " + 1 + " but got " + size, 1, size);
 
         query = new QueryGenerator()
                 .addResourceName(RESOURCE_ACTUATOR_LABEL)
                 .toString();
-        resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         size = countResultSetSizeByGeneratingResponseFromResultSet(resultSet);
         assertEquals("Resource query should return " + 1 + " but got " + size, 1, size);
 
 //        query = new QueryGenerator()
 //                .addResourceName(RESOURCE_STATIONARYDEVICE_LABEL)
 //                .toString();
-//        resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+//        resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
 
         QueryResponse resp = HandlerUtils.generateSearchResponseFromResultSet(resultSet);
         for (QueryResourceResult singleResp : resp.getResources()) {
@@ -201,7 +201,7 @@ public class QueryGenerationTests {
     public void testSearchByResourceName_notExistingResource() {
         //Not existing platform
         String query = new QueryGenerator().addResourceName("Resource 12345").toString();
-        ResultSet resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        ResultSet resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         int size = countResultSetSizeByGeneratingResponseFromResultSet(resultSet);
         assertEquals("Resource query should return " + 0 + " but got " + size, 0, size);
     }
@@ -209,12 +209,12 @@ public class QueryGenerationTests {
     @Test
     public void testSearchByLikeResourceName() {
         String query = new QueryGenerator().addLikeResourceName("tionary", "CONTAINS").toString();
-        ResultSet resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        ResultSet resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         int size = countResultSetSizeByGeneratingResponseFromResultSet(resultSet);
         assertEquals("Resource query should return " + 1 + " but got " + size, 1, size);
 
         query = new QueryGenerator().addLikeResourceName("service", "CONTAINS").toString();
-        resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         size = countResultSetSizeByGeneratingResponseFromResultSet(resultSet);
         assertEquals("Resource query should return " + 1 + " but got " + size, 1, size);
     }
@@ -222,7 +222,7 @@ public class QueryGenerationTests {
     @Test
     public void testSearchByLikeResourceName_notExisting() {
         String query = new QueryGenerator().addResourceName("aaaaa").toString();
-        ResultSet resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        ResultSet resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         int size = countResultSetSizeByGeneratingResponseFromResultSet(resultSet);
         assertEquals("Resource query should return " + 0 + " but got " + size, 0, size);
     }
@@ -230,18 +230,18 @@ public class QueryGenerationTests {
     @Test
     public void testSearchByResourceId() {
         String query = new QueryGenerator().addResourceId("stationary1").toString();
-        ResultSet resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        ResultSet resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         int size = countResultSetSizeByGeneratingResponseFromResultSet(resultSet);
         assertEquals("Resource query should return " + 1 + " but got " + size, 1, size);
 
         query = new QueryGenerator().addResourceId("mobile1").toString();
-        resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         size = countResultSetSizeByGeneratingResponseFromResultSet(resultSet);
         assertEquals("Resource query should return " + 1 + " but got " + size, 1, size);
 
         //Platform 3
         query = new QueryGenerator().addResourceId("service1").toString();
-        resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         size = countResultSetSizeByGeneratingResponseFromResultSet(resultSet);
         assertEquals("Resource query should return " + 1 + " but got " + size, 1, size);
     }
@@ -250,7 +250,7 @@ public class QueryGenerationTests {
     public void testSearchByResourceId_NotExistingResource() {
         //Not existing platform
         String query = new QueryGenerator().addResourceId("12345").toString();
-        ResultSet resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        ResultSet resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         int size = countResultSetSizeByGeneratingResponseFromResultSet(resultSet);
         assertEquals("Resource query should return " + 0 + " but got " + size, 0, size);
     }
@@ -258,7 +258,7 @@ public class QueryGenerationTests {
     @Test
     public void testSearchByResourceDescription() {
         String query = new QueryGenerator().addResourceDescription("This is stationary 1").toString();
-        ResultSet resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        ResultSet resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         int size = countResultSetSizeByGeneratingResponseFromResultSet(resultSet);
         assertEquals("Resource query should return " + 1 + " but got " + size, 1, size);
     }
@@ -267,7 +267,7 @@ public class QueryGenerationTests {
     public void testSearchByResourceDescription_NotExistingResource() {
         //Not existing platform
         String query = new QueryGenerator().addResourceDescription("This is resource 10").toString();
-        ResultSet resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        ResultSet resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         int size = countResultSetSizeByGeneratingResponseFromResultSet(resultSet);
         assertEquals("Resource query should return " + 0 + " but got " + size, 0, size);
     }
@@ -275,13 +275,13 @@ public class QueryGenerationTests {
     @Test
     public void testSearchByLikeResourceDescription() {
         String query = new QueryGenerator().addLikeResourceDescription("This is ", "CONTAINS").toString();
-        ResultSet resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        ResultSet resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         int size = countResultSetSizeByGeneratingResponseFromResultSet(resultSet);
         assertEquals("Resource query should return " + 4 + " but got " + size, 4, size);
 
         //Platform 2
         query = new QueryGenerator().addLikeResourceDescription("service", "CONTAINS").toString();
-        resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         size = countResultSetSizeByGeneratingResponseFromResultSet(resultSet);
         assertEquals("Resource query should return " + 1 + " but got " + size, 1, size);
     }
@@ -290,7 +290,7 @@ public class QueryGenerationTests {
     public void testSearchByLikeResourceDescription_NotExistingResource() {
         //Not existing platform
         String query = new QueryGenerator().addResourceDescription("This is resource 12345").toString();
-        ResultSet resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        ResultSet resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         int size = countResultSetSizeByGeneratingResponseFromResultSet(resultSet);
         assertEquals("Resource query should return " + 0 + " but got " + size, 0, size);
     }
@@ -298,7 +298,7 @@ public class QueryGenerationTests {
     @Test
     public void testSearchByResourceLocationName() {
         String query = new QueryGenerator().addResourceLocationName("Paris").toString();
-        ResultSet resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        ResultSet resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         int size = countAndPrintSearchResponses(resultSet);
         assertEquals("Resource query should return " + 3 + " but got " + size, 3, size);
     }
@@ -307,7 +307,7 @@ public class QueryGenerationTests {
     public void testSearchByResourceLocationName_NotExistingResource() {
         //Not existing platform
         String query = new QueryGenerator().addResourceLocationName("12345location").toString();
-        ResultSet resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        ResultSet resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         int size = countResultSetSizeByGeneratingResponseFromResultSet(resultSet);
         assertEquals("Resource query should return " + 0 + " but got " + size, 0, size);
     }
@@ -315,7 +315,7 @@ public class QueryGenerationTests {
     @Test
     public void testSearchByLikeResourceLocationName() {
         String query = new QueryGenerator().addLikeResourceLocationName("ris", "CONTAINS").toString();
-        ResultSet resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        ResultSet resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         int size = countResultSetSizeByGeneratingResponseFromResultSet(resultSet);
         assertEquals("Resource query should return " + 3 + " but got " + size, 3, size);
     }
@@ -324,7 +324,7 @@ public class QueryGenerationTests {
     public void testSearchByLikeResourceLocationName_NotExistingResource() {
         //Not existing platform
         String query = new QueryGenerator().addLikeResourceLocationName("12345location", "CONTAINS").toString();
-        ResultSet resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        ResultSet resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         int size = countResultSetSizeByGeneratingResponseFromResultSet(resultSet);
         assertEquals("Resource query should return " + 0 + " but got " + size, 0, size);
     }
@@ -334,13 +334,13 @@ public class QueryGenerationTests {
         String query = new QueryGenerator()
                 .addResourceObservedPropertyName("temperature")
                 .toString();
-        ResultSet resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        ResultSet resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         int size = countAndPrintSearchResponses(resultSet);
         assertEquals("Resource query should return " + 2 + " but got " + size, 2, size);
 
         //Platform 2
         query = new QueryGenerator().addResourceObservedPropertyName("humidity").toString();
-        resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         size = countAndPrintSearchResponses(resultSet);
         assertEquals("Resource query should return " + 1 + " but got " + size, 1, size);
     }
@@ -349,7 +349,7 @@ public class QueryGenerationTests {
     public void testSearchByResourceObservedPropertyName_NotExistingResource() {
         //Not existing platform
         String query = new QueryGenerator().addResourceObservedPropertyName("12345property").toString();
-        ResultSet resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        ResultSet resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         int size = countResultSetSizeByGeneratingResponseFromResultSet(resultSet);
         assertEquals("Resource query should return " + 0 + " but got " + size, 0, size);
     }
@@ -358,18 +358,18 @@ public class QueryGenerationTests {
     @Test
     public void testSearchByLikeResourceObservedPropertyName() {
         String query = new QueryGenerator().addLikeResourceObservedPropertyName("temp", "CONTAINS").toString();
-        ResultSet resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        ResultSet resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         int size = countAndPrintSearchResponses(resultSet);
         assertEquals("Resource query should return " + 2 + " but got " + size, 2, size);
 
         query = new QueryGenerator().addLikeResourceObservedPropertyName("mperat", "CONTAINS").toString();
-        resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         size = countAndPrintSearchResponses(resultSet);
         assertEquals("Resource query should return " + 2 + " but got " + size, 2, size);
 
         //Platform 2
         query = new QueryGenerator().addLikeResourceObservedPropertyName("hum", "CONTAINS").toString();
-        resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         size = countAndPrintSearchResponses(resultSet);
         assertEquals("Resource query should return " + 1 + " but got " + size, 1, size);
     }
@@ -378,7 +378,7 @@ public class QueryGenerationTests {
     public void testSearchByLikeResourceObservedPropertyName_NotExistingResource() {
         //Not existing platform
         String query = new QueryGenerator().addLikeResourceObservedPropertyName("12345property", "CONTAINS").toString();
-        ResultSet resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        ResultSet resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         int size = countAndPrintSearchResponses(resultSet);
         assertEquals("Resource query should return " + 0 + " but got " + size, 0, size);
     }
@@ -390,7 +390,7 @@ public class QueryGenerationTests {
         names.add("humidity");
 
         String query = new QueryGenerator().addResourceObservedPropertyNames(names).toString();
-        ResultSet resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        ResultSet resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         int size = countResultSetSizeByGeneratingResponseFromResultSet(resultSet);
         assertEquals("Resource query should return " + 1 + " but got " + size, 1, size);
     }
@@ -403,7 +403,7 @@ public class QueryGenerationTests {
         Integer distance = Integer.valueOf("1000");
 
         String query = new QueryGenerator().addResourceLocationDistance(latitude, longitude, distance).toString();
-        ResultSet resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        ResultSet resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
 
         int size = countAndPrintSearchResponses(resultSet);
         assertEquals("Resource query should return " + 3 + " but got " + size, 3, size);
@@ -417,7 +417,7 @@ public class QueryGenerationTests {
         Integer distance = Integer.valueOf("1");
 
         String query = new QueryGenerator().addResourceLocationDistance(latitude, longitude, distance).toString();
-        ResultSet resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        ResultSet resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         int size = countResultSetSizeByGeneratingResponseFromResultSet(resultSet);
         assertEquals("Resource query should return " + 0 + " but got " + size, 0, size);
     }
@@ -430,7 +430,7 @@ public class QueryGenerationTests {
 
         String query = new QueryGenerator().addResourceLocationDistance(latitude, longitude, distance)
                 .addResourceObservedPropertyName("humidity").toString();
-        ResultSet resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        ResultSet resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         int size = countResultSetSizeByGeneratingResponseFromResultSet(resultSet);
         assertEquals("Resource query should return " + 1 + " but got " + size, 1, size);
     }
@@ -445,7 +445,7 @@ public class QueryGenerationTests {
                 .addResourceLocationDistance(latitude, longitude, distance)
                 .addLikeResourceDescription("stat", "CONTAINS")
                 .toString();
-        ResultSet resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        ResultSet resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         int size = countResultSetSizeByGeneratingResponseFromResultSet(resultSet);
         assertEquals("Resource query should return " + 1 + " but got " + size, 1, size);
     }
@@ -454,7 +454,7 @@ public class QueryGenerationTests {
     public void testSearchByResourceType() {
         //Not existing platform
         String query = new QueryGenerator().addResourceType(ResourceType.ACTUATOR.getUri()).toString();
-        ResultSet resultSet = triplestore.executeQueryOnUnionGraph(query,null,false);
+        ResultSet resultSet = triplestore.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
         int size = countAndPrintSearchResponses(resultSet);
         assertEquals("Resource query should return " + 1 + " but got " + size, 1, size);
     }
@@ -463,11 +463,11 @@ public class QueryGenerationTests {
         ResultSetFormatter.out(System.out, resultSet);
     }
 
-    private void executeQueryOnUnionGraph(TripleStore store, String filename) throws IOException {
-        String query = IOUtils.toString(this.getClass()
-                .getResource(filename));
-        ResultSet resultSet = store.executeQueryOnUnionGraph(query,null,false);
-        printSearchResponsesFormatter(resultSet);
-    }
+//    private void executeQueryOnUnionGraph(TripleStore store, String filename) throws IOException {
+//        String query = IOUtils.toString(this.getClass()
+//                .getResource(filename));
+//        ResultSet resultSet = store.executeQueryOnGraph(query,TripleStore.UNION_GRAPH,null,false);
+//        printSearchResponsesFormatter(resultSet);
+//    }
 
 }

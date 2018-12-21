@@ -375,7 +375,7 @@ public class TripleStore {
                 Model m = dataset.getNamedModel(graphUri);
 
                 //TODO TEST INFERENCE FROM OTHER MODELS
-                m.add(getAllDefModels());
+//                m.add(getAllDefModels());
 //                m = ModelFactory.createRDFSModel(m);
 
                 try (QueryExecution qe = QueryExecutionFactory.create(query, m)) {
