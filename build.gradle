@@ -1,8 +1,8 @@
 // initial extensions to gradle
 buildscript {
     ext {
-        springBootVersion = '1.5.15.RELEASE'
-        springCloudVersion = 'Dalston.SR5'
+        springBootVersion = '1.5.18.RELEASE'
+        springCloudVersion = 'Edgware.SR5'
     }
     repositories {
         mavenCentral()
@@ -72,6 +72,7 @@ Forces dependencies' cache invalidation for each build for dependencies marked w
 configurations.all {
     // check for updates every build
     resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    exclude group: 'org.slf4j', module : "slf4j-log4j12"
 }
 
 dependencies {
@@ -87,18 +88,9 @@ dependencies {
             3) project dependency requires changes in settings.gradle file in this project
             4) never commit build.gradle which has project dependencies active as it will break CI builds
     */
-    compile('com.github.symbiote-h2020:SymbIoTeLibraries:5.34.0') {changing=true}
-    compile('com.github.symbiote-h2020:SemanticMapping:1.0.2') {changing=true}
-//    compile project(':SemanticMapping')
+    compile('com.github.symbiote-h2020:SymbIoTeLibraries:5.37+') {changing=true}
 
-    compile 'org.springframework.cloud:spring-cloud-starter-sleuth'
-
-
-    compile('com.github.symbiote-h2020:SymbIoTeSemantics:2.3.2') {
-        changing = true
-        exclude group: 'org.slf4j'
-    }
-
+    compile('org.springframework.cloud:spring-cloud-starter-sleuth')
     compile('org.springframework.cloud:spring-cloud-starter-config')
     compile('org.springframework.cloud:spring-cloud-starter-eureka')
     compile('org.springframework.cloud:spring-cloud-starter-zipkin') // Causes the java.net.ConnectException
@@ -110,14 +102,7 @@ dependencies {
     // Needed for docker
     compile('org.springframework.retry:spring-retry')
     compile('org.springframework.boot:spring-boot-starter-aop')
-
-    //Jena dependencies
-//    compile('org.apache.jena:jena-core:3.4.0')
-//    compile('org.apache.jena:jena-querybuilder:3.4.0')
-//    compile('org.apache.jena:jena-permissions:3.4.0')
-//    compile('org.apache.jena:jena-spatial:3.4.0') {
-//        exclude group: 'org.slf4j' , module: 'slf4j-log4j12'
-//    }
+    
     compile group: 'org.apache.jena', name: 'jena-core', version: '3.9.0'
     compile group: 'org.apache.jena', name: 'jena-querybuilder', version: '3.9.0'
     compile group: 'org.apache.jena', name: 'jena-permissions', version: '3.9.0'
