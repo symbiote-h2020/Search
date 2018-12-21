@@ -373,6 +373,11 @@ public class TripleStore {
 //                Model modelToQuery = dataset.getUnionModel();
 //                Model model = ModelFactory.createDefaultModel().read(in, "");
                 Model m = dataset.getNamedModel(graphUri);
+
+                //TODO TEST INFERENCE FROM OTHER MODELS
+                m.add(getAllDefModels());
+//                m = ModelFactory.createRDFSModel(m);
+
                 try (QueryExecution qe = QueryExecutionFactory.create(query, m)) {
 //                    qe.setTimeout(sparqlQueryTimeout);
                     long in = System.currentTimeMillis();
@@ -499,4 +504,15 @@ public class TripleStore {
         log.debug("Adding following information model metadata: " + rdf);
         return rdf;
     }
+
+    public Model getAllDefModels()  {
+        Model allModels = ModelFactory.createDefaultModel();
+            allModels.add(dataset.getNamedModel(QU.getURI()));
+            allModels.add(dataset.getNamedModel(BIM_QU_ALIGN.getURI()));
+            allModels.add(dataset.getNamedModel(BIM.getURI()));
+            allModels.add(dataset.getNamedModel(BIM_PROPERTY.getURI()));
+
+        return allModels;
+    }
 }
+

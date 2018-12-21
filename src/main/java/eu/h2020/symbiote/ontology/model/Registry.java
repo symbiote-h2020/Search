@@ -75,10 +75,6 @@ public class Registry {
      */
     public void registerResource(String platformUri, String serviceURI, String resourceUri, Model resourceModel) {
         log.debug("Inserting info to default graph");
-
-        //TODO delete long debugging
-        //printModel(resourceModel);
-
         tripleStore.insertGraph(TripleStore.DEFAULT_GRAPH, resourceModel);
 
         tripleStore.insertGraph(TripleStore.DEFAULT_GRAPH, getResourceMetadata(serviceURI,resourceUri), RDFFormat.Turtle);

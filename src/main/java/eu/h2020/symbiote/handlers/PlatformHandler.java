@@ -203,7 +203,7 @@ public class PlatformHandler implements IPlatformEvents, ISspEvents, IModelEvent
         return "PREFIX cim: <http://www.symbiote-h2020.eu/ontology/core#>\n" +
                 "PREFIX mim: <http://www.symbiote-h2020.eu/ontology/meta#>" +
                 "\n" +
-                "SELECT ?service ?serviceURL ?platformId ?informationModel WHERE {\n" +
+                "SELECT ?service ?serviceURL ?platformId ?informationModel FROM <http://www.symbiote-h2020.eu/ontology/internal/meta> WHERE {\n" +
                 "\t?service a mim:InterworkingService;\n" +
                 "\t\t\tmim:url ?serviceURL;\n" +
                 "\t\t\tmim:usesInformationModel ?informationModel.\n" +
@@ -219,7 +219,7 @@ public class PlatformHandler implements IPlatformEvents, ISspEvents, IModelEvent
 
     public List<InterworkingServiceInfo> readInterworkingServicesFromTriplestore() {
         List<InterworkingServiceInfo> services = new ArrayList<>();
-        ResultSet resultSet = this.storage.getTripleStore().executeQueryOnUnionGraph(getLoadAllInterworkingServicesSPQRL(), null, false);
+        ResultSet resultSet = this.storage.getTripleStore().executeQuery(getLoadAllInterworkingServicesSPQRL(), null, false);
         while (resultSet.hasNext()) {
             QuerySolution solution = resultSet.next();
             String serviceIRI = solution.get(SOLUTION_SERVICE_IRI).toString();
