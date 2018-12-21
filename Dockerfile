@@ -3,7 +3,7 @@ FROM openjdk:8-jre-alpine
 WORKDIR /home
 
 ENV componentName "Search"
-ENV componentVersion 3.0.10
+ENV componentVersion 3.0.11
 
 RUN apk --no-cache add \
 	git \
