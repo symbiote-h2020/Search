@@ -6,11 +6,15 @@
 package eu.h2020.symbiote.ontology.model;
 
 import eu.h2020.symbiote.core.internal.RDFFormat;
+import eu.h2020.symbiote.model.mim.InformationModel;
 import eu.h2020.symbiote.semantics.ModelHelper;
 import eu.h2020.symbiote.semantics.ontology.MIM;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jena.graph.Triple;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
 
 import java.math.BigInteger;
 
@@ -32,25 +36,33 @@ public class Registry {
     }
 
     public void registerPlatform(String platformId, String rdf, RDFFormat format) {
-        tripleStore.insertGraph(ModelHelper.getPlatformURI(platformId), rdf, format);
+        tripleStore.insertGraph(//ModelHelper.getPlatformURI(platformId),
+                TripleStore.DEFAULT_GRAPH,
+                rdf, format);
 //        tripleStore.insertGraph(Ontology.PLATFORMS_GRAPH, Ontology.getPlatformMetadata(platformId, modelId), format);
         log.debug(String.format("platform registered: platformId={}, format={}, rdf={}", platformId, format, rdf));
     }
 
     public void registerPlatform(String platformId, Model rdf) {
-        tripleStore.insertGraph(ModelHelper.getPlatformURI(platformId), rdf);
+        tripleStore.insertGraph(//ModelHelper.getPlatformURI(platformId),
+                TripleStore.DEFAULT_GRAPH,
+                rdf);
 //        tripleStore.insertGraph(Ontology.PLATFORMS_GRAPH, Ontology.getPlatformMetadata(platformId, modelId), RDFFormat.Turtle);
         log.debug(String.format("platform registered: platformId={}, rdf={}", platformId,rdf));
     }
 
     public void registerSsp(String sspId, Model rdf) {
-        tripleStore.insertGraph(ModelHelper.getSspURI(sspId), rdf);
+        tripleStore.insertGraph(//ModelHelper.getSspURI(sspId)
+                TripleStore.DEFAULT_GRAPH,
+                rdf);
 //        tripleStore.insertGraph(Ontology.PLATFORMS_GRAPH, Ontology.getPlatformMetadata(platformId, modelId), RDFFormat.Turtle);
         log.debug(String.format("ssp registered: sspId={}, rdf={}",sspId,rdf));
     }
 
     public void registerSdev(String sdevId, Model rdf) {
-        tripleStore.insertGraph(ModelHelper.getSdevURI(sdevId), rdf);
+        tripleStore.insertGraph(//ModelHelper.getSdevURI(sdevId),
+                TripleStore.DEFAULT_GRAPH,
+                rdf);
 //        tripleStore.insertGraph(Ontology.PLATFORMS_GRAPH, Ontology.getPlatformMetadata(platformId, modelId), RDFFormat.Turtle);
         log.debug(String.format("sdev registered: sspId={}, rdf={}",sdevId,rdf));
     }
@@ -62,9 +74,30 @@ public class Registry {
      * @param resourceModel Model describing the resource.
      */
     public void registerResource(String platformUri, String serviceURI, String resourceUri, Model resourceModel) {
-        tripleStore.insertGraph(platformUri, resourceModel);
-        tripleStore.insertGraph(platformUri, getResourceMetadata(serviceURI,resourceUri), RDFFormat.Turtle);
+        log.debug("Inserting info to default graph");
+
+        //TODO delete long debugging
+        //printModel(resourceModel);
+
+        tripleStore.insertGraph(TripleStore.DEFAULT_GRAPH, resourceModel);
+
+        tripleStore.insertGraph(TripleStore.DEFAULT_GRAPH, getResourceMetadata(serviceURI,resourceUri), RDFFormat.Turtle);
         log.debug(String.format("Resource={%s} registered for platform: platformUri={%s}", resourceUri, platformUri));
+    }
+
+    private void printModel(Model resourceModel) {
+        log.debug("Printing model to be added..");
+        log.debug("========================================================");
+        StmtIterator stmtIterator = resourceModel.listStatements();
+        while( stmtIterator.hasNext() ) {
+            Statement next = stmtIterator.next();
+            log.debug( " " + next.getSubject().toString() + "  |  " + next.getPredicate().toString() + "  |  " + next.getObject().toString() );
+        }
+        log.debug("========================================================");
+    }
+
+    public void registerSdevResourceLinkToInterworkingService( String sdevServiceURI, String resourceUri ) {
+        tripleStore.insertGraph(TripleStore.DEFAULT_GRAPH, getResourceMetadata(sdevServiceURI,resourceUri), RDFFormat.Turtle);
     }
 
 //    /**
@@ -80,7 +113,7 @@ public class Registry {
 //    }
 
     private String getResourceMetadata( String serviceURI, String resourceUri ) {
-        return "<" + serviceURI + "> <" + MIM.hasResource + "> <" +resourceUri + "> .";
+        return "<" + serviceURI + "> <" + MIM.hasResource + "> <" + resourceUri + "> .";
     }
 
 //    private String getSspResourceMetadata( String sdevURI, String resourceUri ) {

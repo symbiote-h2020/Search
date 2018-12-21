@@ -1,0 +1,6 @@
+PREFIX pim1: <http://www.symbiote-h2020.eu/ontology/test1#>
+PREFIX pim2: <http://www.symbiote-h2020.eu/ontology/test2#> 
+
+RULE
+   CONDITION INDIVIDUAL pim1:temp1
+   PRODUCTION INDIVIDUAL pim2:temp2

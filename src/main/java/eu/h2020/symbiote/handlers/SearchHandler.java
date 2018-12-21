@@ -75,7 +75,7 @@ public class SearchHandler implements ISearchEvents {
 
             long afterQGeneration = System.currentTimeMillis();
 
-            ResultSet results = this.triplestore.executeQuery(q.toString(),request.getSecurityRequest(),false);
+            ResultSet results = this.triplestore.executeQueryOnUnionGraph(q.toString(),request.getSecurityRequest(),false);
 
             long afterInitialQuery = System.currentTimeMillis();
 
@@ -99,13 +99,22 @@ public class SearchHandler implements ISearchEvents {
 
             List<QueryResourceResult> resultsList = response.getBody();
 
-            List<String> validatedIds = securityManager.checkGroupPolicies(resultsList.stream().map(QueryResourceResult::getId).collect(Collectors.toList()), request.getSecurityRequest());
+            try {
+                List<String> validatedIds = securityManager.checkGroupPolicies(resultsList.stream().map(QueryResourceResult::getId).collect(Collectors.toList()), request.getSecurityRequest());
+                log.debug("["+comm.getReqId()+"] Got validated ids " + validatedIds.size() + " resources." );
 
-            List<QueryResourceResult> filteredResults = resultsList.stream().filter(qresult -> validatedIds.contains(qresult.getId())).collect(Collectors.toList());
+                List<QueryResourceResult> filteredResults = resultsList.stream().filter(qresult -> validatedIds.contains(qresult.getId())).collect(Collectors.toList());
 
-            log.debug("["+comm.getReqId()+"] Filtered results size: " + filteredResults.size());
+                log.debug("["+comm.getReqId()+"] Filtered results size: " + filteredResults.size());
 
-            resultsList = filteredResults;
+                resultsList = filteredResults;
+            } catch (Exception e ) {
+                log.debug("Got error during filtering: " + e.getClass().getCanonicalName() + " | cause " + e.getCause() + " | " + e.getMessage() );
+                response.setBody(new ArrayList<>());
+                response.setStatus(HttpStatus.SC_UNAUTHORIZED);
+                response.setMessage("Error occurred during checking security policies : " + e.getMessage());
+                return response;
+            }
 
 
             //OLD format, now:
@@ -126,7 +135,7 @@ public class SearchHandler implements ISearchEvents {
 
             long beforeRank = System.currentTimeMillis();
 
-            if( shouldRank ) {
+            if( shouldRank && request.getShould_rank() !=null && request.getShould_rank() ) {
                 log.debug("["+comm.getReqId()+"] Generating ranking for response...");
                 RankingQuery rankingQuery = new RankingQuery(response);
                 rankingQuery.setIncludeDistance(HandlerUtils.isDistanceQuery(request));
@@ -159,13 +168,14 @@ public class SearchHandler implements ISearchEvents {
     }
 
     @Override
-    public SparqlQueryResponse sparqlSearch(CoreSparqlQueryRequest request) {
+    public SparqlQueryResponse sparqlSearch(SearchCommunicationHandler comm, CoreSparqlQueryRequest request) {
         String resultOfSearch = "";
         SparqlQueryResponse response = new SparqlQueryResponse();
 
+        ResultSet resultSet;
 
         //TODO change to true for deployment
-        ResultSet resultSet = this.triplestore.executeQuery(request.getBody(),request.getSecurityRequest(),true);
+        resultSet = this.triplestore.executeQuery(request.getBody(),request.getSecurityRequest(),true);
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
@@ -211,7 +221,7 @@ public class SearchHandler implements ISearchEvents {
         String propertiesQuery = q.toString();
 
         log.debug(propertiesQuery);
-        ResultSet resultSet = this.triplestore.executeQuery(propertiesQuery,request,false);
+        ResultSet resultSet = this.triplestore.executeQueryOnUnionGraph(propertiesQuery,request,false);
 
         Map<String,List<Property>> resourcesPropertiesMap = new HashMap<>();
 

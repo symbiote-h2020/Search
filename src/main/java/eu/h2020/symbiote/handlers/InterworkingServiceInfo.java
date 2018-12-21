@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * Class storing info abour interworking service: its url and iri.
- *
+ * <p>
  * Created by Szymon Mueller on 23/06/2018.
  */
 @Document
@@ -18,13 +18,16 @@ public class InterworkingServiceInfo {
 
     public String platformId;
 
+    public String informationModeIri;
+
     public InterworkingServiceInfo() {
     }
 
-    public InterworkingServiceInfo(String interworkingServiceIRI, String interworkingServiceURL, String platformId) {
+    public InterworkingServiceInfo(String interworkingServiceIRI, String interworkingServiceURL, String platformId, String informationModelIri) {
         this.interworkingServiceIRI = interworkingServiceIRI;
         this.interworkingServiceURL = interworkingServiceURL;
         this.platformId = platformId;
+        this.informationModeIri = informationModelIri;
     }
 
     public String getInterworkingServiceIRI() {
@@ -49,5 +52,13 @@ public class InterworkingServiceInfo {
 
     public void setPlatformId(String platformId) {
         this.platformId = platformId;
+    }
+
+    public String getInformationModeIri() {
+        return informationModeIri;
+    }
+
+    public void setInformationModeIri(String informationModeIri) {
+        this.informationModeIri = informationModeIri;
     }
 }

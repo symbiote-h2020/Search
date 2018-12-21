@@ -8,8 +8,10 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 import eu.h2020.symbiote.core.internal.CoreResourceRegisteredOrModifiedEventPayload;
+import eu.h2020.symbiote.core.internal.CoreSspResourceRegisteredOrModifiedEventPayload;
 import eu.h2020.symbiote.handlers.ResourceHandler;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -53,12 +55,37 @@ public class ResourceModifiedConsumer extends DefaultConsumer {
 
         try {
             ObjectMapper mapper = new ObjectMapper();
-            CoreResourceRegisteredOrModifiedEventPayload resource = mapper.readValue(msg, CoreResourceRegisteredOrModifiedEventPayload.class);
+
 
             long before = System.currentTimeMillis();
 
             Callable<Boolean> callable = () -> {
-                boolean success = handler.updateResource(resource);
+                CoreResourceRegisteredOrModifiedEventPayload coreRes = null;
+                CoreSspResourceRegisteredOrModifiedEventPayload sspRes = null;
+
+                try {
+                    coreRes = mapper.readValue(msg, CoreResourceRegisteredOrModifiedEventPayload.class);
+                } catch(Exception e ) {
+                    log.debug("[Update] This is not a core resource");
+                }
+                try {
+                    sspRes = mapper.readValue(msg, CoreSspResourceRegisteredOrModifiedEventPayload.class);
+                    if(StringUtils.isEmpty(sspRes.getSdevId())) {
+                        sspRes= null;
+                    }
+                } catch(Exception e ) {
+                    log.debug("[Update] This is not a ssp resource");
+                }
+
+                boolean success = false;
+                if( sspRes != null ) {
+                    success = handler.updateResource(sspRes);
+                    if (success) {
+                        handler.addSdevResourceServiceLink(sspRes);
+                    }
+                } else if( coreRes !=null ) {
+                    success = handler.updateResource(coreRes);
+                }
 
                 long after = System.currentTimeMillis();
 
@@ -69,10 +96,13 @@ public class ResourceModifiedConsumer extends DefaultConsumer {
             };
             writerExecutorService.submit(callable);
 
-        } catch( JsonParseException | JsonMappingException e ) {
-            log.error("Error occurred when parsing Resource object JSON: " + msg, e);
-        } catch( IOException e ) {
-            log.error("I/O Exception occurred when parsing Resource object" , e);
+//        } catch( JsonParseException | JsonMappingException e ) {
+//            log.error("Error occurred when parsing Resource object JSON: " + msg, e);
+//        } catch( IOException e ) {
+//            log.error("I/O Exception occurred when parsing Resource object" , e);
+//        }
+        } catch( Exception e ) {
+            log.error("Generic occurred when handling rdf resource modification: " + msg, e);
         }
 
         getChannel().basicAck(envelope.getDeliveryTag(),false);

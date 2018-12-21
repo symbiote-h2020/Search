@@ -18,8 +18,10 @@ import org.apache.jena.rdf.model.ModelFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by Mael on 23/01/2017.
@@ -138,7 +140,7 @@ public class TestSetupConfig {
     public static final String RESOURCE_SERVICE_FILENAME = "/exampleService2Params.json";
     public static final String RESOURCE_SERVICE_LABEL = "Service 1";
     public static final String RESOURCE_SERVICE_URI = RESOURCE_PREDICATE + "service1";
-//    public static final String RESOURCE_SERVICE_ID = "service1";
+    public static final String RESOURCE_SERVICE_ID = "service1";
 
 //    public static final String RESOURCE_ACTUATING_SERVICE_FILENAME = "/r2_models/exampleActuatingService.json";
 //    public static final String RESOURCE_ACTUATING_SERVICE_LABEL = "Actuating Service 1";
@@ -147,9 +149,11 @@ public class TestSetupConfig {
     public static final String RESOURCE_ACTUATOR_FILENAME = "/exampleActuator2Params.json";
     public static final String RESOURCE_ACTUATOR_LABEL = "Actuator 1";
     public static final String RESOURCE_ACTUATOR_URI = RESOURCE_PREDICATE + "actuator1";
+    public static final String RESOURCE_ACTUATOR_ID = "actuator1";
     public static final String SSP_NAME = "SmartSpace1";
     public static final String SSP_ID = "Ssp1";
     public static final String SDEV_ID_1 = "sdevId1";
+    public static final String SDEV_ID_2 = "sdevId2";
 
 
     public static Model loadFileAsModel(String fileLocation, String format ) {
@@ -213,6 +217,23 @@ public class TestSetupConfig {
         return smartSpace;
     }
 
+    public static SmartSpace generateSmartSpace(String sspName, String sspId, List<String> interworkingServiceUrls) {
+        SmartSpace smartSpace = new SmartSpace();
+        smartSpace.setName(sspName);
+        smartSpace.setDescription(Arrays.asList("This is smart space 1"));
+        smartSpace.setId(sspId);
+        List<InterworkingService> iss = new ArrayList<>();
+        for( String url: interworkingServiceUrls ) {
+            InterworkingService interworkingService = new InterworkingService();
+            interworkingService.setUrl(url);
+            interworkingService.setInformationModelId("BIM");
+            iss.add(interworkingService);
+        }
+        smartSpace.setInterworkingServices( iss );
+
+        return smartSpace;
+    }
+
     public static SspRegInfo generateSdev(String sspId, String sdevId, String pluginId, String pluginUrl) {
         SspRegInfo sspRegInfo = new SspRegInfo();
         sspRegInfo.setSspId(sspId);
@@ -221,7 +242,8 @@ public class TestSetupConfig {
         sspRegInfo.setDerivedKey1("deriveKey1");
         sspRegInfo.setHashField("hashSecret");
         sspRegInfo.setPluginId(pluginId);
-        sspRegInfo.setPluginURL(pluginUrl);
+        //TODO remove for real ssp
+//        sspRegInfo.setPluginUrl(pluginUrl);
         return sspRegInfo;
     }
 

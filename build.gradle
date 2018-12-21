@@ -14,6 +14,11 @@ buildscript {
     }
 }
 
+//Windows too long path
+plugins {
+    id "ua.eshepelyuk.ManifestClasspath" version "1.0.0"
+}
+
 // code
 apply plugin: 'java'
 apply plugin: 'org.springframework.boot'
@@ -54,6 +59,7 @@ repositories {
 dependencyManagement {
     imports {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+//        mavenBom 'org.springframework.cloud:spring-cloud-sleuth:2.0.2.BUILD-SNAPSHOT'
     }
 }
 
@@ -81,8 +87,14 @@ dependencies {
             3) project dependency requires changes in settings.gradle file in this project
             4) never commit build.gradle which has project dependencies active as it will break CI builds
     */
-    compile('com.github.symbiote-h2020:SymbIoTeLibraries:5.27+') {changing=true}
-    compile('com.github.symbiote-h2020:SymbIoTeSemantics:2.3+') {
+    compile('com.github.symbiote-h2020:SymbIoTeLibraries:5.34.0') {changing=true}
+    compile('com.github.symbiote-h2020:SemanticMapping:1.0.2') {changing=true}
+//    compile project(':SemanticMapping')
+
+    compile 'org.springframework.cloud:spring-cloud-starter-sleuth'
+
+
+    compile('com.github.symbiote-h2020:SymbIoTeSemantics:2.3.2') {
         changing = true
         exclude group: 'org.slf4j'
     }
@@ -100,12 +112,17 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-aop')
 
     //Jena dependencies
-    compile('org.apache.jena:jena-core:3.4.0')
-    compile('org.apache.jena:jena-querybuilder:3.4.0')
-    compile('org.apache.jena:jena-permissions:3.4.0')
-    compile('org.apache.jena:jena-spatial:3.4.0') {
-        exclude group: 'org.slf4j' , module: 'slf4j-log4j12'
-    }
+//    compile('org.apache.jena:jena-core:3.4.0')
+//    compile('org.apache.jena:jena-querybuilder:3.4.0')
+//    compile('org.apache.jena:jena-permissions:3.4.0')
+//    compile('org.apache.jena:jena-spatial:3.4.0') {
+//        exclude group: 'org.slf4j' , module: 'slf4j-log4j12'
+//    }
+    compile group: 'org.apache.jena', name: 'jena-core', version: '3.9.0'
+    compile group: 'org.apache.jena', name: 'jena-querybuilder', version: '3.9.0'
+    compile group: 'org.apache.jena', name: 'jena-permissions', version: '3.9.0'
+    compile group: 'org.apache.jena', name: 'jena-spatial', version: '3.9.0'
+
 
 
     // Use JUnit4

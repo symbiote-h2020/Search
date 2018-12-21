@@ -33,9 +33,9 @@ public class SearchEngine {
         return new ResultSetMem(partialResults.toArray(new ResultSet[partialResults.size()]));
     }
 
-    public ResultSet search(Query query) {
-        ResultSet resultSet = tripleStore.executeQuery(query, null, false);
-        return resultSet;
-    }
+//    public ResultSet search(Query query) {
+//        ResultSet resultSet = tripleStore.executeQuery(query, null, false);
+//        return resultSet;
+//    }
 
 }

@@ -1,5 +1,7 @@
 package eu.h2020.symbiote.query;
 
+import eu.h2020.symbiote.ontology.model.TripleStore;
+
 /**
  * Created by Szymon Mueller on 28/05/2018.
  */
@@ -28,6 +30,7 @@ public abstract class AbstractDeleteRequest {
 //        q.append("\t\tcim:id \""+platformId+"\" .\n");
 //        q.append("}");
         StringBuilder q = generateBaseQuery();
+        q.append("WITH <" + TripleStore.DEFAULT_GRAPH + "> ");
         q.append("DELETE { ?service ?p ?o \n" );
         q.append("} WHERE {\n");
         q.append("\t?service ?p ?o .\n");

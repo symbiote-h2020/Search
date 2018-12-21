@@ -169,10 +169,10 @@ public class SearchApplicationTests {
         printResultSet(resultSet);
     }
 
-    private void executeQuery( TripleStore store, Query query ) throws IOException {
-        ResultSet resultSet = store.executeQuery(query,null,false);
-        printResultSet(resultSet);
-    }
+//    private void executeQuery( TripleStore store, Query query ) throws IOException {
+//        ResultSet resultSet = store.executeQuery(query,null,false);
+//        printResultSet(resultSet);
+//    }
 
     private void printResultSet( ResultSet resultSet ) {
         while (resultSet.hasNext()) {

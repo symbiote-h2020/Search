@@ -5,39 +5,35 @@ import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
 
 /**
- * Generator of the delete update operation for sdev.
+ * Generator of the delete update operation.
  *
- * Created by Mael on 28/05/2018.
+ * Created by Mael on 26/01/2017.
  */
-public class DeleteSdevRequestGenerator extends AbstractDeleteRequest {
+public class DeleteMappingRequestGenerator extends AbstractDeleteRequest {
 
     private UpdateRequest request;
 
     /**
-     * Constructor of the delete operation. Prepares SPARQL Update statements to delete the sdev with specified id
+     * Constructor of the delete operation. Prepares SPARQL Update statements to delete the platform with specified id
      * and connected statements.
      * To generate the request use {@link #generateRequest()}.
      *
-     * @param sdevId Id of the sdev to be deleted.
+     * @param mappingId Id of the resource to be deleted.
      */
-    public DeleteSdevRequestGenerator(String sdevId ) {
+    public DeleteMappingRequestGenerator(String mappingId ) {
         request = UpdateFactory.create();
-//        request.add(generateInformationServiceDelete(sspId));
-        request.add(generateSdevDelete(sdevId));
+        request.add(generateMappingDelete(mappingId));
     }
 
-    private String generateSdevDelete( String sdevId ) {
+    private String generateMappingDelete( String mappingId ) {
         StringBuilder q = generateBaseQuery();
         q.append("WITH <" + TripleStore.DEFAULT_GRAPH + "> ");
-        q.append("DELETE { ?sdev ?p ?o } WHERE {\n");
-        q.append("\t?sdev ?p ?o ;\n");
-        q.append("\t\tcim:id \""+sdevId+"\" .\n");
+        q.append("DELETE { ?s ?p ?o } WHERE {\n");
+        q.append("\t?s ?p ?o ;\n");
+        q.append("\t\tcim:id \""+mappingId+"\" .\n");
         q.append("}");
         return q.toString();
     }
-
-
-
 
     /**
      * Generates the update request, containing delete queries for resource and data linked to the resource.

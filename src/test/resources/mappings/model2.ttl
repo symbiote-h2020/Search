@@ -1,0 +1,16 @@
+@prefix : <http://www.symbiote-h2020.eu/ontology/test2#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix core: <http://www.symbiote-h2020.eu/ontology/core#> .
+ 
+<http://www.symbiote-h2020.eu/ontology/test2> a owl:Ontology ;                                           
+	owl:imports <http://www.symbiote-h2020.eu/ontology/core/2.2.0> ;
+	rdfs:label "PIM 2 for testing semantic mapping"@en ;                                           
+	owl:versionInfo "v1.0.0 2018/02/20 12:00:00"^^xsd:string ;                                           
+	rdfs:comment "2ndt model for testing SPARQL query re-writing in Search"@en .
+	
+:temp2 a core:Property, owl:NamedIndividual ;
+	core:name "temp1" ;
+	core:description "temp as defined in PIM 1"@en .

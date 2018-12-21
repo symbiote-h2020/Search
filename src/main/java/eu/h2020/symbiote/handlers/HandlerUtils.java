@@ -1,12 +1,14 @@
 package eu.h2020.symbiote.handlers;
 
 import eu.h2020.symbiote.cloud.model.ssp.SspRegInfo;
+import eu.h2020.symbiote.core.cci.InfoModelMappingRequest;
 import eu.h2020.symbiote.core.ci.QueryResourceResult;
 import eu.h2020.symbiote.core.ci.QueryResponse;
 import eu.h2020.symbiote.core.ci.ResourceType;
 import eu.h2020.symbiote.core.internal.CoreQueryRequest;
 import eu.h2020.symbiote.model.cim.*;
 import eu.h2020.symbiote.model.mim.InterworkingService;
+import eu.h2020.symbiote.model.mim.OntologyMapping;
 import eu.h2020.symbiote.model.mim.Platform;
 import eu.h2020.symbiote.model.mim.SmartSpace;
 import eu.h2020.symbiote.query.QueryGenerator;
@@ -15,6 +17,7 @@ import eu.h2020.symbiote.semantics.ontology.CIM;
 import eu.h2020.symbiote.semantics.ontology.INTERNAL;
 import eu.h2020.symbiote.semantics.ontology.MIM;
 import org.apache.commons.collections.ListUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jena.query.QuerySolution;
@@ -78,6 +81,7 @@ public class HandlerUtils {
 
 
         for (InterworkingService service : platform.getInterworkingServices()) {
+            log.debug("Linking platform's service to infromationModelUri " + ModelHelper.getInformationModelURI(service.getInformationModelId()));
             Resource interworkingServiceResource = model.createResource(generateInterworkingServiceUri(ModelHelper.getPlatformURI(platform.getId()), service.getUrl()))
                     .addProperty(RDF.type, MIM.InterworkingService)
                     .addProperty(MIM.usesInformationModel, model.createResource(ModelHelper.getInformationModelURI(service.getInformationModelId())))
@@ -107,6 +111,10 @@ public class HandlerUtils {
             cutServiceUrl = serviceUrl.substring(8);
         }
         return platformUri + "/service/" + cutServiceUrl;
+    }
+
+    public static String generateInterworkingServiceUriForSdev( String sdevUri ) {
+        return sdevUri + "/service/internal";
     }
 
     public static Model generateModelFromSsp(SmartSpace ssp) {
@@ -181,7 +189,7 @@ public class HandlerUtils {
                 .addProperty(CIM.name,sdev.getSspId())
                 .addProperty(MIM.isConnectedTo,model.createResource(sspIri) );
 
-        sdevResource.addProperty(MIM.hasService, model.createResource(generateInterworkingServiceUri(ModelHelper.getSspURI(sspId), interworkingServiceUrl)));
+        sdevResource.addProperty(MIM.hasService, model.createResource(generateInterworkingServiceUriForSdev(ModelHelper.getSdevURI(sdev.getSymId()))));
 
         //No name or description in the sdev model
 //        for (InterworkingService service : platform.getInterworkingServices()) {
@@ -192,6 +200,49 @@ public class HandlerUtils {
 
 
 //        }
+//        Model serviceModel = generateInterworkingService(platform);
+//        model.add(serviceModel);
+
+        model.write(System.out, "TURTLE");
+        return model;
+    }
+
+    /**
+     * Generates a model containing RDF statements equivalent to information model mappings.
+     *
+     * @param mapping Mapping to be translated
+     * @return Model containing RDF statements.
+     */
+    public static Model generateModelFromMapping(OntologyMapping mapping) {
+        log.debug("Generating model from mapping");
+        // create an empty Model
+        Model model = ModelFactory.createDefaultModel();
+        model.setNsPrefix("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+        model.setNsPrefix("rdfs", "http://www.w3.org/2000/01/rdf-schema#");
+        model.setNsPrefix("owl", "http://www.w3.org/2002/07/owl#");
+        model.setNsPrefix("xsd", "http://www.w3.org/2001/XMLSchema#");
+        model.setNsPrefix("core", "http://www.symbiote-h2020.eu/ontology/core#");
+        model.setNsPrefix("meta", "http://www.symbiote-h2020.eu/ontology/meta#");
+
+        // construct proper Mapping entry
+        Resource mappingResource = model.createResource(ModelHelper.getMappingURI(mapping.getId()))
+                .addProperty(RDF.type, MIM.Mapping)
+                .addProperty(CIM.id, mapping.getId());
+        if( mapping.getName() != null ) {
+            mappingResource.addProperty(CIM.name, mapping.getName());
+        }
+
+        if( mapping.getDefinition() != null ) {
+            mappingResource.addProperty(MIM.hasDefinition,mapping.getDefinition());
+        }
+
+        if( mapping.getSourceModelId() != null ) {
+            mappingResource.addProperty(MIM.hasSourceModel,ModelHelper.getInformationModelURI(mapping.getSourceModelId()));
+        }
+        if( mapping.getDestinationModelId() != null ) {
+            mappingResource.addProperty(MIM.hasDestinationModel,ModelHelper.getInformationModelURI(mapping.getDestinationModelId()));
+        }
+
 //        Model serviceModel = generateInterworkingService(platform);
 //        model.add(serviceModel);
 
@@ -240,8 +291,12 @@ public class HandlerUtils {
         }
         if (request.getResource_type() != null && !request.getResource_type().isEmpty()) {
             try {
-                ResourceType type = ResourceType.getTypeForName(request.getResource_type());
-                q.addResourceType(type.getUri());
+                if( request.getResource_type().startsWith("http")) {
+                    q.addResourceType(request.getResource_type());
+                } else {
+                    ResourceType type = ResourceType.getTypeForName(request.getResource_type());
+                    q.addResourceType(type.getUri());
+                }
             } catch (Exception e) {
                 log.warn("Wrong resource type specified: " + request.getResource_type());
             }
@@ -249,6 +304,10 @@ public class HandlerUtils {
         if (request.getLocation_lat() != null && request.getLocation_long() != null && request.getMax_distance() != null) {
             q.addResourceLocationDistance(request.getLocation_lat(), request.getLocation_long(), request.getMax_distance());
         }
+        if(StringUtils.isNotEmpty(request.getOwner())) {
+            q.addSdevOwner(request.getOwner());
+        }
+
         return q;
     }
 
@@ -265,6 +324,7 @@ public class HandlerUtils {
             QuerySolution solution = resultSet.next();
 //            printSolution(solution);
 
+            String owner = solution.get(OWNER)!=null?solution.get(OWNER).toString():"";
             String resId = solution.get(RESOURCE_ID).toString();
             String resName = solution.get(RESOURCE_NAME).toString();
             RDFNode resDescNode = solution.get(RESOURCE_DESCRIPTION);
@@ -366,6 +426,7 @@ public class HandlerUtils {
                     resource.setLocationAltitude(altVal);
                     resource.setObservedProperties(properties);
                     resource.setResourceType(types);
+                    resource.setOwner(owner);
                     responses.put(resId, resource);
 
                     serviceParams.put(resId, new HashMap<>());

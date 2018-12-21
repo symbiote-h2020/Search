@@ -93,9 +93,9 @@ public class ResourceRegistrationTest {
     @Test
     public void testRegisterHandler() {
 
-        InterworkingServiceInfo infoToBeReturned = new InterworkingServiceInfo("http://iri","http://url",PLATFORM_A_ID);
+        InterworkingServiceInfo infoToBeReturned = new InterworkingServiceInfo("http://iri","http://url",PLATFORM_A_ID,"http://modelIri");
 
-        when(interworkingServiceInfoRepo.findByInterworkingServiceURL(anyString())).thenReturn(Optional.of(infoToBeReturned));
+        when(interworkingServiceInfoRepo.findByInterworkingServiceURL(anyString())).thenReturn(Arrays.asList(infoToBeReturned));
 
         SearchStorage.clearStorage();
         SearchStorage searchStorage = SearchStorage.getInstance( SearchStorage.TESTCASE_STORAGE_NAME, securityManager, false );
@@ -133,16 +133,16 @@ public class ResourceRegistrationTest {
         }
     }
 
-    private void fireQueryAll(SearchStorage storage) {
-        Query informationServiceQuery;
-        SelectBuilder sb = new SelectBuilder()
-                .addVar( "*" )
-                .addWhere( "?s", "?p", "?o" );
-
-        Query q = sb.build() ;
-        List<String> results = storage.query("", q);
-        System.out.println( "SearchRequest results: ");
-        System.out.println( results );
-    }
+//    private void fireQueryAll(SearchStorage storage) {
+//        Query informationServiceQuery;
+//        SelectBuilder sb = new SelectBuilder()
+//                .addVar( "*" )
+//                .addWhere( "?s", "?p", "?o" );
+//
+//        Query q = sb.build() ;
+//        List<String> results = storage.query("", q);
+//        System.out.println( "SearchRequest results: ");
+//        System.out.println( results );
+//    }
 
 }
