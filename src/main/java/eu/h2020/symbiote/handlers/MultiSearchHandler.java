@@ -148,7 +148,7 @@ public class MultiSearchHandler implements ISearchEvents {
     private class RejectedHandler implements RejectedExecutionHandler {
         @Override
         public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-            System.out.println("Rejected runnable r " + r.toString());
+            log.debug("Rejected runnable r " + r.toString());
         }
     }
 
@@ -166,15 +166,11 @@ public class MultiSearchHandler implements ISearchEvents {
 
         @Override
         public QueryResponse call() throws Exception {
-            System.out.println(">>>>>>>>>>>>>>>>>>");
-
             QueryResponse response = new QueryResponse();
             try {
                 long beforeSparql = System.currentTimeMillis();
                 Map<SecurityCredentials, ValidationStatus> validatedCredentials = new HashMap<>();
                 QueryGenerator q = HandlerUtils.generateQueryFromSearchRequest(request);
-
-                System.out.println(q.toString());
 
                 long afterQGeneration = System.currentTimeMillis();
 
@@ -199,18 +195,6 @@ public class MultiSearchHandler implements ISearchEvents {
 
                 List<QueryResourceResult> resultsList = response.getBody();
 
-
-                //TODO delete
-//                List<QueryResourceResult> ssp_test = resultsList.stream().filter(qres -> {
-////                    return qres.getPlatformName().equals("SSP_TEST") ||
-////                            qres.getPlatformName().equals("SSP_UNIPA") ||
-////                            qres.getPlatformName().equals("mySSPName");
-//                    return qres.getId().equals("5b5f04fa8199a01ea1acb0fe");
-//                }).collect(Collectors.toList());
-//                if (ssp_test != null ) {
-//                    log.info("Got " + ssp_test.size() + " resources from ssp_test");
-//                }
-
                 List<String> validatedIds = securityManager.checkGroupPolicies(resultsList.stream().map(QueryResourceResult::getId).collect(Collectors.toList()), request.getSecurityRequest());
 
                 List<QueryResourceResult> filteredResults = resultsList.stream().filter(qresult -> validatedIds.contains(qresult.getId())).collect(Collectors.toList());
@@ -218,15 +202,6 @@ public class MultiSearchHandler implements ISearchEvents {
                 log.debug("["+comm.getReqId()+"] Filtered results size: " + filteredResults.size());
 
                 resultsList = filteredResults;
-
-
-                //OLD format, now:
-//            if( securityEnabled ) {
-//                resultsList = response.getBody().stream().filter(res -> {
-////                    log.debug("Checking policies for for res: " + res.getId() );
-//                    return securityManager.checkPolicyByResourceId(res.getId(), request.getSecurityRequest(), validatedCredentials);
-//                }).collect(Collectors.toList());
-//            }
 
                 long afterCheckPolicy = System.currentTimeMillis();
 
@@ -271,7 +246,6 @@ public class MultiSearchHandler implements ISearchEvents {
             //Sending response
             comm.sendResponse(response);
 
-            System.out.println("<<<<<<<<<<<<<<<<<<<<");
             return response;
         }
     }
@@ -344,7 +318,6 @@ public class MultiSearchHandler implements ISearchEvents {
             }
             try {
                 resultOfSearch = stream.toString("UTF-8");
-//            System.out.println(resultOfSearch);
             } catch (UnsupportedEncodingException e) {
                 log.error("Error occurred when doing sparqlSearch formatting: " + e.getMessage(), e);
                 response.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
@@ -480,7 +453,6 @@ public class MultiSearchHandler implements ISearchEvents {
             }
             try {
                 resultOfSearch = stream.toString("UTF-8");
-//            System.out.println(resultOfSearch);
             } catch (UnsupportedEncodingException e) {
                 log.error("Error occurred when doing sparqlSearch formatting: " + e.getMessage(), e);
                 response.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);

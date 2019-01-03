@@ -289,7 +289,7 @@ public class QueryGenerator {
      * @return Command to be used in FILTER clause. In case input without preceding/trailing <b>*</b> has been used throws exception.
      */
     private Command modifyInputAndGetCommand(String input) throws InvalidParameterException {
-        System.out.println("Modify: " + input);
+        log.debug("Modify: " + input);
         Command command = null;
         if (!containsRegex(input)) {
             throw new InvalidParameterException("Input must contain * character at start and/or end of the string");
@@ -303,7 +303,7 @@ public class QueryGenerator {
         } else {
             command = new Command("STRSTARTS", input.substring(0, input.length() - 1));
         }
-        System.out.println("After: " + input);
+        log.debug("After: " + input);
         return command;
     }
 

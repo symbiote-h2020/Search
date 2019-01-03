@@ -1,12 +1,9 @@
 package eu.h2020.symbiote.communication;
 
 import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
 import eu.h2020.symbiote.handlers.ISearchEvents;
 import eu.h2020.symbiote.handlers.PlatformHandler;
 import eu.h2020.symbiote.handlers.ResourceHandler;
-import eu.h2020.symbiote.handlers.SearchHandler;
 import eu.h2020.symbiote.mappings.MappingManager;
 import eu.h2020.symbiote.ranking.AvailabilityManager;
 import eu.h2020.symbiote.ranking.PopularityManager;
@@ -40,14 +37,14 @@ public class RabbitManager {
 
     private Map<String,Object> queueArgs;
 
-//    @Value("${rabbit.host}")
-//    private String rabbitHost;
-//
-//    @Value("${rabbit.username}")
-//    private String rabbitUsername;
-//
-//    @Value("${rabbit.password}")
-//    private String rabbitPassword;
+    @Value("${rabbit.host}")
+    private String rabbitHost;
+
+    @Value("${rabbit.username}")
+    private String rabbitUsername;
+
+    @Value("${rabbit.password}")
+    private String rabbitPassword;
 
     @Value("${spring.rabbitmq.template.reply-timeout}")
     private Integer rabbitMessageTimeout;
@@ -751,6 +748,10 @@ public class RabbitManager {
 
         channel.basicConsume(queueName, false, consumer);
         log.debug( "Consumer model deleted created!!!" );
+    }
+
+    public org.springframework.amqp.rabbit.connection.Connection getConnection() {
+        return this.connection;
     }
 
 }

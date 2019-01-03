@@ -186,7 +186,6 @@ public class SearchApplicationTests {
                 }
                 temp += var + " = " + solution.get(var).toString();
             }
-            System.out.println( temp );
         }
     }
 

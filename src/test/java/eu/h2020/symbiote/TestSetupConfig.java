@@ -1,12 +1,15 @@
 package eu.h2020.symbiote;
 
 import eu.h2020.symbiote.cloud.model.ssp.SspRegInfo;
+import eu.h2020.symbiote.communication.SearchCommunicationHandler;
 import eu.h2020.symbiote.core.ci.QueryResourceResult;
 import eu.h2020.symbiote.core.ci.QueryResponse;
+import eu.h2020.symbiote.core.internal.CoreQueryRequest;
 import eu.h2020.symbiote.core.internal.CoreResource;
 import eu.h2020.symbiote.core.internal.CoreResourceType;
 import eu.h2020.symbiote.core.internal.RDFFormat;
 import eu.h2020.symbiote.handlers.HandlerUtils;
+import eu.h2020.symbiote.handlers.ISearchEvents;
 import eu.h2020.symbiote.model.mim.InterworkingService;
 import eu.h2020.symbiote.model.mim.Platform;
 import eu.h2020.symbiote.model.mim.SmartSpace;
@@ -15,6 +18,7 @@ import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.mockito.ArgumentCaptor;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,6 +27,9 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 /**
  * Created by Mael on 23/01/2017.
  */
@@ -30,6 +37,7 @@ public class TestSetupConfig {
 
     //Rabbit messaging constants
     public static final String PLATFORM_EXCHANGE_NAME = "test.symbiote.platform";
+    public static final String MAPPING_EXCHANGE_NAME = "test.symbiote.mapping";
     public static final String PLATFORM_CREATED = "platform.created";
     public static final String PLATFORM_MODIFIED = "platform.modified";
     public static final String PLATFORM_DELETED = "platform.removed";
@@ -280,7 +288,7 @@ public class TestSetupConfig {
 //    }
 
     public static CoreResource generateModifiedStationarySensor() {
-        return generateSensor(RESOURCE_STATIONARY_LABEL_MODIFIED,RESOURCE_STATIONARY_COMMENT_MODIFIED,RESOURCE_STATIONARY_ID,PLATFORM_A_URL, RESOURCE_STATIONARY_FILENAME_MODIFIED, RDFFormat.JSONLD );
+        return generateSensor(RESOURCE_STATIONARY_LABEL_MODIFIED,RESOURCE_STATIONARY_COMMENT_MODIFIED,RESOURCE_STATIONARY_ID,PLATFORM_A_SERVICE_URI, RESOURCE_STATIONARY_FILENAME_MODIFIED, RDFFormat.JSONLD );
     }
 
     public static CoreResource generateSensor(String label, String comment, String id, String serviceUrl, String rdfFilename, RDFFormat format) {
@@ -346,6 +354,17 @@ public class TestSetupConfig {
 
         }
         return i;
+    }
+    public static QueryResponse sendSearchAndGetResponse(ISearchEvents searchHandler, SearchCommunicationHandler comm1, CoreQueryRequest searchReq) throws InterruptedException {
+        searchHandler.search(comm1,searchReq);
+        Thread.sleep(2000);
+
+//    public void sendResponse(AbstractResponseSecured response ) {
+
+        ArgumentCaptor<QueryResponse> argumentCaptor = ArgumentCaptor.forClass(QueryResponse.class);
+
+        verify(comm1,times(1)).sendResponse(argumentCaptor.capture());
+        return argumentCaptor.getValue();
     }
 
 }

@@ -57,6 +57,10 @@ public class FilteringEvaluator implements SecurityEvaluator {
     // require a different strategy.
     private boolean evaluate(Object principalObj, Resource r) {
 //        log.debug("EVALUATOR - > evaluate(principalObj,resource): principalObj: " + principalObj.toString() + "  ||xxxxxx||  resource: " + r.toString());
+        log.debug("EVALUATOR FOR " + r.getURI());
+//        if( r.getURI()!= null && r.getURI().startsWith("http://www.symbiote-h2020.eu/ontology/internal/resources/") ) {
+//            log.debug("GOCHA");
+//        }
         Principal principal = (Principal) principalObj;
         // we do not allow anonymous (un-authenticated) reads of data.
         // Another strategy would be to only require authentication if the
@@ -66,11 +70,14 @@ public class FilteringEvaluator implements SecurityEvaluator {
             throw new AuthenticationRequiredException();
         }
 
+
+
         // a message is only available to sender or recipient
 //        if (r.hasProperty(RDF.type, CoreInformationModel.StationarySensor) ||
 //                r.hasProperty(RDF.type, CoreInformationModel.MobileSensor) ||
 //                r.hasProperty(RDF.type, CoreInformationModel.Service)) {
-        if( r.hasProperty(RDF.type , CIM.Resource)) {
+//        if( r.hasProperty(RDF.type , CIM.Resource)) {
+        if( r.getURI()!= null && r.getURI().startsWith("http://www.symbiote-h2020.eu/ontology/internal/resources/") ) {
 //            if ( r.hasProperty(RDF.type, MetaInformationModel.Platform)) {
 //                System.out.println("GG");
 //            }

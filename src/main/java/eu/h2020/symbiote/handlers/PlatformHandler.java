@@ -59,13 +59,13 @@ public class PlatformHandler implements IPlatformEvents, ISspEvents, IModelEvent
             Property predicate = stmt.getPredicate();   // get the predicate
             RDFNode object = stmt.getObject();      // get the object
 
-            System.out.print(subject.toString());
-            System.out.print(" " + predicate.toString() + " ");
+            log.debug(subject.toString());
+            log.debug(" " + predicate.toString() + " ");
             if (object instanceof Resource) {
-                System.out.print(object.toString());
+                log.debug(object.toString());
             } else {
                 // object is a literal
-                System.out.print(" \"" + object.toString() + "\"");
+                log.debug(" \"" + object.toString() + "\"");
             }
 
             log.debug(" .");
@@ -226,9 +226,6 @@ public class PlatformHandler implements IPlatformEvents, ISspEvents, IModelEvent
             String serviceURL = solution.get(SOLUTION_SERVICE_URL).toString();
             String platformId = solution.get(SOLUTION_PLATFORM_ID).toString();
             String informationModelIri = solution.get(SOLUTION_INFORMATION_MODEL).toString();
-
-            //TODO delete
-            System.out.println("Loaded ii: " + platformId + " | " + serviceIRI + " | " + serviceURL);
 
             services.add(new InterworkingServiceInfo(serviceIRI, serviceURL, platformId, informationModelIri));
         }

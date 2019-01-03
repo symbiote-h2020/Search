@@ -317,7 +317,7 @@ public class HandlerUtils {
         Map<String, Map<String, CapabilitiesInfo>> capabilitiesInfos = new HashMap<>();
 
         if (!resultSet.hasNext()) {
-            System.out.println("Could not generate search response from result set, cause resultSet is empty");
+            log.debug("Could not generate search response from result set, cause resultSet is empty");
         }
 //        System.out.println("Found vars: " + resultSet.getResultVars());
         while (resultSet.hasNext()) {
@@ -497,41 +497,6 @@ public class HandlerUtils {
 //        responses.values().stream().forEach(rsp -> printParamsAndCapabilities(rsp));
 
         return response;
-    }
-
-    private static void printParamsAndCapabilities( QueryResourceResult rsp ) {
-        System.out.println( " Printing resource " + rsp.getId() + " name " + rsp.getName() );
-        if (rsp.getInputParameters() != null ) {
-            System.out.println( " Input params: ");
-            rsp.getInputParameters().stream().forEach(iparam -> System.out.println(" - " + iparam));
-        } else {
-            System.out.println("Input params is null");
-        }
-
-        if( rsp.getCapabilities() != null ) {
-            System.out.println(" Capabilities: ");
-            rsp.getCapabilities().stream().forEach(cap -> System.out.println(" - " + cap.getName() + " params " + cap.getParameters()));
-        } else {
-            System.out.println("Capabilities is null");
-        }
-
-    }
-
-    private static void printSolution(QuerySolution solution) {
-        StringBuilder sb = new StringBuilder();
-        Iterator<String> stringIterator = solution.varNames();
-        while (stringIterator.hasNext()) {
-            String varName = stringIterator.next();
-            RDFNode rdfNode = solution.get(varName);
-            sb.append("| ");
-            sb.append(varName);
-            sb.append(" : ");
-            sb.append(rdfNode != null ? rdfNode.toString() : "null");
-            sb.append(" |");
-            sb.append(System.getProperty("line.separator"));
-        }
-
-        System.out.println(sb);
     }
 
     public static boolean isDistanceQuery(CoreQueryRequest request) {

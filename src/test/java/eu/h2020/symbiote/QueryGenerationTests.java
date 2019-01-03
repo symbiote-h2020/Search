@@ -150,7 +150,6 @@ public class QueryGenerationTests {
     @Test
     public void testSearchByResourceName() {
 
-        System.out.println("----------- TEST -------------");
         String query = new QueryGenerator()
                 .addResourceName(RESOURCE_STATIONARY_LABEL)
                 .toString();

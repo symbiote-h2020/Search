@@ -17,6 +17,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.permissions.Factory;
+import org.apache.jena.permissions.model.SecuredModel;
 import org.apache.jena.query.*;
 import org.apache.jena.query.spatial.EntityDefinition;
 import org.apache.jena.query.spatial.SpatialDatasetFactory;
@@ -361,8 +362,13 @@ public class TripleStore {
             if (useSecureGraph) {
                 //TODO check for querying named graphs
 //                synchronized (TripleStore.class) {
+
+                //TODO // FIXME: 02/01/2019
+                Model m = dataset.getNamedModel(graphUri);
+                SecuredModel securedM = Factory.getInstance(evaluator, "http://symbiote-h2020.eu/secureModel", m);
+
                 setSecurityRequest(securityRequest);
-                try (QueryExecution qe = QueryExecutionFactory.create(query, securedModel)) {
+                try (QueryExecution qe = QueryExecutionFactory.create(query, securedM)) {
                     qe.setTimeout(sparqlQueryTimeout);
                     result = ResultSetFactory.copyResults(qe.execSelect());
                 }

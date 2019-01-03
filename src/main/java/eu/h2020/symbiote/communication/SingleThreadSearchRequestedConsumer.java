@@ -92,7 +92,7 @@ public class SingleThreadSearchRequestedConsumer extends DefaultConsumer {
                     .contentType("application/json")
                     .build();
             this.getChannel().basicPublish("", properties.getReplyTo(), replyProps, responseBytes);
-            System.out.println("["+reqId+"-> Message sent back in total time " + (System.currentTimeMillis() - in) + " ms");
+            log.debug("["+reqId+"-> Message sent back in total time " + (System.currentTimeMillis() - in) + " ms");
 
             this.getChannel().basicAck(envelope.getDeliveryTag(), false);
 

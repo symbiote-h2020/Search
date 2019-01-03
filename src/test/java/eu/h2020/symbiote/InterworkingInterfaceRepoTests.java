@@ -76,7 +76,6 @@ public class InterworkingInterfaceRepoTests {
     public void testLoadingInterworkingServicesFromTriplestore() {
         List<InterworkingServiceInfo> foundII = platformHandler.readInterworkingServicesFromTriplestore();
         assertNotNull(foundII);
-        System.out.println(" II found: " + foundII.size());
     }
 
     @Test

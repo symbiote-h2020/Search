@@ -362,7 +362,7 @@ public class SearchApplication {
     }
 
     public static void moveDefaultGraph(TripleStore tripleStore) {
-        System.out.println(">>>>>>>>>> MOVING TO NAMED GRAPH <<<<<<<<<");
+        log.debug(">>>>>>>>>> MOVING TO NAMED GRAPH <<<<<<<<<");
 
         UpdateRequest req = UpdateFactory.create();
         req.add("MOVE DEFAULT TO <http://www.symbiote-h2020.eu/defaultGraph>");
