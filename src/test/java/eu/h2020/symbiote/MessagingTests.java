@@ -70,7 +70,7 @@ public class MessagingTests {
         ReflectionTestUtils.setField(rabbitManager, "rabbitHost", "localhost");
         ReflectionTestUtils.setField(rabbitManager, "rabbitUsername", "guest");
         ReflectionTestUtils.setField(rabbitManager, "rabbitPassword", "guest");
-        ReflectionTestUtils.setField(rabbitManager, "rabbitMessageTimeout", 30000);
+        ReflectionTestUtils.setField(rabbitManager, "rabbitMessageTimeout", 60000);
 
 
         ReflectionTestUtils.setField(rabbitManager, "platformExchangeName", PLATFORM_EXCHANGE_NAME);
@@ -432,7 +432,7 @@ public class MessagingTests {
             String jsonResource = mapper.writeValueAsString(resourcesToDel);
             sendMessage(RESOURCE_EXCHANGE_NAME, RESOURCE_DELETED, null, jsonResource);
             Thread.sleep(1000);
-            verify(mockHandler).deleteResource(isA(String.class));
+            verify(mockHandler).deleteResources(isA(List.class));
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -504,7 +504,7 @@ public class MessagingTests {
             String jsonResource = mapper.writeValueAsString(resourcesToDel);
             sendMessage(RESOURCE_EXCHANGE_NAME, SSP_RESOURCE_DELETED, null, jsonResource);
             Thread.sleep(1000);
-            verify(mockHandler).deleteResource(isA(String.class));
+            verify(mockHandler).deleteResources(isA(List.class));
 
         } catch (IOException e) {
             e.printStackTrace();
