@@ -9,10 +9,12 @@ import eu.h2020.symbiote.core.internal.RDFFormat;
 import eu.h2020.symbiote.filtering.FilteringEvaluator;
 import eu.h2020.symbiote.filtering.SecurityManager;
 import eu.h2020.symbiote.model.mim.InformationModel;
+import eu.h2020.symbiote.query.DeleteResourceRequestGenerator;
 import eu.h2020.symbiote.security.communication.payloads.SecurityRequest;
 import eu.h2020.symbiote.semantics.GraphHelper;
 import eu.h2020.symbiote.semantics.ModelHelper;
 import eu.h2020.symbiote.semantics.ontology.*;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jena.ontology.OntModel;
@@ -35,6 +37,7 @@ import org.apache.lucene.store.RAMDirectory;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Class representing a triplestore - connected to in-memory or disk (TDB) jena repository. Creates a spatial index
@@ -303,6 +306,7 @@ public class TripleStore {
 //        GraphHelper.removeGraph(dataset, graphUri);
 //    }
 
+
     public void removedNamedGraph(String graphUri) {
         UpdateRequest grapDropRequest = UpdateFactory.create("DROP GRAPH <" + graphUri + ">");
         executeUpdate(grapDropRequest);
@@ -493,32 +497,86 @@ public class TripleStore {
     }
 
     public void registerInformationModel(InformationModel informationModel) {
-        log.info("Registering information model metadata " + informationModel.getUri() );
+        log.info("Registering information model metadata " + informationModel.getUri());
         insertGraph(TripleStore.DEFAULT_GRAPH, getInformationModelMetadata(informationModel), RDFFormat.Turtle);
-        log.info("Registering information model rdf " + informationModel.getUri() );
-        insertModelGraph( informationModel.getUri(), informationModel.getRdf(), informationModel.getRdfFormat() );
-        log.info("Finished registering model" );
+        log.info("Registering information model rdf " + informationModel.getUri());
+        insertModelGraph(informationModel.getUri(), informationModel.getRdf(), informationModel.getRdfFormat());
+        log.info("Finished registering model");
     }
 
     private String getInformationModelMetadata(InformationModel informationModel) {
         String entityUri = ModelHelper.getInformationModelURI(informationModel.getId());
-        String rdf = "<"+entityUri+"> <"+ RDF.type+"> <"+MIM.InformationModel+"> . " +
-                "<"+entityUri+"> <"+ CIM.id+"> \""+ informationModel.getId() +"\" . " +
-                "<"+entityUri+"> <"+ CIM.name+"> \""+informationModel.getName()+"\" . " +
-                "<"+entityUri+"> <"+ MIM.hasDefinition+"> <"+informationModel.getUri()+"> . ";
+        String rdf = "<" + entityUri + "> <" + RDF.type + "> <" + MIM.InformationModel + "> . " +
+                "<" + entityUri + "> <" + CIM.id + "> \"" + informationModel.getId() + "\" . " +
+                "<" + entityUri + "> <" + CIM.name + "> \"" + informationModel.getName() + "\" . " +
+                "<" + entityUri + "> <" + MIM.hasDefinition + "> <" + informationModel.getUri() + "> . ";
 
         log.debug("Adding following information model metadata: " + rdf);
         return rdf;
     }
 
-    public Model getAllDefModels()  {
+    public Model getAllDefModels() {
         Model allModels = ModelFactory.createDefaultModel();
-            allModels.add(dataset.getNamedModel(QU.getURI()));
-            allModels.add(dataset.getNamedModel(BIM_QU_ALIGN.getURI()));
-            allModels.add(dataset.getNamedModel(BIM.getURI()));
-            allModels.add(dataset.getNamedModel(BIM_PROPERTY.getURI()));
+        allModels.add(dataset.getNamedModel(QU.getURI()));
+        allModels.add(dataset.getNamedModel(BIM_QU_ALIGN.getURI()));
+        allModels.add(dataset.getNamedModel(BIM.getURI()));
+        allModels.add(dataset.getNamedModel(BIM_PROPERTY.getURI()));
 
         return allModels;
     }
+
+    //Specific delete operations checking if specific entity with id exists before hand
+
+
+    public boolean executeDeleteResources(List<String> resourceIds) {
+        dataset.begin(ReadWrite.WRITE);
+
+        long in = System.currentTimeMillis();
+        //Check first
+        for (String resourceId : resourceIds) {
+            try (QueryExecution qExec = QueryExecutionFactory.create(
+                    "PREFIX cim: <http://www.symbiote-h2020.eu/ontology/core#> SELECT (count(*) AS ?count) { ?s cim:id \"" + resourceId + "\"}",
+                    dataset.getNamedModel(TripleStore.DEFAULT_GRAPH))) {
+                ResultSet rs = qExec.execSelect();
+
+                QuerySolution solution1 = rs.next();
+
+                log.debug("Result of select raw: " + solution1.toString());
+
+                int val = 0;
+                try {
+                    val = Integer.valueOf(StringUtils.substringBefore(solution1.get("count").toString(), "^^"));
+                } catch (NumberFormatException e) {
+                    log.debug("Nfe: " + StringUtils.substringBefore(solution1.get("count").toString(), "^^"));
+                }
+                log.debug("temporary printing select results: " + val);
+                if (val == 0) {
+                    log.debug("During checking for resource delete operation resource with id: " + resourceId
+                            + " could not be found, check finished in " + (System.currentTimeMillis() - in) + " ms");
+                    //resource does not exist, abort
+                    dataset.abort();
+                    return false;
+                }
+
+
+//                if (!rs.hasNext()) {
+//                    log.debug("During checking for resource delete operation resource with id: " + resourceId + " could not be found");
+//                    //resource does not exist, abort
+//                    dataset.abort();
+//                    return false;
+//                }
+            }
+        }
+
+        log.debug("Existing check done in " + (System.currentTimeMillis() - in) + " ms");
+
+        for (String resourceId : resourceIds) {
+            UpdateRequest updateRequest = new DeleteResourceRequestGenerator(resourceId).generateRequest();
+            UpdateAction.execute(updateRequest, dataset);
+        }
+        dataset.commit();
+        return true;
+    }
+
 }
 

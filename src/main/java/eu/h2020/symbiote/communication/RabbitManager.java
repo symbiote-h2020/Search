@@ -188,6 +188,8 @@ public class RabbitManager {
     @PostConstruct
     private void init() throws InterruptedException {
         //FIXME check if there is better exception handling in @postconstruct method
+
+        log.debug("rabbitMessageTimeout: " + rabbitMessageTimeout);
         Channel channel = null;
 
         //setting up ttl args

@@ -6,6 +6,7 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
+import com.sun.javafx.binding.StringFormatter;
 import eu.h2020.symbiote.handlers.ResourceHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,21 +55,24 @@ public class ResourceDeletedConsumer extends DefaultConsumer {
         });
 
         Callable<Boolean> callable = () -> {
-            for (String delId : toDelete) {
-                log.debug("Deleting resource " + delId);
-                handler.deleteResource(delId);
-                //Send the response back to the client
-                //TODO
-                long after = System.currentTimeMillis();
-
-                log.debug("Total delete operation finished and took: " + (after - before ) + " ms");
+            log.debug("Deleting resources " + toDelete.stream().reduce((x,y) -> x +","+y).get());
+            boolean result = handler.deleteResources(toDelete);
+            if( result ) {
+                log.debug("Delete operation successful, ack");
+                getChannel().basicAck(envelope.getDeliveryTag(),false);
+            } else {
+                log.debug("Delete operation was not successful, resubmitting in 2s");
+                Thread.sleep(5000);
+                getChannel().basicReject(envelope.getDeliveryTag(),true);
             }
+            //TODO
+            long after = System.currentTimeMillis();
+
+            log.debug("Total delete operation finished and took: " + (after - before ) + " ms");
             return Boolean.TRUE;
         };
 
         writerExecutorService.submit(callable);
-
-        getChannel().basicAck(envelope.getDeliveryTag(),false);
     }
 }
 

@@ -343,11 +343,17 @@ public class ResourceHandler implements IResourceEvents {
     public boolean deleteResource(String resourceId) {
         log.debug("Deleting resource " + resourceId);
         UpdateRequest updateRequest = new DeleteResourceRequestGenerator(resourceId).generateRequest();
+
+        //Mod to check if resource exists
         this.storage.getTripleStore().executeUpdate(updateRequest);
 
-        this.storage.getTripleStore().printDataset();
-        this.accessPolicyRepo.delete(resourceId);
         return true;
+    }
+
+    public boolean deleteResources( List<String> resourceIds ) {
+        boolean result = this.storage.getTripleStore().executeDeleteResources(resourceIds);
+        log.debug("Delete resources ended with result: " + result);
+        return result;
     }
 
     @Override
