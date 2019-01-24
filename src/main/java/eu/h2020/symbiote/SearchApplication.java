@@ -1,27 +1,22 @@
 package eu.h2020.symbiote;
 
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
 import eu.h2020.symbiote.communication.RabbitManager;
 import eu.h2020.symbiote.communication.SearchCommunicationHandler;
-import eu.h2020.symbiote.core.internal.*;
+import eu.h2020.symbiote.core.internal.CoreSparqlQueryRequest;
 import eu.h2020.symbiote.filtering.AccessPolicyRepo;
 import eu.h2020.symbiote.filtering.SecurityManager;
 import eu.h2020.symbiote.handlers.*;
 import eu.h2020.symbiote.mappings.MappingManager;
-import eu.h2020.symbiote.mappings.MappingRepository;
 import eu.h2020.symbiote.model.mim.InformationModel;
-import eu.h2020.symbiote.model.mim.InterworkingService;
-import eu.h2020.symbiote.model.mim.SmartSpace;
 import eu.h2020.symbiote.ontology.model.TripleStore;
 import eu.h2020.symbiote.ranking.AvailabilityManager;
 import eu.h2020.symbiote.ranking.PopularityManager;
 import eu.h2020.symbiote.ranking.RankingHandler;
 import eu.h2020.symbiote.search.SearchStorage;
-import eu.h2020.symbiote.semantics.ModelHelper;
-import eu.h2020.symbiote.semantics.ontology.BIM;
-import eu.h2020.symbiote.semantics.ontology.CIM;
-import eu.h2020.symbiote.semantics.ontology.MIM;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jena.update.UpdateFactory;
@@ -41,16 +36,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
 
 /**
@@ -225,8 +220,18 @@ public class SearchApplication {
             startBlankCleanupScheduler(resourceHandler);
 
 
-            //TODO moveDefaultGraph
+//            resourceHandler.deleteResources(Arrays.asList("5c2f517d4f5ab037cf045a72","5c2f517d4f5ab037cf045a74", "5c2f517d4f5ab037cf045a76", "5c2f52f54f5ab037cf045a79", "5c2f52f54f5ab037cf045a7b"));
+
+
+            //TODO 1. moveDefaultGraph
 //            moveDefaultGraph(searchStorage.getTripleStore());
+            //TODO 2. moveDefaultGraph
+//            searchStorage.getTripleStore().loadModelsToNamedGraphs();
+            //TODO 3. send model registrations - from Registry
+
+
+
+
             //TODO testquery
 //            testQuery(searchHandler);
             //TODO check model helper
@@ -241,20 +246,54 @@ public class SearchApplication {
 //            registerResourceM1(resourceHandler);
 //            registerResourceM2(resourceHandler);
 
+
+
 //            registerMappingTestResource(resourceHandler);
 //            searchStorage.getTripleStore().loadBaseModel(CIM.getURI());
 //            searchStorage.getTripleStore().loadBaseModel(MIM.getURI());
         }
 
-//        private void deleteResourcesFromGraphs(TripleStore tripleStore) {
-//            UpdateRequest req = UpdateFactory.create();
-//            req.add(generateResourceRemoval("5bfc0bfe4f5ab04324f1cc25","http://www.symbiote-h2020.eu/ontology/internal/platforms/SSP_Navigo"));
-//            req.add(generateResourceRemoval("5bc9ab084f5ab05629acc62a","http://www.symbiote-h2020.eu/defaultGraph"));
-//            req.add(generateResourceRemoval("5bc9ab074f5ab05629acc628","http://www.symbiote-h2020.eu/defaultGraph"));
-//            req.add(generateResourceRemoval("5bc9ab084f5ab05629acc62c","http://www.symbiote-h2020.eu/defaultGraph"));
-//            req.add(generateResourceRemoval("5bc9aadb4f5ab05629acc624","http://www.symbiote-h2020.eu/defaultGraph"));
-//            req.add(generateResourceRemoval("5bc9ab064f5ab05629acc626","http://www.symbiote-h2020.eu/defaultGraph"));
-//            tripleStore.executeUpdate(req);
+        private void deleteResourcesFromGraphs(TripleStore tripleStore) {
+            UpdateRequest req = UpdateFactory.create();
+            req.add(generateResourceRemoval("5bc9ab084f5ab05629acc62a","http://www.symbiote-h2020.eu/defaultGraph"));
+            req.add(generateResourceRemoval("5bc9ab074f5ab05629acc628","http://www.symbiote-h2020.eu/defaultGraph"));
+            req.add(generateResourceRemoval("5bc9ab084f5ab05629acc62c","http://www.symbiote-h2020.eu/defaultGraph"));
+            req.add(generateResourceRemoval("5bc9aadb4f5ab05629acc624","http://www.symbiote-h2020.eu/defaultGraph"));
+            req.add(generateResourceRemoval("5bc9ab064f5ab05629acc626","http://www.symbiote-h2020.eu/defaultGraph"));
+            tripleStore.executeUpdate(req);
+        }
+
+//        private void sendModelRegistrations(PlatformHandler platformHandler) {
+//
+//            try (MongoClient client = new MongoClient()) {
+//                MongoDatabase database = client.getDatabase("symbiote-core-registry-database");
+//
+////                MongoClient mongoClient = new MongoClient(connectionString);
+//
+//                CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
+//                        org.bson.codecs.configuration.CodecRegistries.fromProviders(Pojo);
+//                MongoDatabase database = mongoClient.getDatabase("testdb").withCodecRegistry(pojoCodecRegistry);
+////                CodecRegistry pojoCodecRegistry = MongoClient.getDefaultCodecRegistry();
+////                pojoCodecRegistry.
+////                        fromProviders(PojoCodecProvider.builder().automatic(true).build()));
+////
+////                database.withCodecRegistry(pojoRegistry);
+//
+//
+//                MongoCollection<InformationModel> informationModels = database.getCollection("informationModel", InformationModel.class);
+//                try (MongoCursor<InformationModel> iterator = informationModels.find().iterator() ) {
+//                    while( iterator.hasNext() ) {
+//                        InformationModel next = iterator.next();
+//                        if( !next.getId().equals("BIM") ) {
+//                            System.out.print("Adding information model: " + next.getId() + " uri: " + next.getUri());
+//                            platformHandler.registerInformationModel(next);
+//                        } else {
+//                            System.out.println("Skipping BIM");
+//                        }
+//                    }
+//                }
+//            }
+//
 //        }
 
         private void testQuery(ISearchEvents searchHandler) {
@@ -365,7 +404,7 @@ public class SearchApplication {
         log.debug(">>>>>>>>>> MOVING TO NAMED GRAPH <<<<<<<<<");
 
         UpdateRequest req = UpdateFactory.create();
-        req.add("MOVE DEFAULT TO <http://www.symbiote-h2020.eu/defaultGraph>");
+        req.add("MOVE DEFAULT TO <"+TripleStore.DEFAULT_GRAPH+">");
         tripleStore.executeUpdate(req);
     }
 

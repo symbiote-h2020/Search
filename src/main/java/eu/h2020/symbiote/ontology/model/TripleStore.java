@@ -17,14 +17,16 @@ import eu.h2020.symbiote.semantics.ontology.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jena.graph.Node;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.permissions.Factory;
 import org.apache.jena.permissions.model.SecuredModel;
 import org.apache.jena.query.*;
-import org.apache.jena.query.spatial.EntityDefinition;
-import org.apache.jena.query.spatial.SpatialDatasetFactory;
+import org.apache.jena.query.spatial.*;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.sparql.core.DatasetGraph;
+import org.apache.jena.sparql.core.Quad;
 import org.apache.jena.tdb.TDBFactory;
 import org.apache.jena.update.UpdateAction;
 import org.apache.jena.update.UpdateFactory;
@@ -37,6 +39,7 @@ import org.apache.lucene.store.RAMDirectory;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -110,7 +113,9 @@ public class TripleStore {
         boolean newRepo = false;
         currentDirectory = directory;
 
-        EntityDefinition entDef = new EntityDefinition("entityField", "geoField");
+//        EntityDefinition entDef = new EntityDefinition("entityField", "geoField");
+
+        EntityDefinition entDef = new EntityDefinition("uri","geo");
 
         File dir = new File(directory + (directory.endsWith("/") ? "" : "/") + SPATIAL_REPO);
 
@@ -134,6 +139,21 @@ public class TripleStore {
         }
 
         dataset = SpatialDatasetFactory.createLucene(baseDataset, realDir, entDef);
+
+        //Additional spatial setting test - 10_01_2019
+//        DatasetGraphSpatial spatialDataset = (DatasetGraphSpatial) (dataset.asDatasetGraph());
+//        SpatialIndex spatialIndex = spatialDataset.getSpatialIndex();
+//
+//        SpatialIndexContext context = new SpatialIndexContext(spatialIndex);
+//        spatialIndex.startIndexing();
+//
+//        Iterator<Quad> quadIter = spatialDataset.find(Node.ANY, Node.ANY, Node.ANY, Node.ANY);
+//        for (; quadIter.hasNext();) {
+//            Quad quad = quadIter.next();
+//            context.index(quad.getGraph(), quad.getSubject(), quad.getPredicate(), quad.getObject());
+//        }
+//        spatialIndex.finishIndexing();
+
 //        DatasetGraphSpatial datasetGraph = (DatasetGraphSpatial) (dataset.asDatasetGraph());
 //
 //        SpatialIndex spatialIndex = datasetGraph.getSpatialIndex();
@@ -190,6 +210,10 @@ public class TripleStore {
 
     public void setSparqlQueryTimeout(int sparqlQueryTimeout) {
         this.sparqlQueryTimeout = sparqlQueryTimeout;
+    }
+
+    public void loadModelsToNamedGraphs() {
+        loadModels();
     }
 
     private void loadModels() {
@@ -430,18 +454,24 @@ public class TripleStore {
 
     public ResultSet executeQueryOnDataset(Query query, SecurityRequest securityRequest, boolean useSecureGraph) {
         dataset.begin(ReadWrite.READ);
+        log.debug("Executing query on dataset");
         ResultSet result = null;
         try {
             if (useSecureGraph) {
+                log.debug("Using secured graph");
                 //TODO check for querying named graphs
                 setSecurityRequest(securityRequest);
                 try (QueryExecution qe = QueryExecutionFactory.create(query, securedModel)) {
                     qe.setTimeout(sparqlQueryTimeout);
+                    log.debug("Executing on secured graph");
                     result = ResultSetFactory.copyResults(qe.execSelect());
                 }
             } else {
+                log.debug("Using nonsecured graph");
                 try (QueryExecution qe = QueryExecutionFactory.create(query, dataset)) {
+                    qe.setTimeout(sparqlQueryTimeout);
                     long in = System.currentTimeMillis();
+                    log.debug("Executing on notsecured");
                     ResultSet resultSet = qe.execSelect();
                     log.debug("Before copy results");
                     result = ResultSetFactory.copyResults(resultSet);
@@ -451,6 +481,7 @@ public class TripleStore {
         } finally {
             dataset.end();
         }
+        log.debug("Finished executing query on dataset");
         return result;
     }
 
