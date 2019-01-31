@@ -182,9 +182,9 @@ public class SearchStorage {
         tripleStore.removedNamedGraph(uri);
     }
 
-    public OntModel getNamedGraphAsOntModel( String uri ) {
+    public OntModel getNamedGraphAsOntModel( String uri, boolean includeImport, boolean useInference ) {
         log.debug("Getting named ont model by uri " + uri);
-        OntModel pimModel = tripleStore.getNamedOntModel(uri);
+        OntModel pimModel = tripleStore.getNamedOntModel(uri, includeImport, useInference);
 
         return pimModel;
     }

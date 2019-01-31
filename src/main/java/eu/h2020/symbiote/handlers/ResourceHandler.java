@@ -120,9 +120,12 @@ public class ResourceHandler implements IResourceEvents {
 
     public Map<String,Model> findResourcesInRdf(String rdf, RDFFormat rdfFormat, String informationModeIri) {
         log.debug("Searching for resource in rdf");
+        long in = System.currentTimeMillis();
         Map<String,Model> result = new HashMap<>();
         try {
+            long time1 = System.currentTimeMillis();
             OntModel ontModel = ModelHelper.readModel(rdf, rdfFormat , false, false);
+            long timer_after_read_model = System.currentTimeMillis();
 //            if( ontModel.getDocumentManager().getProcessImports() ) {
 //                log.debug("Turning on manual process imports");
 //                ontModel.getDocumentManager().setProcessImports(true);
@@ -130,6 +133,7 @@ public class ResourceHandler implements IResourceEvents {
 //                log.debug("Process imports are on");
 //            }
             ontModel = ModelHelper.withInf(ontModel);
+            long timer_after_with_inf = System.currentTimeMillis();
 
             //New add pim
 
@@ -143,23 +147,28 @@ public class ResourceHandler implements IResourceEvents {
 //                }
 
             //Get information model definition for information model entity
-            Set<Individual> infoModels = storage.getNamedGraphAsOntModel(TripleStore.DEFAULT_GRAPH).listIndividuals(MIM.InformationModel).toSet();
+            OntModel loadedDefaultModel = storage.getNamedGraphAsOntModel(TripleStore.DEFAULT_GRAPH,false,false);
+            Set<Individual> infoModels = loadedDefaultModel.listIndividuals(MIM.InformationModel).toSet();
+            long timer_after_storage_getnamed = System.currentTimeMillis();
             List<Individual> rightInfoModels = infoModels.stream().filter(infoModelIndividual -> infoModelIndividual.getURI().equals(informationModeIri)).collect(Collectors.toList());
 
+            long timer_after_filtering_byuri = System.currentTimeMillis();
+
             log.debug("Checking graph containing information model, found: " + rightInfoModels.size() + " for InfoModelIRI: " + informationModeIri );
+            log.debug("[Timers] readModel " + (timer_after_read_model - time1) + " | withInf " + (timer_after_with_inf - timer_after_read_model )
+                    + " | storageGetNamed " + (timer_after_storage_getnamed - timer_after_with_inf ) + " | filteringByUri " + (timer_after_filtering_byuri - timer_after_storage_getnamed));
 
             String pimGraphUri = BIM.getURI();
 
             if( rightInfoModels. size() == 1 ) {
                 Individual pimIndividual = rightInfoModels.get(0);
                 log.debug("Trying to read definition graph uri");
-                Resource modelGraph = storage.getNamedGraphAsOntModel(TripleStore.DEFAULT_GRAPH).getResource(pimIndividual.getURI()).getProperty(MIM.hasDefinition).getResource();
+                Resource modelGraph = loadedDefaultModel.getResource(pimIndividual.getURI()).getProperty(MIM.hasDefinition).getResource();
                 log.debug("Found graphUri: " + modelGraph.getURI());
                 pimGraphUri = modelGraph.getURI();
             }
 
-
-            OntModel pim = storage.getNamedGraphAsOntModel(pimGraphUri);
+            OntModel pim = storage.getNamedGraphAsOntModel(pimGraphUri,true,true);
 //            OntModel pim = storage.getNamedGraphAsOntModel("http://iosb.fraunhofer.de/ilt/ontologies/educampus");
 //            printModel("pimModel",pim);
 
@@ -199,7 +208,7 @@ public class ResourceHandler implements IResourceEvents {
         } catch (IOException e) {
             log.error(e);
         }
-        log.debug("Returning resources in rdf: " + result.size());
+        log.debug("Returning resources in rdf: " + result.size() + " total check time: " + ( System.currentTimeMillis() - in ) + " ms");
         return result;
 
     }

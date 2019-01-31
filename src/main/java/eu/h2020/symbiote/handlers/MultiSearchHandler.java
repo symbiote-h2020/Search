@@ -348,7 +348,8 @@ public class MultiSearchHandler implements ISearchEvents {
 
             if( mappingsFromSource.size() == 0 ) {
                 //Could not find models by threating sourceModel as ID - trying as an IRI
-                Set<Individual> infoModels = this.triplestore.getNamedOntModel(TripleStore.DEFAULT_GRAPH).listIndividuals(MIM.InformationModel).toSet();
+                //TODO check if need import/inference
+                Set<Individual> infoModels = this.triplestore.getNamedOntModel(TripleStore.DEFAULT_GRAPH,false,false).listIndividuals(MIM.InformationModel).toSet();
                 List<String> rightInfoModelIds = infoModels.stream().filter(infoModelIndividual -> {
 //                    infoModelIndividual.getURI().equals(sourceModelId);
 //                    log.debug("Before checking for info models defitnions " + infoModelIndividual.getURI() );
@@ -364,7 +365,8 @@ public class MultiSearchHandler implements ISearchEvents {
                     return infoModelIndividual.getURI().equals(sourceModelId) || modelIri.equals(sourceModelId);
                 }).map( infoModelIndividual -> {
                     log.debug("Before checking mapping: " +infoModelIndividual.getURI() );
-                    Statement property = this.triplestore.getNamedOntModel(TripleStore.DEFAULT_GRAPH).getResource(infoModelIndividual.getURI()).getProperty(CIM.id);
+                    //TODO check if need import/inference
+                    Statement property = this.triplestore.getNamedOntModel(TripleStore.DEFAULT_GRAPH,false,false).getResource(infoModelIndividual.getURI()).getProperty(CIM.id);
                     log.debug("Mapping: " + property.toString() );
                     try {
                         String s = property.getLiteral().toString();

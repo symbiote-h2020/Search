@@ -138,7 +138,7 @@ public class DeleteAndUpdateHandlerTests {
     public void deletePlatformTest() {
         printDataset();
 
-        Model graph = triplestore.getNamedOntModel(TripleStore.DEFAULT_GRAPH);
+        Model graph = triplestore.getNamedOntModel(TripleStore.DEFAULT_GRAPH,false,false);
         org.apache.jena.rdf.model.Resource resource = graph.createResource(PLATFORM_A_URI);
         boolean contains = graph.contains(resource, CIM.id, PLATFORM_A_ID);
         assertTrue("Before platform A should exist", contains);
@@ -146,7 +146,7 @@ public class DeleteAndUpdateHandlerTests {
         PlatformHandler delHandler = new PlatformHandler(storage,interworkingServiceInfoRepo);
         delHandler.deletePlatform(PLATFORM_A_ID);
 
-        graph = triplestore.getNamedOntModel(TripleStore.DEFAULT_GRAPH);
+        graph = triplestore.getNamedOntModel(TripleStore.DEFAULT_GRAPH,false,false);
         contains = graph.contains(resource, CIM.id, PLATFORM_A_ID);
         assertFalse("After delete platform A should not exist", contains);
     }
@@ -165,7 +165,7 @@ public class DeleteAndUpdateHandlerTests {
         SearchCommunicationHandler comm3 = Mockito.mock(SearchCommunicationHandler.class);
         when(comm3.getReqId()).thenReturn("3");
 
-        Model graph = triplestore.getNamedOntModel(TripleStore.DEFAULT_GRAPH);
+        Model graph = triplestore.getNamedOntModel(TripleStore.DEFAULT_GRAPH,false,false);
         boolean hasAtLeastOne = graph.listStatements().hasNext();
         assertTrue("Initial graph should have at least some statements", hasAtLeastOne);
 

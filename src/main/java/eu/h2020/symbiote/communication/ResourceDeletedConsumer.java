@@ -55,7 +55,8 @@ public class ResourceDeletedConsumer extends DefaultConsumer {
         });
 
         Callable<Boolean> callable = () -> {
-            log.debug("Deleting resources " + toDelete.stream().reduce((x,y) -> x +","+y).get());
+            String resourcesList = toDelete.stream().reduce((x, y) -> x + "," + y).get();
+            log.debug("Deleting resources " + resourcesList);
             boolean result = handler.deleteResources(toDelete);
             if( result ) {
                 log.debug("Delete operation successful, ack");
@@ -68,7 +69,7 @@ public class ResourceDeletedConsumer extends DefaultConsumer {
             //TODO
             long after = System.currentTimeMillis();
 
-            log.debug("Total delete operation finished and took: " + (after - before ) + " ms");
+            log.debug("Total delete operation for finished and took: " + (after - before ) + " ms");
             return Boolean.TRUE;
         };
 

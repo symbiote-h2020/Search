@@ -130,6 +130,102 @@ public class QueryGenerator {
 
     }
 
+    private void generateModiafableQueryWithPropPath() {
+
+        query = new StringBuilder();
+
+        query.append("PREFIX cim: <http://www.symbiote-h2020.eu/ontology/core#> \n");
+        query.append("PREFIX mim: <http://www.symbiote-h2020.eu/ontology/meta#> \n");
+        query.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n");
+        query.append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
+        query.append("PREFIX owl: <http://www.w3.org/2002/07/owl#> \n");
+        query.append("PREFIX spatial: <http://jena.apache.org/spatial#> \n");
+        query.append("PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> \n\n");
+
+        //Location test //dziala ok
+        query.append("SELECT ?resId ?resName ?resDescription ?locationName ?locationLat ?locationLong ?locationAlt " +
+                "?platformId ?platformName ?property ?propName ?propDesc ?type ?parameter ?parameterName ?parameterMandatory " +
+                "?parameterDatatype ?dataPred ?dataObj ?capability ?capName ?capParameter ?capParameterName " +
+                "?capParameterMandatory ?capParameterDatatype ?capDataPred ?capDataObj ?owner WHERE {\n");
+//        query.append("\t?sensor a cim:Resource ;\n"); \\TODO r3 dereference
+        query.append("\t?sensor a ?type ;\n");
+        query.append("\t\tcim:id ?resId ;\n");
+        query.append("\t\tcim:name ?resName .\n");
+        query.append("\t?platform cim:id ?platformId ;\n");
+        query.append("\t\tcim:name ?platformName .\n");
+
+        query.append("\t?platform mim:hasService/mim:hasResource ?sensor .\n");
+
+        if (locationquery) {
+            query.append("\t?sensor cim:locatedAt ?location.\n");
+            query.append("	?location cim:name ?locationName.\n");
+        }
+        if (propertyquery) {
+            query.append("\t?sensor cim:observesProperty ?property.\n");
+            query.append("\t?property cim:name ?propName.\n");
+        }
+
+        query.append("OPTIONAL { ");
+
+        query.append("\t?sensor cim:locatedAt ?location.\n");
+        query.append("\t?location geo:lat ?locationLat .\n");
+        query.append("\t?location geo:long ?locationLong .\n");
+        query.append("\t?location geo:alt ?locationAlt .\n");
+
+        if (!locationquery) {
+            query.append("\t?location cim:name ?locationName.\n");
+        }
+        query.append("} \n");
+
+        //OPTIONAL description
+        query.append("OPTIONAL { ");
+        query.append("\t?sensor cim:description ?resDescription.\n");
+        query.append("} \n");
+
+        if (!propertyquery) {
+            query.append("OPTIONAL { ");
+            query.append("\t?sensor cim:observesProperty ?property.\n");
+            query.append("\t?property cim:name ?propName.\n");
+            query.append("OPTIONAL { ");
+            query.append("\t?property cim:description ?propDesc.\n");
+            query.append("} \n");
+            query.append("} \n");
+        }
+
+        //OPTIONAL input parameters of services
+        query.append("OPTIONAL { ");
+        query.append("\t?sensor cim:hasParameter ?parameter .\n");
+        query.append("\t?parameter cim:name ?parameterName .\n");
+        query.append("\t?parameter cim:mandatory ?parameterMandatory .\n");
+        query.append("\t?parameter cim:hasDatatype ?parameterDatatype .\n");
+        query.append("\t?parameterDatatype ?dataPred ?dataObj .\n");
+        query.append("} \n");
+
+        //OPTIONAL capabilities and their input parameters
+        query.append("OPTIONAL { ");
+        query.append("\t?sensor cim:hasCapability ?capability .\n");
+        query.append("\t?capability cim:name ?capName .\n");
+        query.append("\t?capability cim:hasParameter ?capParameter.\n");
+        query.append("\t?capParameter cim:name ?capParameterName .\n");
+        query.append("\t?capParameter cim:mandatory ?capParameterMandatory .\n");
+        query.append("\t?capParameter cim:hasDatatype ?capParameterDatatype .\n");
+        query.append("\t?capParameterDatatype ?capDataPred ?capDataObj .\n");
+        query.append("} \n");
+
+        //SDev info into ?owner field
+        query.append("OPTIONAL { ");
+        query.append("\t?sdev cim:id ?owner .\n" );
+        query.append("\t?sdev a mim:SmartDevice .\n" );
+        query.append("\t?sdev mim:hasService ?sdevService .\n" );
+        query.append("\t?sdevService mim:hasResource ?sensor .\n" );
+        query.append("} \n");
+
+//        query.append("OPTIONAL { ");
+//        query.append("\t?capability cim:name ?capName \n");
+//        query.append("} \n");
+
+    }
+
     public QueryGenerator addPlatformId(String platformId) {
         extension.append("\t?platform cim:id \"" + platformId + "\" .\n");
         return this;

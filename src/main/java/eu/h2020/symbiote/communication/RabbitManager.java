@@ -46,7 +46,7 @@ public class RabbitManager {
     @Value("${rabbit.password}")
     private String rabbitPassword;
 
-    @Value("${spring.rabbitmq.template.reply-timeout}")
+    @Value("${search.spring.rabbitmq.template.reply-timeout}")
     private Integer rabbitMessageTimeout;
 
     @Value("${rabbit.exchange.platform.name}")

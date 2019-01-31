@@ -503,13 +503,19 @@ public class TripleStore {
         return result;
     }
 
-    public OntModel getNamedOntModel(String uri) {
+    public OntModel getNamedOntModel(String uri, boolean includeImport, boolean useInference) {
         OntModel modelToReturn = null;
 
+        long timers_begin = System.currentTimeMillis();
         dataset.begin(ReadWrite.READ);
+        long timers_afterbeingread = System.currentTimeMillis();
         Model namedModel = dataset.getNamedModel(uri);
+        long timers_aftergetNameModel = System.currentTimeMillis();
         try {
-            modelToReturn = ModelHelper.asOntModel(namedModel, true, true);
+            modelToReturn = ModelHelper.asOntModel(namedModel, includeImport, useInference);
+            long timers_afterAsOntModell = System.currentTimeMillis();
+            log.debug("[Timers getNamedOntModel] waitingBegin " + (timers_afterbeingread - timers_begin) + " | gettingNamedModel " + (timers_aftergetNameModel - timers_afterbeingread )
+                    + " | afterAsOntModel " + ( timers_afterAsOntModell - timers_aftergetNameModel));
         } catch (Exception e) {
             log.error("Error occurred when asOntModel: " + e.getMessage());
         }
