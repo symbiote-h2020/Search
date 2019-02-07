@@ -191,9 +191,7 @@ public class SearchApplication {
             manager.registerModelDeleteConsumer(platformHandler);
             manager.registerModelUpdateConsumer(platformHandler);
 
-            //TODO
-            //loading interworking services on startup
-//            platformHandler.loadAndSaveInterworkingServicesFromTriplestore();
+
 
 //            platformHandler.deleteSsp("5b921e51ef6ecf58cca87812");
 //            platformHandler.deleteSdev("5b922212ef6ecf58cca87813");
@@ -229,6 +227,9 @@ public class SearchApplication {
 //            searchStorage.getTripleStore().loadModelsToNamedGraphs();
             //TODO 3. send model registrations - from Registry
 
+            //TODO
+            //loading interworking services on startup
+//            platformHandler.loadAndSaveInterworkingServicesFromTriplestore();
 
 
 

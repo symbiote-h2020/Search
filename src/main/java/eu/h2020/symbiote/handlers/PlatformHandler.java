@@ -220,6 +220,7 @@ public class PlatformHandler implements IPlatformEvents, ISspEvents, IModelEvent
     public List<InterworkingServiceInfo> readInterworkingServicesFromTriplestore() {
         List<InterworkingServiceInfo> services = new ArrayList<>();
         ResultSet resultSet = this.storage.getTripleStore().executeQuery(getLoadAllInterworkingServicesSPQRL(), null, false);
+        log.debug("Adding services: ");
         while (resultSet.hasNext()) {
             QuerySolution solution = resultSet.next();
             String serviceIRI = solution.get(SOLUTION_SERVICE_IRI).toString();
@@ -227,11 +228,11 @@ public class PlatformHandler implements IPlatformEvents, ISspEvents, IModelEvent
             String platformId = solution.get(SOLUTION_PLATFORM_ID).toString();
             String informationModelIri = solution.get(SOLUTION_INFORMATION_MODEL).toString();
 
+            log.debug(" serviceIRI: " + serviceIRI + " | serviceURL: " + serviceURL + " | platformId: " + platformId + " | informationModelIRI " + informationModelIri );
             services.add(new InterworkingServiceInfo(serviceIRI, serviceURL, platformId, informationModelIri));
         }
         return services;
     }
-
 
     //TODO check informationmodelId
     public void loadAndSaveInterworkingServicesFromTriplestore() {
@@ -246,7 +247,6 @@ public class PlatformHandler implements IPlatformEvents, ISspEvents, IModelEvent
     public void registerInformationModel(InformationModel model) {
         log.debug("Inserting information model graph " + model.getUri());
         this.storage.registerModel( model  );
-
     }
 
     @Override
